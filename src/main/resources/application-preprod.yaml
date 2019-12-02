@@ -1,0 +1,11 @@
+oppdrag.mq:
+  queuemanager: MQ1LSC01
+  queuename: QA.Q1_231.OB04_OPPDRAG_XML
+  channel: Q1_231
+  hostname: b27apvl172.preprod.local
+  port: 1413
+  user: ${MQ_SRVBRUKER} #Hentes fra vault
+  password: ${MQ_PASSWORD} #Hentes fra vault
+  enabled: true
+
+
