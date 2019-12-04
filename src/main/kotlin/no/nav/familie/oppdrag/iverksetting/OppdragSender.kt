@@ -20,6 +20,7 @@ class OppdragSender(@Autowired val jmsTemplate: JmsTemplate,
         }
 
         try {
+            LOG.info("Default destination er: {}", jmsTemplate.defaultDestinationName)
             jmsTemplate.convertAndSend(køNavn, oppdrag110Xml)
             LOG.info("Sender Oppdrag110-XML over MQ til OS")
         } catch (e: JmsException) {
