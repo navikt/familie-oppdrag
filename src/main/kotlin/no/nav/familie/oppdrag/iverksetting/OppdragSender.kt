@@ -24,6 +24,7 @@ class OppdragSender(@Autowired val jmsTemplate: JmsTemplate,
             LOG.info("Sender Oppdrag110-XML over MQ til OS")
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende Oppdrag til OS. Feil: ", e)
+            throw e
         }
         return oppdrag110Xml
     }
