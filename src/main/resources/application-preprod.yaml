@@ -1,7 +1,7 @@
 ibm.mq:
-  queuemanager: MQ1LSC02
-  queuename: OB04_OPPDRAG_XML
-  channel: QA.Q1_231
+  queuemanager: b27apvl176.preprod.local:1413/MQ1LSC02
+  queuename: QA.Q1_231.OB04_OPPDRAG_XML
+  channel: Q1_231
   connName: b27apvl176.preprod.local(1413)
   user: ${MQ_SRVBRUKER} #Hentes fra vault
   password: ${MQ_PASSWORD} #Hentes fra vault
