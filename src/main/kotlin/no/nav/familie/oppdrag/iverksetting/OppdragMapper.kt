@@ -1,8 +1,11 @@
 package no.nav.familie.oppdrag.iverksetting
 
 import no.trygdeetaten.skjema.oppdrag.ObjectFactory
+import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
+import org.springframework.stereotype.Component
 
+@Component
 class OppdragMapper {
 
     private val objectFactory = ObjectFactory()
@@ -29,5 +32,11 @@ class OppdragMapper {
         }
 
         return oppdrag110
+    }
+
+    fun tilOppdrag(oppdrag110: Oppdrag110): Oppdrag {
+        return objectFactory.createOppdrag().apply {
+            this.oppdrag110 = oppdrag110
+        }
     }
 }

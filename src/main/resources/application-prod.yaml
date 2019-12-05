@@ -1,0 +1,10 @@
+#NB! Dette skal ikke skrus på i produksjon før avstemming er på plass!
+oppdrag.mq:
+  queuemanager: MPLSC02
+  queuename: QA.P231.OB04_OPPDRAG_FP_XML
+  channel: P_FPSAK
+  hostname: a01apvl063.adeo.no
+  port: 1414
+  user: ${MQ_SRVBRUKER}
+  password: ${MQ_PASSWORD}
+  enabled: false

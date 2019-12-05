@@ -107,12 +107,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.ibm.mq</groupId>
-            <artifactId>mq-jms-spring-boot-starter</artifactId>
-            <version>2.2.1</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- NAV interne avhengigheter-->
         <dependency>

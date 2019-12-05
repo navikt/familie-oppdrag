@@ -8,7 +8,6 @@ import com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.ConnectionFactory
@@ -17,7 +16,6 @@ import javax.jms.JMSException
 private const val UTF_8_WITH_PUA = 1208
 
 @Configuration
-@Profile("!dev")
 class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
                       @Value("\${oppdrag.mq.queuemanager}") val queuemanager: String,
                       @Value("\${oppdrag.mq.channel}") val channel: String,
@@ -29,20 +27,20 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
     @Bean
     @Throws(JMSException::class)
     fun mqQueueConnectionFactory(): ConnectionFactory {
-        val connectionFactory = MQQueueConnectionFactory()
-        connectionFactory.hostName = hostname
-        connectionFactory.queueManager = queuemanager
-        connectionFactory.channel = channel
-        connectionFactory.port = port
-        connectionFactory.transportType = WMQ_CM_CLIENT
-        connectionFactory.ccsid = UTF_8_WITH_PUA
-        connectionFactory.setIntProperty(JMS_IBM_ENCODING, MQENC_NATIVE)
-        connectionFactory.setIntProperty(JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA)
+        val targetFactory = MQQueueConnectionFactory()
+        targetFactory.hostName = hostname
+        targetFactory.queueManager = queuemanager
+        targetFactory.channel = channel
+        targetFactory.port = port
+        targetFactory.transportType = WMQ_CM_CLIENT
+        targetFactory.ccsid = UTF_8_WITH_PUA
+        targetFactory.setIntProperty(JMS_IBM_ENCODING, MQENC_NATIVE)
+        targetFactory.setIntProperty(JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA)
 
         val cf = UserCredentialsConnectionFactoryAdapter()
         cf.setUsername(user)
         cf.setPassword(password)
-        cf.setTargetConnectionFactory(connectionFactory)
+        cf.setTargetConnectionFactory(targetFactory)
         return cf
     }
 

@@ -1,17 +1,9 @@
-ibm.mq:
-  #queuemanager: MQ1LSC02
-  queuename: QA.Q1_231.OB04_OPPDRAG_FP_XML
-  #channel: Q1_231
-  #connName: b27apvl176.preprod.local(1413)
-  #user: ${MQ_SRVBRUKER} #Hentes fra vault
-  #password: ${MQ_PASSWORD} #Hentes fra vault
-  enabled: true
-
 oppdrag.mq:
   queuemanager: MQ1LSC02
   queuename: QA.Q1_231.OB04_OPPDRAG_FP_XML
   channel: Q1_FPSAK
   hostname: b27apvl176.preprod.local
   port: 1413
-  user: ${MQ_SRVBRUKER} #Hentes fra vault
-  password: ${MQ_PASSWORD} #Hentes fra vault
+  user: ${MQ_SRVBRUKER}
+  password: ${MQ_PASSWORD}
+  enabled: true
