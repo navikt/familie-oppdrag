@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-class KøController(@Autowired val oppdragSender: OppdragSender, @Autowired val oppdragMapper: OppdragMapper) {
+class OppdragController(@Autowired val oppdragSender: OppdragSender, @Autowired val oppdragMapper: OppdragMapper) {
 
-    // Denne brukes kun for å teste integrasjonen mot OS over MQ
+    @Deprecated("Dette endepunktet brukes kun for å teste integrasjonen mot OS over MQ")
     @GetMapping("/oppdrag")
     fun sendOppdrag(): String {
 
