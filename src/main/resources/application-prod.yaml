@@ -1,4 +1,5 @@
-#NB! Dette skal ikke skrus på i produksjon før avstemming er på plass!
+# NB! Dette skal ikke skrus på i produksjon før avstemming er på plass!
+# TODO: Koble om til generell kø OB04_OPPDRAG_XML og lage en egen kanal for familie_oppdrag
 oppdrag.mq:
   queuemanager: MPLSC02
   queuename: QA.P231.OB04_OPPDRAG_FP_XML

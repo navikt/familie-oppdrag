@@ -1,3 +1,4 @@
+# TODO: Koble om til generell kø OB04_OPPDRAG_XML og lage en egen kanal for familie_oppdrag
 oppdrag.mq:
   queuemanager: MQ1LSC02
   queuename: QA.Q1_231.OB04_OPPDRAG_FP_XML
