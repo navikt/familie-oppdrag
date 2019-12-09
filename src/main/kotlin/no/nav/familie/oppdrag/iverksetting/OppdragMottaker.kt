@@ -11,6 +11,7 @@ class OppdragMottaker(@Autowired val jmsTemplateInngående: JmsTemplate) {
 
     @JmsListener(destination = "\${oppdrag.mq.mottak}")
     fun mottaKvitteringFraOppdrag() {
+        LOG.info("Lytter på kvitteringskø: {}", jmsTemplateInngående.defaultDestinationName)
 
         val melding = jmsTemplateInngående.receiveAndConvert()
         LOG.info("Mottatt melding på kvitteringskø: {}", melding)
