@@ -2,7 +2,7 @@
 oppdrag.mq:
   queuemanager: MQ1LSC02
   send: QA.Q1_231.OB04_OPPDRAG_XML
-  mottak: QA.Q1_FAMILIE_OPPDRAG.FAMILIE_OPPDRAG_XML_KVITT
+  mottak: QA.Q1_FAMILIE_OPPDRAG.OPPDRAG_FAMILIE_XML_KVITT
   channel: Q1_FAMILIE_OPPDRAG
   hostname: b27apvl176.preprod.local
   port: 1413
