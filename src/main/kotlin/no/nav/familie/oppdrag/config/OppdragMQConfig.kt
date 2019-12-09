@@ -19,7 +19,8 @@ private const val UTF_8_WITH_PUA = 1208
 class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
                       @Value("\${oppdrag.mq.queuemanager}") val queuemanager: String,
                       @Value("\${oppdrag.mq.channel}") val channel: String,
-                      @Value("\${oppdrag.mq.queuename}") val queuename: String,
+                      @Value("\${oppdrag.mq.send}") val sendQueue: String,
+                      @Value("\${oppdrag.mq.mottak}") val mottakQueue: String,
                       @Value("\${oppdrag.mq.port}") val port: Int,
                       @Value("\${oppdrag.mq.user}") val user: String,
                       @Value("\${oppdrag.mq.password}") val password: String) {
@@ -45,9 +46,16 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
     }
 
     @Bean
-    fun jmsTemplate(connectionFactory: ConnectionFactory): JmsTemplate {
+    fun jmsTemplateUtgående(connectionFactory: ConnectionFactory): JmsTemplate {
         val jmsTemplate = JmsTemplate(connectionFactory)
-        jmsTemplate.defaultDestinationName = queuename
+        jmsTemplate.defaultDestinationName = sendQueue
+        return jmsTemplate
+    }
+
+    @Bean
+    fun jmsTemplateInngående(connectionFactory: ConnectionFactory): JmsTemplate {
+        val jmsTemplate = JmsTemplate(connectionFactory)
+        jmsTemplate.defaultDestinationName = mottakQueue
         return jmsTemplate
     }
 }

@@ -1,8 +1,9 @@
 # TODO: Koble om til generell kø OB04_OPPDRAG_XML og lage en egen kanal for familie_oppdrag
 oppdrag.mq:
   queuemanager: MQ1LSC02
-  queuename: QA.Q1_231.OB04_OPPDRAG_FP_XML
-  channel: Q1_FPSAK
+  send: QA.Q1_231.OB04_OPPDRAG_XML
+  mottak: QA.Q1_FAMILIE_OPPDRAG.FAMILIE_OPPDRAG_XML_KVITT
+  channel: Q1_FAMILIE_OPPDRAG
   hostname: b27apvl176.preprod.local
   port: 1413
   user: ${MQ_SRVBRUKER}
