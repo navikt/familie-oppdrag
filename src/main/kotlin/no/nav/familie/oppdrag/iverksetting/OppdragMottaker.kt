@@ -33,7 +33,7 @@ class OppdragMottaker(@Autowired val jmsTemplateInngående: JmsTemplate,
     }
 
     private fun hentStatus(kvittering: Oppdrag): Status {
-        return Status.fromKode(kvittering.mmel.alvorlighetsgrad)
+        return Status.fraKode(kvittering.mmel.alvorlighetsgrad)
     }
 
     private fun hentMelding(kvittering: Oppdrag): String {

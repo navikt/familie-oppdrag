@@ -15,11 +15,7 @@ class Jaxb {
         setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     }
     val unmarshaller = jaxbContext.createUnmarshaller()
-
-    val xmlInputFactory = XMLInputFactory.newInstance().apply {
-        setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false)
-        setProperty(XMLInputFactory.SUPPORT_DTD, false)
-    }
+    val xmlInputFactory = XMLInputFactory.newInstance()
 
 
     fun tilOppdrag(oppdragXml: String): Oppdrag {

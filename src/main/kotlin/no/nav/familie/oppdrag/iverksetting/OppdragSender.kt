@@ -11,8 +11,6 @@ import org.springframework.jms.JmsException
 import java.lang.UnsupportedOperationException
 
 
-
-
 @Service
 class OppdragSender(@Autowired val jmsTemplateUtgående: JmsTemplate,
                     @Value("\${oppdrag.mq.enabled}") val erEnabled: String,

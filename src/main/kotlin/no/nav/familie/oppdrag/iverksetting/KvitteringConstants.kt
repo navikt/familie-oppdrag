@@ -9,7 +9,7 @@ enum class Status(val kode: String) {
     AVVIST_TEKNISK_FEIL("12");
 
     companion object {
-        fun fromKode(kode: String): Status {
+        fun fraKode(kode: String): Status {
             values().forEach {
                 if (it.kode == kode) return it
             }
