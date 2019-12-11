@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jms.JmsException
 import java.lang.UnsupportedOperationException
-import javax.jms.Session
-import no.nav.familie.log.mdc.MDCConstants
-import javax.jms.TextMessage
 
 
 
