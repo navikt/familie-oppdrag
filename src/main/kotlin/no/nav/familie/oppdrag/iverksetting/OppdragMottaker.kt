@@ -15,11 +15,12 @@ class OppdragMottaker(@Autowired val jmsTemplateInngående: JmsTemplate) {
         LOG.info("Lytter på kvitteringskø: {}", jmsTemplateInngående.defaultDestinationName)
 
         val melding = jmsTemplateInngående.receiveAndConvert()
+        LOG.info("Mottat melding fra OS: {}", melding)
 
         val oppdragKvittering = Jaxb().tilOppdrag(melding as String)
         val status = hentStatus(oppdragKvittering)
         val svarMelding = hentMelding(oppdragKvittering)
-        LOG.info("Mottatt melding på kvitteringskø med status $status og svar $svarMelding")
+        LOG.info("Unmarshallet melding på kvitteringskø: status $status og svar $svarMelding")
     }
 
     private fun hentStatus(kvittering: Oppdrag): Status {
