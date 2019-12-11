@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.rest
 
+import no.nav.familie.ks.kontrakter.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,9 +14,8 @@ class OppdragController(@Autowired val oppdragSender: OppdragSender, @Autowired 
 
     @Deprecated("Dette endepunktet brukes kun for å teste integrasjonen mot OS over MQ")
     @GetMapping("/oppdrag")
-    fun sendOppdrag(): String {
-
-        val oppdrag110 = oppdragMapper.tilOppdrag110()
+    fun sendOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag): String {
+        val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
         oppdragSender.sendOppdrag(oppdragMapper.tilOppdrag(oppdrag110))
         return "Oppdrag sendt ok"
     }
