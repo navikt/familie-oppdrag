@@ -14,10 +14,11 @@ class OppdragMottaker(@Autowired val jmsTemplateInngående: JmsTemplate) {
     fun mottaKvitteringFraOppdrag() {
         LOG.info("Lytter på kvitteringskø: {}", jmsTemplateInngående.defaultDestinationName)
 
-        val melding = jmsTemplateInngående.receiveAndConvert()
-        LOG.info("Mottat melding fra OS: {}", melding)
+        val melding = jmsTemplateInngående.receiveAndConvert() as String
+        val gyldigXmlMelding = melding.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
+        LOG.info("Mottatt melding fra OS: {}", gyldigXmlMelding)
 
-        val oppdragKvittering = Jaxb().tilOppdrag(melding as String)
+        val oppdragKvittering = Jaxb().tilOppdrag(gyldigXmlMelding)
         val status = hentStatus(oppdragKvittering)
         val svarMelding = hentMelding(oppdragKvittering)
         LOG.info("Unmarshallet melding på kvitteringskø: status $status og svar $svarMelding")
