@@ -23,7 +23,7 @@ class OppdragMottaker(@Autowired val jmsTemplateInngående: JmsTemplate) {
     }
 
     private fun hentFagsystemId(kvittering: Oppdrag): String {
-        return kvittering.oppdrag110.fagsystemId
+        return kvittering.oppdrag110.fagsystemId ?: "Ukjent"
     }
 
     private fun hentStatus(kvittering: Oppdrag): Status {
