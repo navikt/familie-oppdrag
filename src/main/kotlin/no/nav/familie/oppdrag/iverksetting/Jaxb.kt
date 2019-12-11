@@ -17,7 +17,6 @@ class Jaxb {
     val unmarshaller = jaxbContext.createUnmarshaller()
     val xmlInputFactory = XMLInputFactory.newInstance()
 
-
     fun tilOppdrag(oppdragXml: String): Oppdrag {
         val oppdrag = unmarshaller.unmarshal(
                 xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(oppdragXml))),
