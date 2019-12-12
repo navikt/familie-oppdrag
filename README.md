@@ -15,5 +15,23 @@ docker run \
   ibmcom/mq
 ```
 
+Og sette opp en database lokalt:
+```
+docker run --name familie-oppdrag -e POSTGRES_PASSWORD=test -d -p 5432:5432 postgres
+docker ps (finn container id)
+docker exec -it <container_id> bash
+psql -U postgres
+CREATE DATABASE "familie-oppdrag";
+```
+
+For å kjøre med denne lokalt må følgende miljøvariabler settes i `application-local.yml`:
+```
+spring.datasource.url=jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
+spring.datasource.username=postgres
+spring.datasource.password=test
+```
+
+Les mer om postgres på nav [her](https://github.com/navikt/utvikling/blob/master/PostgreSQL.md). For å hente credentials manuelt, se [her](https://github.com/navikt/utvikling/blob/master/Vault.md). 
+
 ## Kontaktinfo
 For NAV-interne kan henvendelser om appen rettes til #team-familie på slack. Ellers kan man opprette et issue her på github.

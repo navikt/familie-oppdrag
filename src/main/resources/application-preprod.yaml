@@ -8,3 +8,7 @@ oppdrag.mq:
   user: ${MQ_SRVBRUKER}
   password: ${MQ_PASSWORD}
   enabled: true
+
+spring:
+  datasource:
+    url: jdbc:postgresql://b27dbvl008.preprod.local:5432/familie-oppdrag
