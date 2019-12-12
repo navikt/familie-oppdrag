@@ -51,11 +51,4 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
         jmsTemplate.defaultDestinationName = sendQueue
         return jmsTemplate
     }
-
-    @Bean
-    fun jmsTemplateInngående(connectionFactory: ConnectionFactory): JmsTemplate {
-        val jmsTemplate = JmsTemplate(connectionFactory)
-        jmsTemplate.defaultDestinationName = mottakQueue
-        return jmsTemplate
-    }
 }

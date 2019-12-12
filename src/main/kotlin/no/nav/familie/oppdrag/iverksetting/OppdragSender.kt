@@ -28,7 +28,7 @@ class OppdragSender(val jmsTemplateUtgående: JmsTemplate,
                 msg.jmsReplyTo = MQQueue(kvitteringsKø)
                 msg
             }
-            LOG.info("Sendt Oppdrag110-XML over MQ til OS med fagsakId: {}", oppdrag.oppdrag110.fagsystemId)
+            LOG.info("Sendt Oppdrag110-XML over MQ til OS")
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende Oppdrag til OS. Feil: ", e)
             throw e

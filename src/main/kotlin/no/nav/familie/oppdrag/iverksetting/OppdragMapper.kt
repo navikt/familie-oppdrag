@@ -10,7 +10,7 @@ class OppdragMapper {
 
     private val objectFactory = ObjectFactory()
 
-    fun tilOppdrag110(fagsakId: String): Oppdrag110 {
+    fun tilOppdrag110(): Oppdrag110 {
 
         val oppdragsEnhet = objectFactory.createOppdragsEnhet120().apply {
             enhet = OppdragSkjemaConstants.ENHET
@@ -27,7 +27,6 @@ class OppdragMapper {
             kodeAksjon = OppdragSkjemaConstants.KODE_AKSJON
             datoOppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate()
             utbetFrekvens = UtbetalingsfrekvensKode.MÅNEDLIG.kode
-            fagsystemId = fagsakId
             oppdragsEnhet120.add(oppdragsEnhet)
             oppdragsLinje150.add(oppdragsLinje)
         }
