@@ -1,19 +1,19 @@
 package no.nav.familie.oppdrag.iverksetting
 
+import com.ibm.mq.jms.MQQueue
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jms.JmsException
 import java.lang.UnsupportedOperationException
 
 
 @Service
-class OppdragSender(@Autowired val jmsTemplate: JmsTemplate,
+class OppdragSender(val jmsTemplateUtgående: JmsTemplate,
                     @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
-                    @Value("\${oppdrag.mq.queuename}") val køNavn: String) {
+                    @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String) {
 
     fun sendOppdrag(oppdrag: Oppdrag): String {
         if (!erEnabled.toBoolean()) {
@@ -23,8 +23,12 @@ class OppdragSender(@Autowired val jmsTemplate: JmsTemplate,
 
         val oppdragXml = Jaxb().tilXml(oppdrag)
         try {
-            jmsTemplate.convertAndSend(køNavn, oppdragXml)
-            LOG.info("Sender Oppdrag110-XML over MQ til OS")
+            jmsTemplateUtgående.send { session ->
+                val msg = session.createTextMessage(oppdragXml)
+                msg.jmsReplyTo = MQQueue(kvitteringsKø)
+                msg
+            }
+            LOG.info("Sendt Oppdrag110-XML over MQ til OS")
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende Oppdrag til OS. Feil: ", e)
             throw e
