@@ -1,0 +1,20 @@
+{
+  "kodeEndring": "NY",
+  "fagSystem": "BA",
+  "saksnummer": "123456789",
+  "aktoer": "12345678911",
+  "saksbehandlerId": "Z992991",
+  "utbetalingsperiode": [
+    {
+      "erEndringPåEksisterendePeriode": false,
+      "datoForVedtak": "2019-12-12",
+      "klassifisering": "BAOROSMS",
+      "vedtakdatoFom": "2019-12-01",
+      "vedtakdatoTom": "2020-12-01",
+      "sats": "1054",
+      "satsType": "MND",
+      "utbetalesTil": "12345678911",
+      "behandlingId": "123456789"
+    }
+  ]
+}
