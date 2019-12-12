@@ -4,17 +4,16 @@ import no.nav.familie.ks.kontrakter.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api")
 class OppdragController(@Autowired val oppdragSender: OppdragSender, @Autowired val oppdragMapper: OppdragMapper) {
 
-    @Deprecated("Dette endepunktet brukes kun for å teste integrasjonen mot OS over MQ")
-    @GetMapping("/oppdrag")
-    fun sendOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag): String {
+   @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
+   fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): String {
         val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
         oppdragSender.sendOppdrag(oppdragMapper.tilOppdrag(oppdrag110))
         return "Oppdrag sendt ok"
