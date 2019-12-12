@@ -35,7 +35,7 @@ class OppdragMottaker(val env: Environment) {
     }
 
     private fun hentMelding(kvittering: Oppdrag): String {
-        return kvittering.mmel.beskrMelding
+        return kvittering.mmel.beskrMelding ?: "Beskrivende melding ikke satt fra OS"
     }
 
     companion object {
