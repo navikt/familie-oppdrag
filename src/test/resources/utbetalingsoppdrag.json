@@ -1,6 +1,6 @@
 {
   "kodeEndring": "NY",
-  "fagSystem": "BA",
+  "fagSystem": "IT05",
   "saksnummer": "123456789",
   "aktoer": "12345678911",
   "saksbehandlerId": "Z992991",
@@ -14,7 +14,7 @@
       "sats": "1054",
       "satsType": "MND",
       "utbetalesTil": "12345678911",
-      "behandlingId": "123456789"
+      "behandlingId": "987654321"
     }
   ]
 }
