@@ -52,7 +52,7 @@ class OppdragMapper {
         }
 
         return objectFactory.createOppdragsLinje150().apply {
-            kodeEndringLinje = if (EndringsKode.NY.equals(utbetalingsoppdrag.kodeEndring.name)) EndringsKode.NY.kode else EndringsKode.ENDRING.kode
+            kodeEndringLinje = if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
             utbetalingsperiode.opphør?.let {
                 kodeStatusLinje = TkodeStatusLinje.OPPH
                 datoStatusFom = it.opphørDatoFom.toXMLDate()
