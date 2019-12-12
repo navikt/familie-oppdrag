@@ -2,15 +2,13 @@ package no.nav.familie.oppdrag.iverksetting
 
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class OppdragMottaker(@Autowired val jmsTemplateInngående: JmsTemplate,
-                      @Autowired val env: Environment) {
+class OppdragMottaker(val jmsTemplateInngående: JmsTemplate, val env: Environment) {
 
     @JmsListener(destination = "\${oppdrag.mq.mottak}")
     fun mottaKvitteringFraOppdrag() {

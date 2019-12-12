@@ -5,14 +5,13 @@ import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jms.JmsException
 import java.lang.UnsupportedOperationException
 
 
 @Service
-class OppdragSender(@Autowired val jmsTemplateUtgående: JmsTemplate,
+class OppdragSender(val jmsTemplateUtgående: JmsTemplate,
                     @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
                     @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String) {
 
