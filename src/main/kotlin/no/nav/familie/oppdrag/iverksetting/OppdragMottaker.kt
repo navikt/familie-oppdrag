@@ -11,19 +11,20 @@ import javax.jms.TextMessage
 class OppdragMottaker(val env: Environment) {
 
     @JmsListener(destination = "\${oppdrag.mq.mottak}")
-    fun mottaKvitteringFraOppdrag(melding: TextMessage) {
+    fun mottaKvitteringFraOppdrag(melding: TextMessage): Status {
+        LOG.info("Mottatt melding på kvitteringskø ${melding.text}")
+        var svarFraOppdrag = melding.text as String
         if (!env.activeProfiles.contains("dev")) {
-            var svarFraOppdrag = melding.text as String
             svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
-            val oppdragKvittering = Jaxb().tilOppdrag(svarFraOppdrag)
-
-            val status = hentStatus(oppdragKvittering)
-            val fagsakId = hentFagsakId(oppdragKvittering)
-            val svarMelding = hentMelding(oppdragKvittering)
-            LOG.info("Mottatt melding på kvitteringskø for fagsak $fagsakId: Status $status, svar $svarMelding")
-        } else {
-            LOG.info("Mottatt melding på kvitteringskø ${melding.text}")
         }
+
+        val oppdragKvittering = Jaxb().tilOppdrag(svarFraOppdrag)
+
+        val status = hentStatus(oppdragKvittering)
+        val fagsakId = hentFagsakId(oppdragKvittering)
+        val svarMelding = hentMelding(oppdragKvittering)
+        LOG.info("Mottatt melding på kvitteringskø for fagsak $fagsakId: Status $status, svar $svarMelding")
+        return status
     }
 
     private fun hentFagsakId(kvittering: Oppdrag): String {
