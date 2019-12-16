@@ -12,7 +12,6 @@ class OppdragMottaker(val env: Environment) {
 
     @JmsListener(destination = "\${oppdrag.mq.mottak}")
     fun mottaKvitteringFraOppdrag(melding: TextMessage): Status {
-        LOG.info("Mottatt melding på kvitteringskø ${melding.text}")
         var svarFraOppdrag = melding.text as String
         if (!env.activeProfiles.contains("dev")) {
             svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")

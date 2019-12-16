@@ -9,9 +9,7 @@ import no.trygdeetaten.skjema.oppdrag.ObjectFactory
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
@@ -21,9 +19,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
-private const val FAGOMRADE_BARNETRYGD = "IT05"
+private const val FAGOMRÅDE_BARNETRYGD = "IT05"
 private const val KLASSEKODE_BARNETRYGD = "BAOROSMS"
 private const val SATS_BARNETRYGD = 1054
+private const val TESTKØ = "DEV.QUEUE.1"
+private const val TEST_FAGSAKID = "123456789"
 
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 class OppdragMQSenderTest {
@@ -42,36 +42,35 @@ class OppdragMQSenderTest {
         setTargetConnectionFactory(mqConn)
     }
 
-    private val jmsTemplate = spyk(JmsTemplate(cf).apply { defaultDestinationName = "DEV.QUEUE.1" })
+    private val jmsTemplate = spyk(JmsTemplate(cf).apply { defaultDestinationName = TESTKØ })
 
     @Test
     fun skal_sende_oppdrag_når_skrudd_på() {
-        val oppdragSender = OppdragSender(jmsTemplate, "true", "DEV.QUEUE.1")
-        val fagsakId = oppdragSender.sendOppdrag(lagOppdrag())
+        val oppdragSender = OppdragSender(jmsTemplate, "true", TESTKØ)
+        val fagsakId = oppdragSender.sendOppdrag(lagTestOppdrag())
 
-        assertEquals("123456789", fagsakId)
+        assertEquals(TEST_FAGSAKID, fagsakId)
     }
 
     @Test
     fun skal_ikke_sende_oppdrag_når_skrudd_av() {
-        val oppdragSender = OppdragSender(jmsTemplate, "false", "DEV.QUEUE.1")
+        val oppdragSender = OppdragSender(jmsTemplate, "false", TESTKØ)
 
         Assertions.assertThrows(UnsupportedOperationException::class.java) {
-            oppdragSender.sendOppdrag(lagOppdrag())
+            oppdragSender.sendOppdrag(lagTestOppdrag())
         }
 
         verify { jmsTemplate wasNot called }
     }
 
-    private fun lagOppdrag(): Oppdrag {
-        val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
-        val avstemmingsTidspunkt = LocalDateTime.now()
+    private fun lagTestOppdrag(): Oppdrag {
+        val avstemmingsTidspunkt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS"))
         val objectFactory = ObjectFactory()
 
         val testOppdragsLinje150 = objectFactory.createOppdragsLinje150().apply {
             kodeEndringLinje = EndringsKode.NY.kode
-            vedtakId = "Test"
-            delytelseId = "123456789"
+            vedtakId = avstemmingsTidspunkt
+            delytelseId = TEST_FAGSAKID
             kodeKlassifik = KLASSEKODE_BARNETRYGD
             datoVedtakFom = LocalDate.now().toXMLDate()
             datoVedtakTom = LocalDate.now().plusDays(1).toXMLDate()
@@ -90,8 +89,8 @@ class OppdragMQSenderTest {
         val testOppdrag110 = Oppdrag110().apply {
             kodeAksjon = "1"
             kodeEndring = EndringsKode.NY.kode
-            kodeFagomraade = FAGOMRADE_BARNETRYGD
-            fagsystemId = "123456789"
+            kodeFagomraade = FAGOMRÅDE_BARNETRYGD
+            fagsystemId = TEST_FAGSAKID
             utbetFrekvens = UtbetalingsfrekvensKode.MÅNEDLIG.kode
             oppdragGjelderId = "12345678911"
             datoOppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate()
@@ -102,9 +101,9 @@ class OppdragMQSenderTest {
                 datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate()
             })
             avstemming115 = objectFactory.createAvstemming115().apply {
-                nokkelAvstemming = avstemmingsTidspunkt.format(tidspunktFormatter)
-                kodeKomponent = FAGOMRADE_BARNETRYGD
-                tidspktMelding = avstemmingsTidspunkt.format(tidspunktFormatter)
+                nokkelAvstemming = avstemmingsTidspunkt
+                kodeKomponent = FAGOMRÅDE_BARNETRYGD
+                tidspktMelding = avstemmingsTidspunkt
             }
             oppdragsLinje150.add(testOppdragsLinje150)
         }
