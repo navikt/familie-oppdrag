@@ -11,6 +11,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 class KontraktTilOppdragTest {
+    val idag = LocalDate.now()
 
     @Test
     fun mappeVedtaketTilMariBerg() {
@@ -18,10 +19,10 @@ class KontraktTilOppdragTest {
         val utbetalingsperiode1 = Utbetalingsperiode(
                 erEndringPåEksisterendePeriode = false,
                 opphør = null,
-                datoForVedtak = LocalDate.now(),
+                datoForVedtak = idag,
                 klassifisering = "BAOROSMS",
-                vedtakdatoFom = LocalDate.now(),
-                vedtakdatoTom = LocalDate.now().plusYears(6),
+                vedtakdatoFom = idag,
+                vedtakdatoTom = idag.plusYears(6),
                 sats = BigDecimal.valueOf(1354L),
                 satsType = Utbetalingsperiode.SatsType.MND,
                 utbetalesTil = "12345678911",
@@ -31,10 +32,10 @@ class KontraktTilOppdragTest {
         val utbetalingsperiode2 = Utbetalingsperiode(
                 erEndringPåEksisterendePeriode = false,
                 opphør = null,
-                datoForVedtak = LocalDate.now(),
+                datoForVedtak = idag,
                 klassifisering = "BAOROSMS",
-                vedtakdatoFom = LocalDate.now().plusYears(6).plusMonths(1),
-                vedtakdatoTom = LocalDate.now().plusYears(12).plusMonths(1),
+                vedtakdatoFom = idag.plusYears(6).plusMonths(1),
+                vedtakdatoTom = idag.plusYears(12).plusMonths(1),
                 sats = BigDecimal.valueOf(1054L),
                 satsType = Utbetalingsperiode.SatsType.MND,
                 utbetalesTil = "12345678911",
@@ -62,11 +63,11 @@ class KontraktTilOppdragTest {
 
         val utbetalingsperiode1 = Utbetalingsperiode(
                 erEndringPåEksisterendePeriode = true,
-                opphør = Opphør(LocalDate.now().plusMonths(1)),
-                datoForVedtak = LocalDate.now(),
+                opphør = Opphør(idag.plusMonths(1)),
+                datoForVedtak = idag,
                 klassifisering = "BAOROSMS",
-                vedtakdatoFom = LocalDate.now(),
-                vedtakdatoTom = LocalDate.now().plusYears(2),
+                vedtakdatoFom = idag,
+                vedtakdatoTom = idag.plusYears(2),
                 sats = BigDecimal.valueOf(1354L),
                 satsType = Utbetalingsperiode.SatsType.MND,
                 utbetalesTil = "12345678911",
