@@ -6,11 +6,13 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.core.env.Environment
 import java.io.File
 import javax.jms.TextMessage
 import kotlin.test.assertEquals
 
+@DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 class OppdragMQMottakTest {
 
     var mqConn = MQConnectionFactory().apply {

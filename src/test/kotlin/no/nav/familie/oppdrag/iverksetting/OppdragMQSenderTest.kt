@@ -10,6 +10,7 @@ import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
 import java.lang.UnsupportedOperationException
@@ -24,6 +25,7 @@ private const val SATS_BARNETRYGD = 1054
 private const val TESTKØ = "DEV.QUEUE.1"
 private const val TEST_FAGSAKID = "123456789"
 
+@DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 class OppdragMQSenderTest {
 
     private val mqConn = MQConnectionFactory().apply {
