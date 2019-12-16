@@ -5,7 +5,7 @@ import no.nav.familie.ks.kontrakter.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.ks.kontrakter.oppdrag.Utbetalingsperiode
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
 import no.trygdeetaten.skjema.oppdrag.OppdragsLinje150
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions
 import java.math.BigDecimal
 import java.time.LocalDate
