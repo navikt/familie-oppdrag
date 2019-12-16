@@ -6,10 +6,13 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.core.env.Environment
 import java.io.File
 import javax.jms.TextMessage
+import kotlin.test.assertEquals
 
+@DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 class OppdragMQMottakTest {
 
     var mqConn = MQConnectionFactory().apply {
@@ -34,18 +37,16 @@ class OppdragMQMottakTest {
 
     @Test
     fun skal_tolke_kvittering_riktig_ved_OK() {
-
+        val kvittering: TextMessage = lesKvittering("kvittering-akseptert.xml")
+        val statusFraKvittering = oppdragMottaker.mottaKvitteringFraOppdrag(kvittering)
+        assertEquals(Status.OK, statusFraKvittering)
     }
 
     @Test
     fun skal_tolke_kvittering_riktig_ved_feil() {
         val kvittering: TextMessage = lesKvittering("kvittering-avvist.xml")
-        oppdragMottaker.mottaKvitteringFraOppdrag(kvittering)
-    }
-
-    @Test
-    fun skal_motta_kvittering_når_den_er_lagt_på_kø() {
-
+        val statusFraKvittering = oppdragMottaker.mottaKvitteringFraOppdrag(kvittering)
+        assertEquals(Status.AVVIST_FUNKSJONELLE_FEIL, statusFraKvittering)
     }
 
     private fun lesKvittering(filnavn: String): TextMessage {
