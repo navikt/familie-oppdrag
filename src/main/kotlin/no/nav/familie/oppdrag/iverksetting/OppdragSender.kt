@@ -33,7 +33,7 @@ class OppdragSender(val jmsTemplateUtgående: JmsTemplate,
             LOG.error("Klarte ikke sende Oppdrag til OS. Feil: ", e)
             throw e
         }
-        return oppdragXml
+        return oppdrag.oppdrag110.fagsystemId
     }
 
     companion object {
