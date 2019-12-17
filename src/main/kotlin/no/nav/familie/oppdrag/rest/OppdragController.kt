@@ -1,10 +1,12 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.ks.kontrakter.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.ks.kontrakter.sak.Ressurs
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -13,9 +15,9 @@ import javax.validation.Valid
 class OppdragController(@Autowired val oppdragSender: OppdragSender, @Autowired val oppdragMapper: OppdragMapper) {
 
    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
-   fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): String {
+   fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs> {
         val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
         oppdragSender.sendOppdrag(oppdragMapper.tilOppdrag(oppdrag110))
-        return "Oppdrag sendt ok"
+        return ResponseEntity.ok().body(Ressurs.Companion.success("Oppdrag sendt ok"))
     }
 }
