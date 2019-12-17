@@ -9,3 +9,7 @@ oppdrag.mq:
   user: ${MQ_SRVBRUKER}
   password: ${MQ_PASSWORD}
   enabled: false
+
+spring:
+  datasource:
+    url: jdbc:postgresql://A01DBVL011.adeo.no:5432/familie-oppdrag
