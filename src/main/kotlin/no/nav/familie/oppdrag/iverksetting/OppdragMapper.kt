@@ -74,10 +74,6 @@ class OppdragMapper {
         }
     }
 
-    fun økTeller(teller: Int): Int {
-        return teller.inc()
-    }
-
     fun tilOppdrag(oppdrag110: Oppdrag110): Oppdrag {
         return objectFactory.createOppdrag().apply {
             this.oppdrag110 = oppdrag110
