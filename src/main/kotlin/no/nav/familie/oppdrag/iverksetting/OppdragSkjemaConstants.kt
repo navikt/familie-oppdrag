@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.iverksetting
 
 import no.trygdeetaten.skjema.oppdrag.TfradragTillegg
+import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -26,7 +27,16 @@ class OppdragSkjemaConstants {
 enum class EndringsKode(val kode: String) {
     NY("NY"),
     UENDRET("UEND"),
-    ENDRING("ENDR")
+    ENDRING("ENDR");
+
+    companion object {
+        fun fromKode(kode: String): EndringsKode {
+            for (s in values()) {
+                if (s.kode == kode ) return s
+            }
+            throw IllegalArgumentException("Ingen Endringskode med kode=$kode")
+        }
+    }
 }
 
 enum class UtbetalingsfrekvensKode(val kode: String) {
@@ -46,6 +56,15 @@ enum class SatsTypeKode(val kode: String) {
     ÅRLIG("AAR"),
     A_KONTO("AKTO"),
     UKJENT("-");
+
+    companion object {
+        fun fromKode(kode: String): SatsTypeKode {
+            for (s in values()) {
+                if (s.kode == kode ) return s
+            }
+            throw IllegalArgumentException("Ingen SatsTypeKode med kode=$kode")
+        }
+    }
 }
 
 enum class GradTypeKode(val kode: String) {
