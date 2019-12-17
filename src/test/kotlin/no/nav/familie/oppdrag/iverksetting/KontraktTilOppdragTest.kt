@@ -54,8 +54,8 @@ class KontraktTilOppdragTest {
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
-        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0))
-        assertOppdragslinje150(utbetalingsperiode2, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(1))
+        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0), 100)
+        assertOppdragslinje150(utbetalingsperiode2, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(1), 101)
     }
 
     @Test
@@ -85,7 +85,7 @@ class KontraktTilOppdragTest {
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
-        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0))
+        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0), 100)
     }
 
     fun assertOppdrag110(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag110: Oppdrag110) {
@@ -105,11 +105,12 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate(), oppdrag110.oppdragsEnhet120.get(0).datoEnhetFom)
     }
 
-    fun assertOppdragslinje150(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag, oppdragsLinje150: OppdragsLinje150) {
+    fun assertOppdragslinje150(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag, oppdragsLinje150: OppdragsLinje150,
+                               delytelseIdTeller: Int) {
         Assertions.assertEquals(if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode, oppdragsLinje150.kodeEndringLinje)
         assertOpphør(utbetalingsperiode, oppdragsLinje150)
         Assertions.assertEquals(utbetalingsperiode.datoForVedtak.toString(), oppdragsLinje150.vedtakId)
-        Assertions.assertEquals(utbetalingsoppdrag.saksnummer, oppdragsLinje150.delytelseId)
+        Assertions.assertEquals(utbetalingsoppdrag.saksnummer+delytelseIdTeller.toString(), oppdragsLinje150.delytelseId)
         Assertions.assertEquals(utbetalingsperiode.klassifisering, oppdragsLinje150.kodeKlassifik)
         Assertions.assertEquals(utbetalingsperiode.vedtakdatoFom.toXMLDate(), oppdragsLinje150.datoVedtakFom)
         Assertions.assertEquals(utbetalingsperiode.vedtakdatoTom.toXMLDate(), oppdragsLinje150.datoVedtakTom)
