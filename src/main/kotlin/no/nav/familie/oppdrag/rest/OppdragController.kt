@@ -22,9 +22,11 @@ class OppdragController(@Autowired val oppdragSender: OppdragSender,
    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
    fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
         val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-       val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
-       oppdragSender.sendOppdrag(oppdrag)
-       oppdragProtokollRepository.save(OppdragProtokoll.lagFraOppdrag(oppdrag))
+        val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+
+        // TODO flytt disse to til en @Transactional + @Service type klasse
+        oppdragSender.sendOppdrag(oppdrag)
+        oppdragProtokollRepository.save(OppdragProtokoll.lagFraOppdrag(oppdrag))
         return ResponseEntity.ok().body(Ressurs.Companion.success("Oppdrag sendt ok"))
     }
 }
