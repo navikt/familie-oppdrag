@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<oppdrag xmlns="http://www.trygdeetaten.no/skjema/oppdrag">
+<ns2:oppdrag xmlns:ns2="http://www.trygdeetaten.no/skjema/oppdrag">
     <mmel>
         <systemId>231-OPPD</systemId>
         <kodeMelding>B110008F</kodeMelding>
