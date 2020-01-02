@@ -46,7 +46,7 @@ class OppdragMQSenderTest {
 
     @Test
     fun skal_sende_oppdrag_når_skrudd_på() {
-        val oppdragSender = OppdragSender(jmsTemplate, "true", TESTKØ)
+        val oppdragSender = OppdragSenderMQ(jmsTemplate, "true", TESTKØ)
         val fagsakId = oppdragSender.sendOppdrag(lagTestOppdrag())
 
         assertEquals(TEST_FAGSAKID, fagsakId)
@@ -54,7 +54,7 @@ class OppdragMQSenderTest {
 
     @Test
     fun skal_ikke_sende_oppdrag_når_skrudd_av() {
-        val oppdragSender = OppdragSender(jmsTemplate, "false", TESTKØ)
+        val oppdragSender = OppdragSenderMQ(jmsTemplate, "false", TESTKØ)
 
         Assertions.assertThrows(UnsupportedOperationException::class.java) {
             oppdragSender.sendOppdrag(lagTestOppdrag())
