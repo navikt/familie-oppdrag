@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.config
 
 import no.nav.familie.log.filter.LogFilter
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
 import org.springframework.boot.web.servlet.FilterRegistrationBean
@@ -8,6 +9,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory
 import org.springframework.context.annotation.Bean
 
 @SpringBootConfiguration
+@EnableJwtTokenValidation
 class ApplicationConfig {
 
     @Bean
