@@ -26,7 +26,7 @@ internal class OppdragControllerTest{
             Utbetalingsoppdrag.KodeEndring.NY,
             "FAGSYSTEM_TEST",
             "SAKSNR",
-            "AKTØRID",
+            "FNR",
             "SAKSBEHANDLERID",
             localDateTimeNow,
             listOf(Utbetalingsperiode(false,
@@ -60,7 +60,9 @@ internal class OppdragControllerTest{
                 it.melding.contains("FAGSYSTEM_TEST")
                 && it.status == OppdragProtokollStatus.LAGT_PÅ_KØ
                 && it.opprettetTidspunkt > localDateTimeNow
-                && it.serienummer == 0L
+                && it.fagsystem == "FAGSYSTEM_TEST"
+                && it.fødselsnummer == "FNR"
+                && it.behandlingsId == "1"
             })
         }
     }
