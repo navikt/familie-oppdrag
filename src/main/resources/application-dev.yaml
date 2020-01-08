@@ -8,3 +8,7 @@ oppdrag.mq:
   user: admin
   password: passw0rd
   enabled: true
+
+spring.datasource.url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
+spring.datasource.username: postgres
+spring.datasource.password: test

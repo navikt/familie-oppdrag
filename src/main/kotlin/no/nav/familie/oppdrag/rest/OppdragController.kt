@@ -27,9 +27,15 @@ class OppdragController(@Autowired val oppdragSender: OppdragSender,
         val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
         val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
+       if (oppdragProtokollRepository.hentEksisterendeOppdrag(utbetalingsoppdrag.fagSystem,
+                       utbetalingsoppdrag.utbetalingsperiode[0].behandlingId.toString(),
+                       utbetalingsoppdrag.aktoer).isNotEmpty()) {
+           return ResponseEntity.badRequest().body(Ressurs.failure("Oppdraget finnes fra før"))
+       }
+
         // TODO flytt disse to til en @Transactional + @Service type klasse
         oppdragSender.sendOppdrag(oppdrag)
-        oppdragProtokollRepository.save(OppdragProtokoll.lagFraOppdrag(oppdrag))
+        oppdragProtokollRepository.save(OppdragProtokoll.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
         return ResponseEntity.ok().body(Ressurs.Companion.success("Oppdrag sendt ok"))
     }
 }
