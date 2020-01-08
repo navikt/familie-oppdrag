@@ -26,14 +26,14 @@ class OppdragMQMottakTest {
     @Test
     fun skal_tolke_kvittering_riktig_ved_OK() {
         val kvittering: String = lesKvittering("kvittering-akseptert.xml")
-        val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering)
+        val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering).status()
         assertEquals(Status.OK, statusFraKvittering)
     }
 
     @Test
     fun skal_tolke_kvittering_riktig_ved_feil() {
         val kvittering: String = lesKvittering("kvittering-avvist.xml")
-        val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering)
+        val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering).status()
         assertEquals(Status.AVVIST_FUNKSJONELLE_FEIL, statusFraKvittering)
     }
 

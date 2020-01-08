@@ -11,6 +11,7 @@ import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.service.OppdragService
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -47,9 +48,10 @@ internal class OppdragControllerTest{
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
+        val oppdragService = OppdragService(oppdragSender,oppdragProtokollRepository)
         every { oppdragProtokollRepository.save(any<OppdragProtokoll>()) } answers { arg(0) }
 
-        val oppdragController = OppdragController(oppdragSender,mapper,oppdragProtokollRepository)
+        val oppdragController = OppdragController(oppdragService,mapper)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
