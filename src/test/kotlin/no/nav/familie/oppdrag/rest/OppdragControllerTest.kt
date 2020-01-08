@@ -47,9 +47,10 @@ internal class OppdragControllerTest{
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
+        every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { emptyList() }
         every { oppdragProtokollRepository.save(any<OppdragProtokoll>()) } answers { arg(0) }
 
-        val oppdragController = OppdragController(oppdragSender,mapper,oppdragProtokollRepository)
+        val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
@@ -61,5 +62,29 @@ internal class OppdragControllerTest{
                 && it.serienummer == 0L
             })
         }
+    }
+
+    @Test
+    fun skal_ikke_lagre_oppdragsprotokoll_for_eksisterende_oppdrag() {
+
+        val mapper = OppdragMapper()
+        val oppdragSender = mockk<OppdragSender>(relaxed = true)
+        val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
+        val testOppdragsProtokoll = OppdragProtokoll(1,
+                "AKTØRID",
+                "FAGSYSTEM_TEST",
+                "SAKSNR",
+                "1",
+                "INPUT_DATA",
+                "MELDING",
+                OppdragProtokollStatus.LAGT_PÅ_KØ,
+                LocalDateTime.now())
+        val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
+
+        every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
+
+        oppdragController.sendOppdrag(utbetalingsoppdrag)
+
+        verify (exactly = 0) { oppdragProtokollRepository.save(any<OppdragProtokoll>()) }
     }
 }
