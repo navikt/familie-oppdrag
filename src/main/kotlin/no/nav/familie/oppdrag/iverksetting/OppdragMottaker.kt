@@ -29,8 +29,8 @@ class OppdragMottaker(
         }
 
         val kvittering = lesKvittering(svarFraOppdrag)
-        val oppdragId = kvittering.id()
-        val status = kvittering.protokollStatus()
+        val oppdragId = kvittering.id
+        val status = kvittering.protokollStatus
         val sendtOppdrag: Optional<OppdragProtokoll?> = oppdragProtokollRepository.findById(oppdragId)
 
         when {
@@ -49,8 +49,8 @@ class OppdragMottaker(
 
     fun lesKvittering(svarFraOppdrag: String): Oppdrag {
         val oppdragKvittering = Jaxb().tilOppdrag(svarFraOppdrag)
-        val status = oppdragKvittering.status()
-        val fagsakId = oppdragKvittering.id().fagsystem
+        val status = oppdragKvittering.status
+        val fagsakId = oppdragKvittering.id.fagsystem
         val svarMelding = hentMelding(oppdragKvittering)
         LOG.info("Mottatt melding på kvitteringskø for fagsak $fagsakId: Status $status, svar $svarMelding")
         return oppdragKvittering

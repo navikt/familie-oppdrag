@@ -17,14 +17,15 @@ data class OppdragProtokoll(@Id val fagsystem : String,
                             val status: OppdragProtokollStatus = OppdragProtokollStatus.LAGT_PÅ_KØ,
                             @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()) {
 
-    companion object {
-        fun lagFraOppdrag(oppdrag : Oppdrag) : OppdragProtokoll {
-            return OppdragProtokoll(
-                    fagsystem = oppdrag.id().fagsystem,
-                    fødselsnummer = oppdrag.id().fødselsnummer,
-                    behandlingsId = oppdrag.id().behandlingsId,
-                    melding = ObjectMapper().writeValueAsString(oppdrag)
-            )
-        }
+ }
+
+
+    fun Oppdrag.tilOppdragProtokoll() : OppdragProtokoll {
+        return OppdragProtokoll(
+                fagsystem = this.id.fagsystem,
+                fødselsnummer = this.id.fødselsnummer,
+                behandlingsId = this.id.behandlingsId,
+                melding = ObjectMapper().writeValueAsString(this)
+        )
     }
-}
+

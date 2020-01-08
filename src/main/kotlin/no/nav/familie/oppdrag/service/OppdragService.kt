@@ -1,8 +1,8 @@
 package no.nav.familie.oppdrag.service
 
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
-import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
+import no.nav.familie.oppdrag.repository.tilOppdragProtokoll
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -16,6 +16,6 @@ class OppdragService(
     @Transactional
     fun opprettOppdrag(oppdrag : Oppdrag) {
         oppdragSender.sendOppdrag(oppdrag)
-        oppdragProtokollRepository.save(OppdragProtokoll.lagFraOppdrag(oppdrag))
+        oppdragProtokollRepository.save(oppdrag.tilOppdragProtokoll())
     }
 }
