@@ -78,7 +78,8 @@ internal class OppdragControllerTest{
                 "INPUT_DATA",
                 "MELDING",
                 OppdragProtokollStatus.LAGT_PÅ_KØ,
-                LocalDateTime.now())
+                localDateTimeNow,
+                localDateTimeNow)
         val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
         every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
