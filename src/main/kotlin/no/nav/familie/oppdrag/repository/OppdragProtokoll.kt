@@ -9,21 +9,23 @@ import java.time.LocalDateTime
 
 data class OppdragProtokoll(@Id val serienummer: Long = 0,
                             val fagsystem: String,
-                            @Column("person_id") val personId: String,
+                            @Column("person_ident") val personIdent: String,
                             @Column("fagsak_id") val fagsakId: String,
                             @Column("behandling_id") val behandlingId: String,
                             @Column("input_data") val inputData: String,
                             val melding: String,
                             val status: OppdragProtokollStatus = OppdragProtokollStatus.LAGT_PÅ_KØ,
+                            @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
                             @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()) {
 
     companion object {
-        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag : Oppdrag) : OppdragProtokoll {
+        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag): OppdragProtokoll {
             return OppdragProtokoll(
-                    personId = utbetalingsoppdrag.aktoer,
+                    personIdent = utbetalingsoppdrag.aktoer,
                     fagsystem = utbetalingsoppdrag.fagSystem,
                     fagsakId = utbetalingsoppdrag.saksnummer,
                     behandlingId = utbetalingsoppdrag.utbetalingsperiode[0].behandlingId.toString(),
+                    avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
                     inputData = ObjectMapper().writeValueAsString(utbetalingsoppdrag),
                     melding = ObjectMapper().writeValueAsString(oppdrag)
             )
