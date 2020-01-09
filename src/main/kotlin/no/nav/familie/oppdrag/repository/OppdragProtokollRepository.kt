@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository
 
 interface OppdragProtokollRepository : CrudRepository<OppdragProtokoll, Long> {
 
-    @Query("SELECT * FROM OPPDRAG_PROTOKOLL WHERE behandling_id = :behandlingsid AND aktoer = :aktoer AND fagsystem = :fagsystem")
-    fun hentEksisterendeOppdrag(fagsystem: String, behandlingsid: String, aktoer: String): List<OppdragProtokoll>
+    @Query("SELECT * FROM OPPDRAG_PROTOKOLL WHERE behandling_id = :behandlingId AND person_id = :personId AND fagsystem = :fagsystem")
+    fun hentEksisterendeOppdrag(fagsystem: String, behandlingId: String, personId: String): List<OppdragProtokoll>
 }

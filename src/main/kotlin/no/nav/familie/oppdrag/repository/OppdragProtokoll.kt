@@ -8,8 +8,8 @@ import org.springframework.data.relational.core.mapping.Column
 import java.time.LocalDateTime
 
 data class OppdragProtokoll(@Id val serienummer: Long = 0,
-                            val aktoer: String,
                             val fagsystem: String,
+                            @Column("person_id") val personId: String,
                             @Column("fagsak_id") val fagsakId: String,
                             @Column("behandling_id") val behandlingId: String,
                             @Column("input_data") val inputData: String,
@@ -20,7 +20,7 @@ data class OppdragProtokoll(@Id val serienummer: Long = 0,
     companion object {
         fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag : Oppdrag) : OppdragProtokoll {
             return OppdragProtokoll(
-                    aktoer = utbetalingsoppdrag.aktoer,
+                    personId = utbetalingsoppdrag.aktoer,
                     fagsystem = utbetalingsoppdrag.fagSystem,
                     fagsakId = utbetalingsoppdrag.saksnummer,
                     behandlingId = utbetalingsoppdrag.utbetalingsperiode[0].behandlingId.toString(),
