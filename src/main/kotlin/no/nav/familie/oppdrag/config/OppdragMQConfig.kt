@@ -20,6 +20,7 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
                       @Value("\${oppdrag.mq.queuemanager}") val queuemanager: String,
                       @Value("\${oppdrag.mq.channel}") val channel: String,
                       @Value("\${oppdrag.mq.send}") val sendQueue: String,
+                      @Value("\${oppdrag.mq.avstemming}") val avstemmingQueue: String,
                       @Value("\${oppdrag.mq.port}") val port: Int,
                       @Value("\${oppdrag.mq.user}") val user: String,
                       @Value("\${oppdrag.mq.password}") val password: String) {
@@ -47,5 +48,10 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
     @Bean
     fun jmsTemplateUtgående(connectionFactory: ConnectionFactory): JmsTemplate {
         return JmsTemplate(connectionFactory).apply { defaultDestinationName = sendQueue }
+    }
+
+    @Bean
+    fun jmsTemplateAvstemming(connectionFactory: ConnectionFactory): JmsTemplate {
+        return JmsTemplate(connectionFactory).apply { defaultDestinationName = avstemmingQueue }
     }
 }

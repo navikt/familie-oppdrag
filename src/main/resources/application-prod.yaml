@@ -1,8 +1,9 @@
 # NB! Dette skal ikke skrus på i produksjon før avstemming er på plass!
 oppdrag.mq:
   queuemanager: MPLSC02
-  send: QA.P_FAMILIE_OPPDRAG.OB04_OPPDRAG_XML
+  send: QA.P231.OB04_OPPDRAG_XML
   mottak: QA.P_FAMILIE_OPPDRAG.OPPDRAG_FAMILIE_XML_KVITT
+  avstemming: QA.P234.OB29_AVSTEMMING_XML
   channel: P_FAMILIE_OPPDRAG
   hostname: a01apvl063.adeo.no
   port: 1414
