@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.repository
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -24,7 +25,7 @@ data class OppdragProtokoll(@Id val serienummer: Long = 0,
                     personIdent = utbetalingsoppdrag.aktoer,
                     fagsystem = utbetalingsoppdrag.fagSystem,
                     fagsakId = utbetalingsoppdrag.saksnummer,
-                    behandlingId = utbetalingsoppdrag.utbetalingsperiode[0].behandlingId.toString(),
+                    behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
                     inputData = ObjectMapper().writeValueAsString(utbetalingsoppdrag),
                     melding = ObjectMapper().writeValueAsString(oppdrag)

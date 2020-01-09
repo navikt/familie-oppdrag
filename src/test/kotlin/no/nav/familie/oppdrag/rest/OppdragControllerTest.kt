@@ -12,9 +12,11 @@ import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 
 internal class OppdragControllerTest{
 
@@ -84,8 +86,9 @@ internal class OppdragControllerTest{
 
         every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
 
-        oppdragController.sendOppdrag(utbetalingsoppdrag)
+         val svar = oppdragController.sendOppdrag(utbetalingsoppdrag)
 
         verify (exactly = 0) { oppdragProtokollRepository.save(any<OppdragProtokoll>()) }
+        assertEquals(HttpStatus.BAD_REQUEST, svar.statusCode)
     }
 }

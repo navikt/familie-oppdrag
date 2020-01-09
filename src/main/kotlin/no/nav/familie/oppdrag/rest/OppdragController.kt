@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragProtokoll
@@ -30,7 +31,7 @@ class OppdragController(@Autowired val oppdragSender: OppdragSender,
         val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
        if (oppdragProtokollRepository.hentEksisterendeOppdrag(utbetalingsoppdrag.fagSystem,
-                       utbetalingsoppdrag.utbetalingsperiode[0].behandlingId.toString(),
+                       utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                        utbetalingsoppdrag.aktoer).isNotEmpty()) {
            return ResponseEntity.badRequest().body(Ressurs.failure("Oppdraget finnes fra før"))
        }
