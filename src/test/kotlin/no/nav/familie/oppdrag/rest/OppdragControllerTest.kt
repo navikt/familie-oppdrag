@@ -25,7 +25,7 @@ internal class OppdragControllerTest{
             Utbetalingsoppdrag.KodeEndring.NY,
             "FAGSYSTEM_TEST",
             "SAKSNR",
-            "AKTØRID",
+            "PERSONID",
             "SAKSBEHANDLERID",
             localDateTimeNow,
             listOf(Utbetalingsperiode(false,
@@ -71,7 +71,7 @@ internal class OppdragControllerTest{
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
         val testOppdragsProtokoll = OppdragProtokoll(1,
-                "AKTØRID",
+                "PERSONID",
                 "FAGSYSTEM_TEST",
                 "SAKSNR",
                 "1",
