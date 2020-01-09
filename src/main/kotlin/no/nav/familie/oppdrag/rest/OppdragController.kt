@@ -6,6 +6,7 @@ import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
+import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,7 @@ import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api")
+@ProtectedWithClaims(issuer = "azuread")
 class OppdragController(@Autowired val oppdragSender: OppdragSender,
                         @Autowired val oppdragMapper: OppdragMapper,
                         @Autowired val oppdragProtokollRepository: OppdragProtokollRepository) {

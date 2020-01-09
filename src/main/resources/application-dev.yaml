@@ -9,6 +9,12 @@ oppdrag.mq:
   password: passw0rd
   enabled: true
 
+no.nav.security.jwt:
+  issuer.azuread:
+    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
+    accepted_audience: ${CLIENT_ID}
+    cookie_name: azure_token
+
 spring.datasource.url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
 spring.datasource.username: postgres
 spring.datasource.password: test
