@@ -12,9 +12,11 @@ import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
 
 internal class OppdragControllerTest{
 
@@ -25,7 +27,7 @@ internal class OppdragControllerTest{
             Utbetalingsoppdrag.KodeEndring.NY,
             "FAGSYSTEM_TEST",
             "SAKSNR",
-            "AKTØRID",
+            "PERSONID",
             "SAKSBEHANDLERID",
             localDateTimeNow,
             listOf(Utbetalingsperiode(false,
@@ -47,9 +49,10 @@ internal class OppdragControllerTest{
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
+        every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { emptyList() }
         every { oppdragProtokollRepository.save(any<OppdragProtokoll>()) } answers { arg(0) }
 
-        val oppdragController = OppdragController(oppdragSender,mapper,oppdragProtokollRepository)
+        val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
@@ -61,5 +64,31 @@ internal class OppdragControllerTest{
                 && it.serienummer == 0L
             })
         }
+    }
+
+    @Test
+    fun skal_ikke_lagre_oppdragsprotokoll_for_eksisterende_oppdrag() {
+
+        val mapper = OppdragMapper()
+        val oppdragSender = mockk<OppdragSender>(relaxed = true)
+        val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
+        val testOppdragsProtokoll = OppdragProtokoll(1,
+                "PERSONID",
+                "FAGSYSTEM_TEST",
+                "SAKSNR",
+                "1",
+                "INPUT_DATA",
+                "MELDING",
+                OppdragProtokollStatus.LAGT_PÅ_KØ,
+                localDateTimeNow,
+                localDateTimeNow)
+        val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
+
+        every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
+
+         val svar = oppdragController.sendOppdrag(utbetalingsoppdrag)
+
+        verify (exactly = 0) { oppdragProtokollRepository.save(any<OppdragProtokoll>()) }
+        assertEquals(HttpStatus.BAD_REQUEST, svar.statusCode)
     }
 }
