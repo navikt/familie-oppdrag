@@ -49,19 +49,18 @@ internal class OppdragControllerTest{
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
-        every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { emptyList() }
-        every { oppdragProtokollRepository.save(any<OppdragProtokoll>()) } answers { arg(0) }
+        every { oppdragProtokollRepository.hentOppdrag(any(), any(), any()) } answers { emptyList() }
+        every { oppdragProtokollRepository.lagreOppdrag(any<OppdragProtokoll>()) } answers { 0 }
 
         val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
         verify {
-            oppdragProtokollRepository.save(match<OppdragProtokoll> {
+            oppdragProtokollRepository.lagreOppdrag(match<OppdragProtokoll> {
                 it.melding.contains("FAGSYSTEM_TEST")
                 && it.status == OppdragProtokollStatus.LAGT_PÅ_KØ
                 && it.opprettetTidspunkt > localDateTimeNow
-                && it.serienummer == 0L
             })
         }
     }
@@ -72,7 +71,7 @@ internal class OppdragControllerTest{
         val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
-        val testOppdragsProtokoll = OppdragProtokoll(1,
+        val testOppdragsProtokoll = OppdragProtokoll(
                 "PERSONID",
                 "FAGSYSTEM_TEST",
                 "SAKSNR",
@@ -84,11 +83,11 @@ internal class OppdragControllerTest{
                 localDateTimeNow)
         val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
-        every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
+        every { oppdragProtokollRepository.hentOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
 
          val svar = oppdragController.sendOppdrag(utbetalingsoppdrag)
 
-        verify (exactly = 0) { oppdragProtokollRepository.save(any<OppdragProtokoll>()) }
+        verify (exactly = 0) { oppdragProtokollRepository.lagreOppdrag(any<OppdragProtokoll>()) }
         assertEquals(HttpStatus.BAD_REQUEST, svar.statusCode)
     }
 }
