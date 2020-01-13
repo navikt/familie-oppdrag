@@ -31,6 +31,7 @@
     </root>
 
     <logger name="no.nav" level="WARN"/>
+    <logger name="org.springframework" level="DEBUG" />
     <logger name="no.nav.familie" level="INFO"/>
     <logger name="org.apache" level="INFO"/>
     <logger name="org.apache.cxf" level="ERROR"/>
