@@ -19,10 +19,11 @@ class AvstemmingSenderMQ(val jmsTemplateAvstemming: JmsTemplate,
 
         try {
             jmsTemplateAvstemming.send { session ->
-                val msg = session.createTextMessage("TODO: Avstemming-xml skal inn her")
+                // TODO: XML for avstemming skal inn her
+                val msg = session.createTextMessage("")
                 msg
             }
-            LOG.info("Sendt Avstemming-XML over MQ til OS")
+            LOG.info("Sendt Avstemming-XML på kø ${jmsTemplateAvstemming.defaultDestinationName} til OS")
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende Avstemming til OS. Feil: ", e)
             throw e
