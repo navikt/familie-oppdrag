@@ -3,13 +3,11 @@ package no.nav.familie.oppdrag.rest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
-import no.nav.familie.oppdrag.avstemming.AvstemmingSenderMQ
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -21,7 +19,6 @@ import javax.validation.Valid
 @RequestMapping("/api")
 @ProtectedWithClaims(issuer = "azuread")
 class OppdragController(@Autowired val oppdragSender: OppdragSender,
-                        @Autowired val avstemmingSenderMQ: AvstemmingSenderMQ,
                         @Autowired val oppdragMapper: OppdragMapper,
                         @Autowired val oppdragProtokollRepository: OppdragProtokollRepository) {
 
@@ -40,12 +37,5 @@ class OppdragController(@Autowired val oppdragSender: OppdragSender,
         oppdragSender.sendOppdrag(oppdrag)
         oppdragProtokollRepository.save(OppdragProtokoll.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
         return ResponseEntity.ok().body(Ressurs.Companion.success("Oppdrag sendt ok"))
-    }
-
-    @GetMapping("/avstemming")
-    @Unprotected
-    fun testAvstemming(): String {
-        avstemmingSenderMQ.sendGrensesnittAvstemming()
-        return "Avstemming sendt ok"
     }
 }

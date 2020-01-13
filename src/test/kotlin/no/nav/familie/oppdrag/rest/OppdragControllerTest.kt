@@ -6,7 +6,6 @@ import io.mockk.verify
 import no.nav.familie.kontrakter.felles.oppdrag.Opphør
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
-import no.nav.familie.oppdrag.avstemming.AvstemmingSenderMQ
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragProtokoll
@@ -48,13 +47,12 @@ internal class OppdragControllerTest{
 
         val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
-        val avstemmingSender = mockk<AvstemmingSenderMQ>(relaxed = true)
 
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
         every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { emptyList() }
         every { oppdragProtokollRepository.save(any<OppdragProtokoll>()) } answers { arg(0) }
 
-        val oppdragController = OppdragController(oppdragSender, avstemmingSender, mapper, oppdragProtokollRepository)
+        val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
@@ -73,7 +71,6 @@ internal class OppdragControllerTest{
 
         val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
-        val avstemmingSender = mockk<AvstemmingSenderMQ>(relaxed = true)
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
         val testOppdragsProtokoll = OppdragProtokoll(1,
                 "PERSONID",
@@ -85,7 +82,7 @@ internal class OppdragControllerTest{
                 OppdragProtokollStatus.LAGT_PÅ_KØ,
                 localDateTimeNow,
                 localDateTimeNow)
-        val oppdragController = OppdragController(oppdragSender, avstemmingSender, mapper, oppdragProtokollRepository)
+        val oppdragController = OppdragController(oppdragSender, mapper, oppdragProtokollRepository)
 
         every { oppdragProtokollRepository.hentEksisterendeOppdrag(any(), any(), any()) } answers { listOf(testOppdragsProtokoll) }
 
