@@ -6,8 +6,12 @@ import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET
 import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_ENCODING
 import com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory
+import org.springframework.jms.config.JmsListenerContainerFactory
+import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.ConnectionFactory
@@ -47,8 +51,25 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
 
     @Bean
     fun jmsTemplateUtgående(connectionFactory: ConnectionFactory): JmsTemplate {
-        return JmsTemplate(connectionFactory).apply { defaultDestinationName = sendQueue }
+        return JmsTemplate(connectionFactory).apply {
+            defaultDestinationName = sendQueue
+            isSessionTransacted = true
+        }
     }
+
+    @Bean fun jmsListenerContainerFactory(
+            connectionFactory: ConnectionFactory,
+            configurer: DefaultJmsListenerContainerFactoryConfigurer): JmsListenerContainerFactory<*> {
+        val factory = DefaultJmsListenerContainerFactory()
+        configurer.configure(factory, connectionFactory)
+
+        val transactionManager = JmsTransactionManager()
+        transactionManager.connectionFactory = connectionFactory
+        factory.setTransactionManager(transactionManager)
+        factory.setSessionTransacted(true)
+        return factory
+    }
+
 
     @Bean
     fun jmsTemplateAvstemming(connectionFactory: ConnectionFactory): JmsTemplate {

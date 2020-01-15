@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.iverksetting
 
+import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.lang.IllegalArgumentException
 
 enum class Status(val kode: String) {
@@ -18,4 +19,9 @@ enum class Status(val kode: String) {
         }
     }
 }
+
+val Oppdrag.status : Status
+    get() = Status.fraKode(this.mmel?.alvorlighetsgrad ?: "Ukjent")
+
+
 
