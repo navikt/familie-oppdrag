@@ -35,6 +35,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                        @RequestParam("tom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) tom: LocalDateTime
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Avstemmer oppdrag for $fom til $tom")
+        // TODO Avstemming skal inn her
         return ResponseEntity.ok().body(Ressurs.Companion.success("Avstemming sendt ok"))
     }
 
