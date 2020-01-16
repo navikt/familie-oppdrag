@@ -30,14 +30,14 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
         return ResponseEntity.ok().body(Ressurs.Companion.success("Oppdrag sendt ok"))
     }
 
-    @PostMapping(path = ["/avstemming/{fagsystem}"])
-    fun sendAvstemming(@PathVariable("fagsystem") fagsystem: String,
+    @PostMapping(path = ["/grensesnittavstemming/{fagsystem}"])
+    fun sendGrensesnittavstemming(@PathVariable("fagsystem") fagsystem: String,
                        @RequestParam("fom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) fom: LocalDateTime,
                        @RequestParam("tom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) tom: LocalDateTime
     ): ResponseEntity<Ressurs<String>> {
-        LOG.info("Avstemmer $fagsystem-oppdrag for $fom til $tom")
-        // TODO Avstemming skal inn her
-        return ResponseEntity.ok().body(Ressurs.success("Avstemming sendt ok"))
+        LOG.info("Grensesnittavstemming: Kjører for $fagsystem-oppdrag for $fom til $tom")
+        // TODO Grensesnittavstemming skal inn her
+        return ResponseEntity.ok().body(Ressurs.success("Grensesnittavstemming sendt ok"))
     }
 
     companion object {
