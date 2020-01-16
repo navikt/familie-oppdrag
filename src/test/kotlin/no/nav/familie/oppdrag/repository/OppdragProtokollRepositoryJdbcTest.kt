@@ -1,13 +1,9 @@
-package no.nav.familie.oppdrag.rest
+package no.nav.familie.oppdrag.repository
 
 import no.nav.familie.kontrakter.felles.oppdrag.Opphør
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
-import no.nav.familie.oppdrag.domene.id
-import no.nav.familie.oppdrag.iverksetting.OppdragMapper
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
-import no.nav.familie.oppdrag.service.OppdragService
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,13 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.dao.DuplicateKeyException
-import org.springframework.jms.annotation.EnableJms
 import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 @Configuration
@@ -29,9 +23,8 @@ import kotlin.test.assertFailsWith
 
 @ActiveProfiles("dev")
 @SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
-@EnableJms
 @Disabled
-internal class OppdragControllerIntegrasjonTest {
+internal class OppdragProtokollRepositoryJdbcTest {
 
     val localDateTimeNow = LocalDateTime.now()
     val localDateNow = LocalDate.now()
@@ -55,26 +48,36 @@ internal class OppdragControllerIntegrasjonTest {
                                       1))
     )
 
-    @Autowired lateinit var oppdragService: OppdragService
+
     @Autowired lateinit var oppdragProtokollRepository: OppdragProtokollRepository
 
     @Test
-    fun test_skal_lagre_oppdragprotokoll_for_utbetalingoppdrag() {
+    fun skal_ikke_lagre_duplikat() {
 
-        val mapper = OppdragMapper()
+        oppdragProtokollRepository.opprettOppdrag(utbetalingsoppdragMedTilfeldigAktoer.somOppdragProtokoll)
 
-        val oppdragController = OppdragController(oppdragService, mapper)
+        assertFailsWith<DuplicateKeyException> {
+            oppdragProtokollRepository.opprettOppdrag(utbetalingsoppdragMedTilfeldigAktoer.somOppdragProtokoll)
+        }
 
-        oppdragController.sendOppdrag(utbetalingsoppdragMedTilfeldigAktoer)
-
-        var oppdragStatus: OppdragProtokollStatus;
-
-        do {
-            val oppdrag = oppdragProtokollRepository.hentOppdrag(utbetalingsoppdragMedTilfeldigAktoer.id)
-            oppdragStatus = oppdrag[0].status
-
-        } while (oppdragStatus == OppdragProtokollStatus.LAGT_PÅ_KØ)
-
-        assertEquals( OppdragProtokollStatus.KVITTERT_UKJENT,oppdragStatus)
     }
+
+    @Test
+    fun skal_lagre_status() {
+
+        val oppdragProtokoll = utbetalingsoppdragMedTilfeldigAktoer.somOppdragProtokoll
+                .copy(status = OppdragProtokollStatus.LAGT_PÅ_KØ)
+
+        oppdragProtokollRepository.opprettOppdrag(oppdragProtokoll)
+
+        val hentetOppdragProtokoll = oppdragProtokollRepository.hentOppdrag(oppdragProtokoll.id)
+        assertEquals(OppdragProtokollStatus.LAGT_PÅ_KØ, hentetOppdragProtokoll[0].status)
+
+        oppdragProtokollRepository.oppdaterStatus(hentetOppdragProtokoll[0].id,OppdragProtokollStatus.KVITTERT_OK)
+
+        val hentetOppdatertOppdragProtokoll = oppdragProtokollRepository.hentOppdrag(hentetOppdragProtokoll[0].id)
+        assertEquals(OppdragProtokollStatus.KVITTERT_OK, hentetOppdatertOppdragProtokoll[0].status)
+
+    }
+
 }

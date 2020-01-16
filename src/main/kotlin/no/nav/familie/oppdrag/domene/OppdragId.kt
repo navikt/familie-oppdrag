@@ -1,8 +1,8 @@
 package no.nav.familie.oppdrag.domene
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
-
 
 data class OppdragId(val fagsystem : String,
                      val personIdent : String,
@@ -16,4 +16,4 @@ val Oppdrag.id : OppdragId
 val Utbetalingsoppdrag.id : OppdragId
     get() = OppdragId(this.fagSystem,
                       this.aktoer,
-                      this.utbetalingsperiode.get(0).behandlingId.toString())
+                      this.behandlingsIdForFørsteUtbetalingsperiode())

@@ -1,9 +1,7 @@
 package no.nav.familie.oppdrag.service
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
-import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.domene.id
-import no.nav.familie.oppdrag.iverksetting.OppdragMottaker
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragProtokoll
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.lang.RuntimeException
 
 @Service
 class OppdragService(
@@ -26,7 +23,7 @@ class OppdragService(
         oppdragSender.sendOppdrag(oppdrag)
 
         LOG.debug("Lagrer oppdrag i databasen "+oppdrag.id)
-        oppdragProtokollRepository.lagreOppdrag(OppdragProtokoll.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
+        oppdragProtokollRepository.opprettOppdrag(OppdragProtokoll.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
 
      }
 
