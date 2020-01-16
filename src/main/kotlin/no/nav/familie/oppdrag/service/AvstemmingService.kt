@@ -21,6 +21,7 @@ class AvstemmingService(
         }
 
         // lagre i basen?
+        // oppdatere status til avstemt?
     }
 
     companion object {

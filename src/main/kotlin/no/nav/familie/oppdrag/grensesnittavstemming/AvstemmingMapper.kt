@@ -9,6 +9,7 @@ import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.math.BigDecimal
+import java.nio.ByteBuffer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -60,10 +61,25 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
             this.nokkelFom = getLavesteAvstemmingstidspunkt().toString()
             this.nokkelTom = getHøyesteAvstemmingstidspunkt().toString()
             this.tidspunktAvstemmingTom = LocalDateTime.now().toString() // TODO TRENGER VI DENNE?
-            this.avleverendeAvstemmingId = UUID.randomUUID().toString() // TODO UNDERSØKE OM DET KAN GJØRES SLIK
+            this.avleverendeAvstemmingId = encodeUUIDBase64(UUID.randomUUID())
             this.brukerId = fagOmråde
         }
     }
+
+    fun encodeUUIDBase64(uuid: UUID): String {
+        val bb = ByteBuffer.wrap(ByteArray(16))
+        bb.putLong(uuid.mostSignificantBits)
+        bb.putLong(uuid.leastSignificantBits)
+        return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
+    }
+    /*
+        private static String encodeUUIDBase64(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22);
+    }
+     */
 
     fun opprettAvstemmingsdataLister() : List<Avstemmingsdata> {
         return opprettDetaljdata().chunked(ANTALL_DETALJER_PER_MELDING).map {
