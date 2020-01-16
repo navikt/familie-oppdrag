@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
+import java.time.LocalDateTime
 
 @Repository
 class OppdragProtokollRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragProtokollRepository {
@@ -29,6 +30,14 @@ class OppdragProtokollRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragPr
                 oppdragProtokoll.fagsystem,
                 oppdragProtokoll.avstemmingTidspunkt,
                 oppdragProtokoll.inputData)
+    }
+
+    override fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragProtokoll> {
+        val hentStatement = "SELECT * FROM OPPDRAG_PROTOKOLL WHERE avstemming_tidspunkt >= ? AND avstemming_tidspunkt < ? AND fagsystem = ?"
+
+        return jdbcTemplate.query(hentStatement,
+                arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde),
+                OppdragProtokollRowMapper())
     }
 
 }
