@@ -11,11 +11,9 @@ import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
 import no.nav.familie.oppdrag.service.OppdragService
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.test.assertEquals
 
 internal class OppdragControllerTest{
 
@@ -48,8 +46,8 @@ internal class OppdragControllerTest{
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
-        every { oppdragProtokollRepository.hentOppdrag(any(), any(), any()) } answers { emptyList() }
-        every { oppdragProtokollRepository.lagreOppdrag(any()) } just Runs
+        every { oppdragProtokollRepository.hentOppdrag(any()) } answers { emptyList() }
+        every { oppdragProtokollRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragService = OppdragService(oppdragSender,oppdragProtokollRepository)
 
@@ -58,7 +56,7 @@ internal class OppdragControllerTest{
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
         verify {
-            oppdragProtokollRepository.lagreOppdrag(match<OppdragProtokoll> {
+            oppdragProtokollRepository.opprettOppdrag(match<OppdragProtokoll> {
                 it.melding.contains("FAGSYSTEM_TEST")
                 && it.status == OppdragProtokollStatus.LAGT_PÅ_KØ
                 && it.opprettetTidspunkt > localDateTimeNow
