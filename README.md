@@ -38,3 +38,4 @@ Les mer om postgres på nav [her](https://github.com/navikt/utvikling/blob/maste
 
 ## Kontaktinfo
 For NAV-interne kan henvendelser om appen rettes til #team-familie på slack. Ellers kan man opprette et issue her på github.
+
