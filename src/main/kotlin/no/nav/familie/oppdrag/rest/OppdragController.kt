@@ -48,16 +48,6 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                 )
     }
 
-    @PostMapping(path = ["/grensesnittavstemming/{fagsystem}"])
-    fun sendGrensesnittavstemming(@PathVariable("fagsystem") fagsystem: String,
-                       @RequestParam("fom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) fom: LocalDateTime,
-                       @RequestParam("tom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) tom: LocalDateTime
-    ): ResponseEntity<Ressurs<String>> {
-        LOG.info("Grensesnittavstemming: Kjører for $fagsystem-oppdrag for $fom til $tom")
-        // TODO Grensesnittavstemming skal inn her
-        return ResponseEntity.ok().body(Ressurs.success("Grensesnittavstemming sendt ok"))
-    }
-
     companion object {
         val LOG = LoggerFactory.getLogger(OppdragController::class.java)
     }
