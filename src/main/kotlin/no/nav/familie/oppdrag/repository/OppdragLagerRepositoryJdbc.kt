@@ -1,6 +1,8 @@
 package no.nav.familie.oppdrag.repository
 
+import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.oppdrag.domene.OppdragId
+import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
@@ -9,6 +11,7 @@ import java.sql.ResultSet
 
 @Repository
 class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerRepository {
+
     internal var LOG = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
 
     override fun hentOppdrag(oppdragId: OppdragId): OppdragLager {
@@ -55,6 +58,17 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
 
         jdbcTemplate.execute(update)
     }
+
+    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel) {
+        val updateStatement = "UPDATE oppdrag_lager SET kvitteringsmelding = ? WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ?"
+
+        jdbcTemplate.update(updateStatement,
+                objectMapper.writeValueAsString(kvittering),
+                oppdragId.personIdent,
+                oppdragId.fagsystem,
+                oppdragId.behandlingsId)
+    }
+
 }
 
 class OppdragLagerRowMapper : RowMapper<OppdragLager> {

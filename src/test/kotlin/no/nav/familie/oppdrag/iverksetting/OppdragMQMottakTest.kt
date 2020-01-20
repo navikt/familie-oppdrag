@@ -59,6 +59,7 @@ class OppdragMQMottakTest {
                 oppdragLager
 
         every { oppdragLagerRepository.oppdaterStatus(any(),any()) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
 
@@ -116,12 +117,14 @@ class OppdragMQMottakTest {
                 oppdragLager.copy(status = OppdragStatus.KVITTERT_OK)
 
         every { oppdragLagerRepository.oppdaterStatus(any(),OppdragStatus.KVITTERT_OK) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
         oppdragMottaker.LOG = mockk()
 
         every { oppdragMottaker.LOG.info(any()) } just Runs
         every { oppdragMottaker.LOG.warn(any()) } just Runs
+        every { oppdragMottaker.LOG.debug(any()) } just Runs
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 

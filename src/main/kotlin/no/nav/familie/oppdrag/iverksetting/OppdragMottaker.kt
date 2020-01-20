@@ -33,8 +33,11 @@ class OppdragMottaker(
         LOG.info("Mottatt melding på kvitteringskø for fagsak ${oppdragId}: Status ${kvittering.status}, " +
                  "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}")
 
-        LOG.info("Henter oppdrag ${oppdragId} fra databasen")
+        LOG.debug("Henter oppdrag ${oppdragId} fra databasen")
         val sendteOppdrag: OppdragLager = oppdragLagerRepository.hentOppdrag(oppdragId)
+        if (kvittering.mmel != null) {
+            oppdragLagerRepository.oppdaterKvitteringsmelding(oppdragId, kvittering.mmel)
+        }
 
         if (sendteOppdrag.status != OppdragStatus.LAGT_PÅ_KØ) {
             // TODO: Oppdraget har en status vi ikke venter. Det er GANSKE så feil
