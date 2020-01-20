@@ -4,9 +4,9 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
-import no.nav.familie.oppdrag.repository.OppdragProtokoll
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class OppdragService(
         @Autowired private val oppdragSender: OppdragSender,
-        @Autowired private val oppdragProtokollRepository: OppdragProtokollRepository) {
+        @Autowired private val oppdragLagerRepository: OppdragLagerRepository) {
 
     @Transactional(rollbackFor = [Throwable::class])
     fun opprettOppdrag(utbetalingsoppdrag : Utbetalingsoppdrag, oppdrag: Oppdrag) {
@@ -25,11 +25,11 @@ class OppdragService(
         oppdragSender.sendOppdrag(oppdrag)
 
         LOG.debug("Lagrer oppdrag i databasen "+oppdrag.id)
-        oppdragProtokollRepository.opprettOppdrag(OppdragProtokoll.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
+        oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
      }
 
-    fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragProtokollStatus {
-        return oppdragProtokollRepository.hentOppdrag(oppdragId).status
+    fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragStatus {
+        return oppdragLagerRepository.hentOppdrag(oppdragId).status
     }
 
     companion object {

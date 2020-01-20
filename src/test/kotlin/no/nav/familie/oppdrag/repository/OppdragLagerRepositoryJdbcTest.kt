@@ -21,9 +21,9 @@ import kotlin.test.assertFailsWith
 @SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
-internal class OppdragProtokollRepositoryJdbcTest {
+internal class OppdragLagerRepositoryJdbcTest {
 
-    @Autowired lateinit var oppdragProtokollRepository: OppdragProtokollRepository
+    @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
     companion object {
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
@@ -32,30 +32,30 @@ internal class OppdragProtokollRepositoryJdbcTest {
     @Test
     fun skal_ikke_lagre_duplikat() {
 
-        val oppdragProtokoll = utbetalingsoppdragMedTilfeldigAktoer().somOppdragProtokoll
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
 
-        oppdragProtokollRepository.opprettOppdrag(oppdragProtokoll)
+        oppdragLagerRepository.opprettOppdrag(oppdragLager)
 
         assertFailsWith<DuplicateKeyException> {
-            oppdragProtokollRepository.opprettOppdrag(oppdragProtokoll)
+            oppdragLagerRepository.opprettOppdrag(oppdragLager)
         }
     }
 
     @Test
     fun skal_lagre_status() {
 
-        val oppdragProtokoll = utbetalingsoppdragMedTilfeldigAktoer().somOppdragProtokoll
-                .copy(status = OppdragProtokollStatus.LAGT_PÅ_KØ)
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+                .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
-        oppdragProtokollRepository.opprettOppdrag(oppdragProtokoll)
+        oppdragLagerRepository.opprettOppdrag(oppdragLager)
 
-        val hentetOppdragProtokoll = oppdragProtokollRepository.hentOppdrag(oppdragProtokoll.id)
-        assertEquals(OppdragProtokollStatus.LAGT_PÅ_KØ, hentetOppdragProtokoll.status)
+        val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        assertEquals(OppdragStatus.LAGT_PÅ_KØ, hentetOppdrag.status)
 
-        oppdragProtokollRepository.oppdaterStatus(hentetOppdragProtokoll.id, OppdragProtokollStatus.KVITTERT_OK)
+        oppdragLagerRepository.oppdaterStatus(hentetOppdrag.id, OppdragStatus.KVITTERT_OK)
 
-        val hentetOppdatertOppdragProtokoll = oppdragProtokollRepository.hentOppdrag(hentetOppdragProtokoll.id)
-        assertEquals(OppdragProtokollStatus.KVITTERT_OK, hentetOppdatertOppdragProtokoll.status)
+        val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(hentetOppdrag.id)
+        assertEquals(OppdragStatus.KVITTERT_OK, hentetOppdatertOppdrag.status)
 
     }
 

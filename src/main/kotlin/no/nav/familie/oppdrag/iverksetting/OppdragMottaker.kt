@@ -1,9 +1,9 @@
 package no.nav.familie.oppdrag.iverksetting
 
 import no.nav.familie.oppdrag.domene.id
-import no.nav.familie.oppdrag.repository.OppdragProtokoll
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.repository.protokollStatus
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
@@ -15,7 +15,7 @@ import javax.jms.TextMessage
 
 @Service
 class OppdragMottaker(
-        val oppdragProtokollRepository: OppdragProtokollRepository,
+        val oppdragLagerRepository: OppdragLagerRepository,
         val env: Environment
 ){
     internal var LOG = LoggerFactory.getLogger(OppdragMottaker::class.java)
@@ -34,17 +34,17 @@ class OppdragMottaker(
                  "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}")
 
         LOG.info("Henter oppdrag ${oppdragId} fra databasen")
-        val sendteOppdrag: OppdragProtokoll = oppdragProtokollRepository.hentOppdrag(oppdragId)
+        val sendteOppdrag: OppdragLager = oppdragLagerRepository.hentOppdrag(oppdragId)
 
-        if (sendteOppdrag.status != OppdragProtokollStatus.LAGT_PÅ_KØ) {
+        if (sendteOppdrag.status != OppdragStatus.LAGT_PÅ_KØ) {
             // TODO: Oppdraget har en status vi ikke venter. Det er GANSKE så feil
             LOG.warn("Oppdraget tilknyttet mottatt kvittering har uventet status i databasen. Oppdraget er: ${oppdragId}. " +
                     "Status i databasen er ${sendteOppdrag.status}. " +
                     "Lagrer likevel oppdatert oppdrag i databasen med ny status ${kvittering.protokollStatus}")
-            oppdragProtokollRepository.oppdaterStatus(oppdragId, kvittering.protokollStatus)
+            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.protokollStatus)
         } else  {
             LOG.debug("Lagrer oppdatert oppdrag ${oppdragId} i databasen med ny status ${kvittering.protokollStatus}")
-            oppdragProtokollRepository.oppdaterStatus(oppdragId, kvittering.protokollStatus)
+            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.protokollStatus)
         }
     }
 

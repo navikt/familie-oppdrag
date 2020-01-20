@@ -6,9 +6,9 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
-import no.nav.familie.oppdrag.repository.OppdragProtokoll
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.service.OppdragService
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -40,24 +40,24 @@ internal class OppdragControllerTest{
     )
 
     @Test
-    fun skal_lagre_oppdragprotokoll_for_utbetalingoppdrag() {
+    fun skal_lagre_oppdrag_for_utbetalingoppdrag() {
 
         val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
-        val oppdragProtokollRepository = mockk<OppdragProtokollRepository>()
-        every { oppdragProtokollRepository.opprettOppdrag(any()) } just Runs
+        val oppdragLagerRepository = mockk<OppdragLagerRepository>()
+        every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
-        val oppdragService = OppdragService(oppdragSender,oppdragProtokollRepository)
+        val oppdragService = OppdragService(oppdragSender,oppdragLagerRepository)
 
         val oppdragController = OppdragController(oppdragService, mapper)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
         verify {
-            oppdragProtokollRepository.opprettOppdrag(match<OppdragProtokoll> {
+            oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
                 it.melding.contains("FAGSYSTEM_TEST")
-                && it.status == OppdragProtokollStatus.LAGT_PÅ_KØ
+                && it.status == OppdragStatus.LAGT_PÅ_KØ
                 && it.opprettetTidspunkt > localDateTimeNow
             })
         }

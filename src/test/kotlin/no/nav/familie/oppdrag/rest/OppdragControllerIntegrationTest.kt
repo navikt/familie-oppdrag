@@ -2,8 +2,8 @@ package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
@@ -29,7 +29,7 @@ import kotlin.test.assertEquals
 internal class OppdragControllerIntegrasjonTest {
 
     @Autowired lateinit var oppdragService: OppdragService
-    @Autowired lateinit var oppdragProtokollRepository: OppdragProtokollRepository
+    @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
     companion object {
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
@@ -37,7 +37,7 @@ internal class OppdragControllerIntegrasjonTest {
     }
 
     @Test
-    fun test_skal_lagre_oppdragprotokoll_for_utbetalingoppdrag() {
+    fun test_skal_lagre_oppdrag_for_utbetalingoppdrag() {
 
         val mapper = OppdragMapper()
         val oppdragController = OppdragController(oppdragService, mapper)
@@ -45,14 +45,14 @@ internal class OppdragControllerIntegrasjonTest {
         val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer()
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
-        var oppdragStatus: OppdragProtokollStatus
+        var oppdragStatus: OppdragStatus
 
         do {
-            val oppdrag = oppdragProtokollRepository.hentOppdrag(utbetalingsoppdrag.id)
+            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.id)
 
             oppdragStatus = oppdrag.status
-        } while (oppdragStatus == OppdragProtokollStatus.LAGT_PÅ_KØ)
+        } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
 
-        assertEquals( OppdragProtokollStatus.KVITTERT_UKJENT,oppdragStatus)
+        assertEquals( OppdragStatus.KVITTERT_UKJENT,oppdragStatus)
     }
 }

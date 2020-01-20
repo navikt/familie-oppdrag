@@ -4,9 +4,10 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import no.nav.security.token.support.core.api.Unprotected
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
@@ -25,6 +26,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                         @Autowired val oppdragMapper: OppdragMapper) {
 
    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
+   @Unprotected
    fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
         val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
         val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
@@ -34,7 +36,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])
-    fun hentStatus(@Valid @RequestBody oppdragId: OppdragId): ResponseEntity<Ressurs<OppdragProtokollStatus>> {
+    fun hentStatus(@Valid @RequestBody oppdragId: OppdragId): ResponseEntity<Ressurs<OppdragStatus>> {
         return Result.runCatching { oppdragService.hentStatusForOppdrag(oppdragId) }
                 .fold(
                         onFailure = {
