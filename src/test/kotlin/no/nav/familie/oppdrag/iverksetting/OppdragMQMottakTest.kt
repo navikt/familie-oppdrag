@@ -50,7 +50,7 @@ class OppdragMQMottakTest {
     }
 
     @Test
-    fun skal_lagre_status_fra_kvittering() {
+    fun skal_lagre_status_og_mmel_fra_kvittering() {
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
@@ -67,12 +67,11 @@ class OppdragMQMottakTest {
 
         verify(exactly = 1) { oppdragLagerRepository.hentOppdrag(any()) }
         verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(),any()) }
-
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) }
     }
 
     @Test
     fun skal_logge_error_hvis_det_finnes_to_identiske_oppdrag_i_databasen() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
