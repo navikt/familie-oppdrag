@@ -5,6 +5,7 @@ import com.ibm.msg.client.wmq.WMQConstants
 import io.mockk.called
 import io.mockk.spyk
 import io.mockk.verify
+import no.nav.familie.oppdrag.util.Containers
 import no.trygdeetaten.skjema.oppdrag.ObjectFactory
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
@@ -13,6 +14,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.test.context.ContextConfiguration
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 import java.lang.UnsupportedOperationException
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -26,11 +30,17 @@ private const val TESTKØ = "DEV.QUEUE.1"
 private const val TEST_FAGSAKID = "123456789"
 
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
+@Testcontainers
+@ContextConfiguration(initializers = arrayOf(Containers.MQInitializer::class))
 class OppdragMQSenderTest {
+
+    companion object {
+        @Container var ibmMQContainer = Containers.ibmMQContainer
+    }
 
     private val mqConn = MQConnectionFactory().apply {
         hostName = "localhost"
-        port = 1414
+        port = ibmMQContainer.getMappedPort(1414)
         channel = "DEV.ADMIN.SVRCONN"
         queueManager = "QM1"
         transportType = WMQConstants.WMQ_CM_CLIENT

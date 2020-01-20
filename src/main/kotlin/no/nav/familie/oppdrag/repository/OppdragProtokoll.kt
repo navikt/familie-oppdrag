@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
+import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.springframework.data.relational.core.mapping.Column
@@ -40,4 +41,9 @@ val Utbetalingsoppdrag.somOppdragProtokoll: OppdragProtokoll
         val tilOppdrag110 = OppdragMapper().tilOppdrag110(this)
         val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110);
         return OppdragProtokoll.lagFraOppdrag(this, oppdrag)
+    }
+
+val OppdragProtokoll.id : OppdragId
+    get() {
+        return OppdragId(this.fagsystem,this.personIdent,this.behandlingId)
     }

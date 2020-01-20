@@ -1,82 +1,58 @@
 package no.nav.familie.oppdrag.rest
 
-import no.nav.familie.kontrakter.felles.oppdrag.Opphør
-import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
-import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
+import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
+import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
+import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
 import no.nav.familie.oppdrag.service.OppdragService
-import org.junit.jupiter.api.Disabled
+import no.nav.familie.oppdrag.util.Containers
+import no.nav.familie.oppdrag.util.TestConfig
+import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.dao.DuplicateKeyException
 import org.springframework.jms.annotation.EnableJms
 import org.springframework.test.context.ActiveProfiles
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.*
-import kotlin.test.assertFailsWith
+import org.springframework.test.context.ContextConfiguration
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import kotlin.test.assertEquals
 
-@Configuration
-@ComponentScan("no.nav.familie.oppdrag") class TestConfig
 
 @ActiveProfiles("dev")
+@ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class,Containers.MQInitializer::class))
 @SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
 @EnableJms
-@Disabled
+@DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
+@Testcontainers
 internal class OppdragControllerIntegrasjonTest {
 
-    val localDateTimeNow = LocalDateTime.now()
-    val localDateNow = LocalDate.now()
-
-    val utbetalingsoppdragMedTilfeldigAktoer = Utbetalingsoppdrag(
-            Utbetalingsoppdrag.KodeEndring.NY,
-            "TEST",
-            "SAKSNR",
-            UUID.randomUUID().toString(), // Foreløpig plass til en 50-tegn string og ingen gyldighetssjekk
-            "SAKSBEHANDLERID",
-            localDateTimeNow,
-            listOf(Utbetalingsperiode(false,
-                                      Opphør(localDateNow),
-                                      localDateNow,
-                                      "KLASSE A",
-                                      localDateNow,
-                                      localDateNow,
-                                      BigDecimal.ONE,
-                                      Utbetalingsperiode.SatsType.MND,
-                                      "UTEBETALES_TIL",
-                                      1))
-    )
-
     @Autowired lateinit var oppdragService: OppdragService
+    @Autowired lateinit var oppdragProtokollRepository: OppdragProtokollRepository
+
+    companion object {
+        @Container var postgreSQLContainer = Containers.postgreSQLContainer
+        @Container var ibmMQContainer = Containers.ibmMQContainer
+    }
 
     @Test
     fun test_skal_lagre_oppdragprotokoll_for_utbetalingoppdrag() {
 
         val mapper = OppdragMapper()
-
         val oppdragController = OppdragController(oppdragService, mapper)
 
-        oppdragController.sendOppdrag(utbetalingsoppdragMedTilfeldigAktoer)
-    }
-
-    @Test
-    fun test_skal_ikke_lagre_duplikat() {
-
-        val mapper = OppdragMapper()
-
-        val oppdragController = OppdragController(oppdragService, mapper)
-
-        val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer
+        val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer()
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
-        assertFailsWith<DuplicateKeyException> {
-            oppdragController.sendOppdrag(utbetalingsoppdragMedTilfeldigAktoer.copy(aktoer = utbetalingsoppdrag.aktoer))
-        }
+        var oppdragStatus: OppdragProtokollStatus
 
+        do {
+            val oppdrag = oppdragProtokollRepository.hentOppdrag(utbetalingsoppdrag.id)
+
+            oppdragStatus = oppdrag.status
+        } while (oppdragStatus == OppdragProtokollStatus.LAGT_PÅ_KØ)
+
+        assertEquals( OppdragProtokollStatus.KVITTERT_UKJENT,oppdragStatus)
     }
-
 }

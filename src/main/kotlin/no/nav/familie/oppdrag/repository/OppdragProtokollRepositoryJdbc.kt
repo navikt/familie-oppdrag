@@ -1,5 +1,7 @@
 package no.nav.familie.oppdrag.repository
 
+import no.nav.familie.oppdrag.domene.OppdragId
+import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
@@ -8,28 +10,51 @@ import java.time.LocalDateTime
 
 @Repository
 class OppdragProtokollRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragProtokollRepository {
+    internal var LOG = LoggerFactory.getLogger(OppdragProtokollRepositoryJdbc::class.java)
 
-    override fun hentOppdrag(fagsystem: String, behandlingId: String, personIdent: String): List<OppdragProtokoll> {
+    override fun hentOppdrag(oppdragId: OppdragId): OppdragProtokoll {
         val hentStatement = "SELECT * FROM OPPDRAG_PROTOKOLL WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
 
-        return jdbcTemplate.query(hentStatement,
-                    arrayOf(behandlingId, personIdent, fagsystem),
-                    OppdragProtokollRowMapper())
+        val listeAvOppdrag = jdbcTemplate.query(hentStatement,
+                                  arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
+                                  OppdragProtokollRowMapper())
+
+        return when( listeAvOppdrag.size ) {
+            0 -> {
+                LOG.error("Feil ved henting av oppdrag. Fant ingen oppdrag med id $oppdragId")
+                throw NoSuchElementException("Feil ved henting av oppdrag. Fant ingen oppdrag med id $oppdragId")
+            }
+            1 -> listeAvOppdrag[0]
+            else -> {
+                LOG.error("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
+                throw Exception("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
+            }
+        }
     }
 
-    override fun lagreOppdrag(oppdragProtokoll: OppdragProtokoll) {
+    override fun opprettOppdrag(oppdragProtokoll: OppdragProtokoll) {
         val insertStatement = "INSERT INTO oppdrag_protokoll VALUES (?,?,?,?,?,?,?,?,?)"
 
         jdbcTemplate.update(insertStatement,
-                oppdragProtokoll.melding,
-                oppdragProtokoll.status.name,
-                oppdragProtokoll.opprettetTidspunkt,
-                oppdragProtokoll.personIdent,
-                oppdragProtokoll.fagsakId,
-                oppdragProtokoll.behandlingId,
-                oppdragProtokoll.fagsystem,
-                oppdragProtokoll.avstemmingTidspunkt,
-                oppdragProtokoll.inputData)
+                            oppdragProtokoll.melding,
+                            oppdragProtokoll.status.name,
+                            oppdragProtokoll.opprettetTidspunkt,
+                            oppdragProtokoll.personIdent,
+                            oppdragProtokoll.fagsakId,
+                            oppdragProtokoll.behandlingId,
+                            oppdragProtokoll.fagsystem,
+                            oppdragProtokoll.avstemmingTidspunkt,
+                            oppdragProtokoll.inputData)
+    }
+
+    override fun oppdaterStatus(oppdragId: OppdragId, oppdragProtokollStatus: OppdragProtokollStatus) {
+
+        val update = "UPDATE oppdrag_protokoll SET status = '${oppdragProtokollStatus.name}' " +
+                     "WHERE person_ident = '${oppdragId.personIdent}' " +
+                     "AND fagsystem = '${oppdragId.fagsystem}' " +
+                     "AND behandling_id = '${oppdragId.behandlingsId}'"
+
+        jdbcTemplate.execute(update)
     }
 
     override fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragProtokoll> {
@@ -39,10 +64,9 @@ class OppdragProtokollRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragPr
                 arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde),
                 OppdragProtokollRowMapper())
     }
-
 }
 
-class OppdragProtokollRowMapper: RowMapper<OppdragProtokoll> {
+class OppdragProtokollRowMapper : RowMapper<OppdragProtokoll> {
 
     override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragProtokoll? {
         return OppdragProtokoll(

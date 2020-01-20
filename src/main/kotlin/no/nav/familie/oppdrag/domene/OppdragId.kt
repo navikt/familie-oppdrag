@@ -1,12 +1,14 @@
 package no.nav.familie.oppdrag.domene
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
-
 
 data class OppdragId(val fagsystem : String,
                      val personIdent : String,
-                     val behandlingsId : String)
+                     val behandlingsId : String) {
+    override fun toString(): String = "OppdragId(fagsystem=$fagsystem, behandlingsId=$behandlingsId)"
+}
 
 val Oppdrag.id : OppdragId
     get() = OppdragId(this.oppdrag110.kodeFagomraade,
@@ -16,4 +18,4 @@ val Oppdrag.id : OppdragId
 val Utbetalingsoppdrag.id : OppdragId
     get() = OppdragId(this.fagSystem,
                       this.aktoer,
-                      this.utbetalingsperiode.get(0).behandlingId.toString())
+                      this.behandlingsIdForFørsteUtbetalingsperiode())

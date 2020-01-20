@@ -1,6 +1,5 @@
 package no.nav.familie.oppdrag.repository
 
-import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.iverksetting.Status
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 
