@@ -58,9 +58,8 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
             this.avleverendeKomponentKode = fagOmråde
             this.mottakendeKomponentKode = SystemKode.OPPDRAGSSYSTEMET.kode
             this.underkomponentKode = fagOmråde
-            this.nokkelFom = getLavesteAvstemmingstidspunkt().toString()
-            this.nokkelTom = getHøyesteAvstemmingstidspunkt().toString()
-            this.tidspunktAvstemmingTom = LocalDateTime.now().toString() // TODO TRENGER VI DENNE?
+            this.nokkelFom = getLavesteAvstemmingstidspunkt().format(tidspunktFormatter)
+            this.nokkelTom = getHøyesteAvstemmingstidspunkt().format(tidspunktFormatter)
             this.avleverendeAvstemmingId = encodeUUIDBase64(UUID.randomUUID())
             this.brukerId = fagOmråde
         }
@@ -72,14 +71,6 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         bb.putLong(uuid.leastSignificantBits)
         return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
     }
-    /*
-        private static String encodeUUIDBase64(UUID uuid) {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22);
-    }
-     */
 
     fun opprettAvstemmingsdataLister() : List<Avstemmingsdata> {
         return opprettDetaljdata().chunked(ANTALL_DETALJER_PER_MELDING).map {
@@ -98,7 +89,7 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
                     this.detaljType = detaljType
                     this.offnr = utbetalingsoppdrag.aktoer
                     this.avleverendeTransaksjonNokkel = fagOmråde
-                    this.tidspunkt = oppdrag.avstemmingTidspunkt.toString()
+                    this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
                     if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS)) {
                         val kvitteringsmelding = fraMeldingTilOppdrag(oppdrag.melding)
                         this.meldingKode = kvitteringsmelding.mmel.kodeMelding
@@ -139,8 +130,8 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
 
     fun opprettPeriodeData(): Periodedata {
         return objectFactory.createPeriodedata().apply {
-            this.datoAvstemtFom = formaterTilPeriodedataFormat(getLavesteAvstemmingstidspunkt().toString())
-            this.datoAvstemtTom = formaterTilPeriodedataFormat(getHøyesteAvstemmingstidspunkt().toString())
+            this.datoAvstemtFom = formaterTilPeriodedataFormat(getLavesteAvstemmingstidspunkt().format(tidspunktFormatter))
+            this.datoAvstemtTom = formaterTilPeriodedataFormat(getHøyesteAvstemmingstidspunkt().format(tidspunktFormatter))
         }
     }
 
@@ -215,5 +206,4 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
 
 enum class SystemKode(val kode : String) {
     OPPDRAGSSYSTEMET("OS")
-    // legge til for de andre systemene vi skal kommunisere med?
 }
