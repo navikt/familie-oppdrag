@@ -13,12 +13,12 @@ data class OppdragLager(val fagsystem: String,
                         @Column("person_ident") val personIdent: String,
                         @Column("fagsak_id") val fagsakId: String,
                         @Column("behandling_id") val behandlingId: String,
-                        @Column("input_data") val inputData: String,
-                        val melding: String,
+                        val utbetalingsoppdrag: String,
+                        @Column("utgaaende_oppdrag") val utgåendeOppdrag: String,
                         val status: OppdragStatus = OppdragStatus.LAGT_PÅ_KØ,
                         @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
                         @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
-                        @Column val kvitteringsmelding: String?) {
+                        val kvitteringsmelding: String?) {
 
     companion object {
         fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag): OppdragLager {
@@ -28,8 +28,8 @@ data class OppdragLager(val fagsystem: String,
                     fagsakId = utbetalingsoppdrag.saksnummer,
                     behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
-                    inputData = ObjectMapper().writeValueAsString(utbetalingsoppdrag),
-                    melding = ObjectMapper().writeValueAsString(oppdrag),
+                    utbetalingsoppdrag = ObjectMapper().writeValueAsString(utbetalingsoppdrag),
+                    utgåendeOppdrag = ObjectMapper().writeValueAsString(oppdrag),
                     kvitteringsmelding = null
             )
         }

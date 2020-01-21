@@ -56,7 +56,7 @@ internal class OppdragControllerTest{
 
         verify {
             oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
-                it.melding.contains("FAGSYSTEM_TEST")
+                it.utgåendeOppdrag.contains("FAGSYSTEM_TEST")
                 && it.status == OppdragStatus.LAGT_PÅ_KØ
                 && it.opprettetTidspunkt > localDateTimeNow
             })

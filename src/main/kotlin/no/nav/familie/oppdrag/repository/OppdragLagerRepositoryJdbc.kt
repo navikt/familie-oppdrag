@@ -38,7 +38,7 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
         val insertStatement = "INSERT INTO oppdrag_lager VALUES (?,?,?,?,?,?,?,?,?)"
 
         jdbcTemplate.update(insertStatement,
-                            oppdragLager.melding,
+                            oppdragLager.utgåendeOppdrag,
                             oppdragLager.status.name,
                             oppdragLager.opprettetTidspunkt,
                             oppdragLager.personIdent,
@@ -46,7 +46,7 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
                             oppdragLager.behandlingId,
                             oppdragLager.fagsystem,
                             oppdragLager.avstemmingTidspunkt,
-                            oppdragLager.inputData)
+                            oppdragLager.utbetalingsoppdrag)
     }
 
     override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus) {
