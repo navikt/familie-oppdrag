@@ -18,8 +18,7 @@ class AvstemmingMapperTest {
 
     @Test
     fun testMappingAvTomListe() {
-
-        val mapper = AvstemmingMapper(emptyList(), "BA")
+        val mapper = AvstemmingMapper(emptyList(), fagområde)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(0, meldinger.size)
     }
@@ -27,7 +26,7 @@ class AvstemmingMapperTest {
     @Test
     fun testMappingTilGrensesnittavstemming() {
         val oppdragProtokoll = lagOppdragProtokoll()
-        val mapper = AvstemmingMapper(listOf(oppdragProtokoll), "BA")
+        val mapper = AvstemmingMapper(listOf(oppdragProtokoll), fagområde)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(3, meldinger.size)
         assertAksjon(AksjonType.START, meldinger.first().aksjon)
@@ -100,7 +99,7 @@ class AvstemmingMapperTest {
             erEndringPåEksisterendePeriode = false,
             opphør = null,
             datoForVedtak = idag,
-            klassifisering = "BAOROSMS",
+            klassifisering = "BATR",
             vedtakdatoFom = idag,
             vedtakdatoTom = idag.plusYears(6),
             sats = BigDecimal.valueOf(1354L),
@@ -111,7 +110,7 @@ class AvstemmingMapperTest {
 
     val utbetalingsoppdrag = Utbetalingsoppdrag(
             kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-            fagSystem = "IT05",
+            fagSystem = "BA",
             saksnummer = "12345678",
             aktoer = "12345678911",
             saksbehandlerId = "Z992991",

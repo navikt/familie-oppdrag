@@ -1,8 +1,7 @@
 package no.nav.familie.oppdrag.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
@@ -29,7 +28,7 @@ data class OppdragProtokoll(val fagsystem: String,
                     behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
                     inputData = objectMapper.writeValueAsString(utbetalingsoppdrag),
-                    melding = ObjectMapper().writeValueAsString(oppdrag)
+                    melding = objectMapper.writeValueAsString(oppdrag)
             )
         }
     }

@@ -1,17 +1,16 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.oppdrag.grensesnittavstemming.AvstemmingMapper
 import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.familie.oppdrag.service.AvstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
-import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api")
@@ -24,14 +23,23 @@ class AvstemmingController (@Autowired val oppdragProtokollRepository: OppdragPr
                                   @RequestParam("fom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) fom: LocalDateTime,
                                   @RequestParam("tom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) tom: LocalDateTime
     ): ResponseEntity<Ressurs<String>> {
-        OppdragController.LOG.info("Grensesnittavstemming: Kjører for $fagsystem-oppdrag for $fom til $tom")
-        val oppdragSomSkalAvstemmes = oppdragProtokollRepository.hentIverksettingerForGrensesnittavstemming(fom, tom, fagsystem)
+        LOG.info("Grensesnittavstemming: Kjører for $fagsystem-oppdrag for $fom til $tom")
 
-        val meldinger = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem).lagAvstemmingsmeldinger()
+        return Result.runCatching {  avstemmingService.utførGrensesnittavstemming(fagsystem, fom, tom) }
+                .fold(
+                        onFailure = {
+                            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                    .body(Ressurs.failure("Grensesnittavstemming feilet", it))
+                        },
+                        onSuccess = {
+                            ResponseEntity.ok(Ressurs.Companion.success("Grensesnittavstemming sendt ok"))
+                        }
 
-        avstemmingService.utførGrensesnittavstemming(meldinger)
+                )
+    }
 
-        return ResponseEntity.ok().body(Ressurs.success("Grensesnittavstemming sendt ok"))
+    companion object {
+        val LOG = LoggerFactory.getLogger(AvstemmingController::class.java)
     }
 
 }

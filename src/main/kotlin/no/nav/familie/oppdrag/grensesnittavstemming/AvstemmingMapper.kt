@@ -17,9 +17,8 @@ import java.util.*
 class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
                        private val fagOmråde: String,
                        private val jaxb: Jaxb = Jaxb()) {
-    val objectFactory = ObjectFactory()
-    val ANTALL_DETALJER_PER_MELDING = 70
-    val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
+    private val ANTALL_DETALJER_PER_MELDING = 70
+    private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     fun lagAvstemmingsmeldinger() : List<Avstemmingsdata> {
         if (oppdragsliste.isEmpty())
@@ -28,11 +27,11 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
             return (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagSluttmelding()))
     }
 
-    fun lagStartmelding() = lagMelding(AksjonType.START)
+    private fun lagStartmelding() = lagMelding(AksjonType.START)
 
-    fun lagSluttmelding() = lagMelding(AksjonType.AVSL)
+    private fun lagSluttmelding() = lagMelding(AksjonType.AVSL)
 
-    fun lagDatameldinger(): List<Avstemmingsdata> {
+    private fun lagDatameldinger(): List<Avstemmingsdata> {
         val detaljMeldinger = opprettAvstemmingsdataLister()
 
         val avstemmingsDataLister = if (detaljMeldinger.isNotEmpty()) detaljMeldinger else listOf(lagMelding(AksjonType.DATA))
@@ -45,13 +44,13 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         return avstemmingsDataLister
     }
 
-    fun lagMelding(aksjonType: AksjonType): Avstemmingsdata =
-        objectFactory.createAvstemmingsdata().apply {
+    private fun lagMelding(aksjonType: AksjonType): Avstemmingsdata =
+            Avstemmingsdata().apply {
             aksjon = opprettAksjonsdata(aksjonType)
         }
 
-    fun opprettAksjonsdata(aksjonType: AksjonType): Aksjonsdata {
-        return objectFactory.createAksjonsdata().apply {
+    private fun opprettAksjonsdata(aksjonType: AksjonType): Aksjonsdata {
+        return Aksjonsdata().apply {
             this.aksjonType = aksjonType
             this.kildeType = KildeType.AVLEV
             this.avstemmingType = AvstemmingType.GRSN
@@ -65,14 +64,14 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         }
     }
 
-    fun encodeUUIDBase64(uuid: UUID): String {
+    private fun encodeUUIDBase64(uuid: UUID): String {
         val bb = ByteBuffer.wrap(ByteArray(16))
         bb.putLong(uuid.mostSignificantBits)
         bb.putLong(uuid.leastSignificantBits)
         return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
     }
 
-    fun opprettAvstemmingsdataLister() : List<Avstemmingsdata> {
+    private fun opprettAvstemmingsdataLister() : List<Avstemmingsdata> {
         return opprettDetaljdata().chunked(ANTALL_DETALJER_PER_MELDING).map {
             lagMelding(AksjonType.DATA).apply {
                 this.detalj.addAll(it)
@@ -80,18 +79,18 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         }
     }
 
-    fun opprettDetaljdata() : List<Detaljdata> {
+    private fun opprettDetaljdata() : List<Detaljdata> {
         return oppdragsliste.mapNotNull { oppdrag ->
             val detaljType = opprettDetaljType(oppdrag)
             if (detaljType != null) {
                 val utbetalingsoppdrag = fraInputDataTilUtbetalingsoppdrag(oppdrag.inputData)
-                objectFactory.createDetaljdata().apply {
+                Detaljdata().apply {
                     this.detaljType = detaljType
                     this.offnr = utbetalingsoppdrag.aktoer
                     this.avleverendeTransaksjonNokkel = fagOmråde
                     this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
                     if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS)) {
-                        val kvitteringsmelding = fraMeldingTilOppdrag(oppdrag.melding)
+                        val kvitteringsmelding = fraMeldingTilOppdrag(oppdrag.melding) // TODO hente fra basen i stedet for når det er på plass
                         this.meldingKode = kvitteringsmelding.mmel.kodeMelding
                         this.alvorlighetsgrad = kvitteringsmelding.mmel.alvorlighetsgrad
                         this.tekstMelding = kvitteringsmelding.mmel.beskrMelding
@@ -103,7 +102,7 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         }
     }
 
-    fun opprettDetaljType(oppdrag : OppdragProtokoll) : DetaljType? =
+    private fun opprettDetaljType(oppdrag : OppdragProtokoll) : DetaljType? =
             when (oppdrag.status) {
                 OppdragProtokollStatus.LAGT_PÅ_KØ -> DetaljType.MANG
                 OppdragProtokollStatus.KVITTERT_MED_MANGLER -> DetaljType.VARS
@@ -113,29 +112,29 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
                 OppdragProtokollStatus.KVITTERT_UKJENT -> null
             }
 
-    fun fraInputDataTilUtbetalingsoppdrag(inputData : String) : Utbetalingsoppdrag =
+    private fun fraInputDataTilUtbetalingsoppdrag(inputData : String) : Utbetalingsoppdrag =
         objectMapper.readValue(inputData)
 
-    fun fraMeldingTilOppdrag(melding : String) : Oppdrag =
+    private fun fraMeldingTilOppdrag(melding : String) : Oppdrag =
             jaxb.tilOppdrag(melding)
 
-    fun opprettTotalData() : Totaldata {
+    private fun opprettTotalData() : Totaldata {
         val totalBeløp = oppdragsliste.map { getSatsBeløp(it) }.sum()
-        return objectFactory.createTotaldata().apply {
+        return Totaldata().apply {
             this.totalAntall = oppdragsliste.size
             this.totalBelop = BigDecimal.valueOf(totalBeløp)
             this.fortegn = getFortegn(totalBeløp)
         }
     }
 
-    fun opprettPeriodeData(): Periodedata {
-        return objectFactory.createPeriodedata().apply {
+    private fun opprettPeriodeData(): Periodedata {
+        return Periodedata().apply {
             this.datoAvstemtFom = formaterTilPeriodedataFormat(getLavesteAvstemmingstidspunkt().format(tidspunktFormatter))
             this.datoAvstemtTom = formaterTilPeriodedataFormat(getHøyesteAvstemmingstidspunkt().format(tidspunktFormatter))
         }
     }
 
-    fun opprettGrunnlagsData(): Grunnlagsdata {
+    private fun opprettGrunnlagsData(): Grunnlagsdata {
         var godkjentAntall = 0
         var godkjentBelop = 0L
         var varselAntall = 0
@@ -144,24 +143,26 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         var avvistBelop = 0L
         var manglerAntall = 0
         var manglerBelop = 0L
+
         for (oppdrag in oppdragsliste) {
             val satsbeløp = getSatsBeløp(oppdrag)
-            if (OppdragProtokollStatus.LAGT_PÅ_KØ == oppdrag.status) {
-                manglerBelop += satsbeløp
-                manglerAntall++
-            } else if (OppdragProtokollStatus.KVITTERT_OK == oppdrag.status) {
-                godkjentBelop += satsbeløp
-                godkjentAntall++
-            } else if (OppdragProtokollStatus.KVITTERT_MED_MANGLER == oppdrag.status) {
-                varselBelop += satsbeløp
-                varselAntall++
-            } else {
-                avvistBelop += satsbeløp
-                avvistAntall++
+            when (oppdrag.status) {
+                OppdragProtokollStatus.LAGT_PÅ_KØ -> {
+                    manglerBelop += satsbeløp
+                    manglerAntall++ }
+                OppdragProtokollStatus.KVITTERT_OK -> {
+                    godkjentBelop += satsbeløp
+                    godkjentAntall++ }
+                OppdragProtokollStatus.KVITTERT_MED_MANGLER -> {
+                    varselBelop += satsbeløp
+                    varselAntall++ }
+                else -> {
+                    avvistBelop += satsbeløp
+                    avvistAntall++ }
             }
         }
 
-        return objectFactory.createGrunnlagsdata().apply {
+        return Grunnlagsdata().apply {
             this.godkjentAntall = godkjentAntall
             this.godkjentBelop = BigDecimal.valueOf(godkjentBelop)
             this.godkjentFortegn = getFortegn(godkjentBelop)
@@ -180,25 +181,25 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         }
     }
 
-    fun getSatsBeløp(oppdrag: OppdragProtokoll) : Long =
+    private fun getSatsBeløp(oppdrag: OppdragProtokoll) : Long =
             fraInputDataTilUtbetalingsoppdrag(oppdrag.inputData).utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
 
-    fun getFortegn(satsbeløp: Long): Fortegn {
+    private fun getFortegn(satsbeløp: Long): Fortegn {
         return if (satsbeløp >= 0) Fortegn.T else Fortegn.F
     }
 
-    fun getHøyesteAvstemmingstidspunkt(): LocalDateTime {
+    private fun getHøyesteAvstemmingstidspunkt(): LocalDateTime {
         return sortertAvstemmingstidspunkt().first()
     }
 
-    fun getLavesteAvstemmingstidspunkt(): LocalDateTime {
+    private fun getLavesteAvstemmingstidspunkt(): LocalDateTime {
         return sortertAvstemmingstidspunkt().last()
     }
 
-    fun sortertAvstemmingstidspunkt() =
+    private fun sortertAvstemmingstidspunkt() =
             oppdragsliste.map(OppdragProtokoll::avstemmingTidspunkt).sortedDescending()
 
-    fun formaterTilPeriodedataFormat(stringTimestamp: String): String =
+    private fun formaterTilPeriodedataFormat(stringTimestamp: String): String =
             LocalDateTime.parse(stringTimestamp, tidspunktFormatter)
                     .format(DateTimeFormatter.ofPattern("yyyyMMddHH"))
 

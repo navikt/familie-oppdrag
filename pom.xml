@@ -366,7 +366,7 @@
                                     <xsd>${basedir}/src/main/resources/xsd/oppdragskjema-v1.xsd</xsd>
                                 </xsdOption>
                                 <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/grensesnittavstemmingskjema-v1.xsd</xsd>
+                                    <xsd>${basedir}/src/main/resources/xsd/avstemmingskjema-v1.xsd</xsd>
                                 </xsdOption>
                             </xsdOptions>
                         </configuration>
