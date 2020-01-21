@@ -7,7 +7,7 @@
     <oppdrag-110>
         <kodeAksjon>1</kodeAksjon>
         <kodeEndring>NY</kodeEndring>
-        <kodeFagomraade>IT05</kodeFagomraade>
+        <kodeFagomraade>BA</kodeFagomraade>
         <fagsystemId>123456786</fagsystemId>
         <utbetFrekvens>MND</utbetFrekvens>
         <oppdragGjelderId>12345678911</oppdragGjelderId>
@@ -27,7 +27,7 @@
             <kodeEndringLinje>NY</kodeEndringLinje>
             <vedtakId>2019-12-16</vedtakId>
             <delytelseId>123456786</delytelseId>
-            <kodeKlassifik>BAOROSMS</kodeKlassifik>
+            <kodeKlassifik>BATR</kodeKlassifik>
             <datoVedtakFom>2019-12-20+01:00</datoVedtakFom>
             <datoVedtakTom>2020-12-21+01:00</datoVedtakTom>
             <sats>1054</sats>
