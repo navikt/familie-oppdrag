@@ -1,6 +1,6 @@
 package no.nav.familie.oppdrag.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.domene.OppdragId
@@ -28,8 +28,8 @@ data class OppdragLager(val fagsystem: String,
                     fagsakId = utbetalingsoppdrag.saksnummer,
                     behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
-                    utbetalingsoppdrag = ObjectMapper().writeValueAsString(utbetalingsoppdrag),
-                    utgåendeOppdrag = ObjectMapper().writeValueAsString(oppdrag),
+                    utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
+                    utgåendeOppdrag = objectMapper.writeValueAsString(oppdrag),
                     kvitteringsmelding = null
             )
         }
