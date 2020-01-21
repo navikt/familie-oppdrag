@@ -26,11 +26,21 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
 
    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
    fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
-        val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-        val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+       return Result.runCatching {
+           val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
+           val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-        oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag)
-        return ResponseEntity.ok().body(Ressurs.Companion.success("Oppdrag sendt ok"))
+           oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag)
+       }.fold(
+               onFailure = {
+                   ResponseEntity
+                           .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                           .body(Ressurs.failure(errorMessage = "Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}"))
+               },
+               onSuccess = {
+                   ResponseEntity.ok(Ressurs.success("Oppdrag sendt OK"))
+               }
+       )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])
