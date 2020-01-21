@@ -11,11 +11,11 @@ internal class OppdragStatusTest {
     @Test
     fun skal_konvertere_status() {
 
-        assertEquals(OppdragStatus.KVITTERT_OK, lagOppdrag("00").protokollStatus)
-        assertEquals(OppdragStatus.KVITTERT_MED_MANGLER, lagOppdrag("04").protokollStatus)
-        assertEquals(OppdragStatus.KVITTERT_FUNKSJONELL_FEIL, lagOppdrag("08").protokollStatus)
-        assertEquals(OppdragStatus.KVITTERT_TEKNISK_FEIL, lagOppdrag("12").protokollStatus)
-        assertEquals(OppdragStatus.KVITTERT_UKJENT, lagOppdrag("Ukjent").protokollStatus)
+        assertEquals(OppdragStatus.KVITTERT_OK, lagOppdrag("00").oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_MED_MANGLER, lagOppdrag("04").oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_FUNKSJONELL_FEIL, lagOppdrag("08").oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_TEKNISK_FEIL, lagOppdrag("12").oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_UKJENT, lagOppdrag("Ukjent").oppdragStatus)
     }
 
     private fun lagOppdrag(alvorlighetsgrad: String) : Oppdrag {

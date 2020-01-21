@@ -4,7 +4,7 @@ import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.repository.OppdragStatus
-import no.nav.familie.oppdrag.repository.protokollStatus
+import no.nav.familie.oppdrag.repository.oppdragStatus
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
@@ -43,11 +43,11 @@ class OppdragMottaker(
             // TODO: Oppdraget har en status vi ikke venter. Det er GANSKE så feil
             LOG.warn("Oppdraget tilknyttet mottatt kvittering har uventet status i databasen. Oppdraget er: ${oppdragId}. " +
                     "Status i databasen er ${sendteOppdrag.status}. " +
-                    "Lagrer likevel oppdatert oppdrag i databasen med ny status ${kvittering.protokollStatus}")
-            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.protokollStatus)
+                    "Lagrer likevel oppdatert oppdrag i databasen med ny status ${kvittering.oppdragStatus}")
+            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.oppdragStatus)
         } else  {
-            LOG.debug("Lagrer oppdatert oppdrag ${oppdragId} i databasen med ny status ${kvittering.protokollStatus}")
-            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.protokollStatus)
+            LOG.debug("Lagrer oppdatert oppdrag ${oppdragId} i databasen med ny status ${kvittering.oppdragStatus}")
+            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.oppdragStatus)
         }
     }
 
