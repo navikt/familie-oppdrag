@@ -83,6 +83,7 @@ class OppdragLagerRowMapper : RowMapper<OppdragLager> {
                 resultSet.getString(1),
                 OppdragStatus.valueOf(resultSet.getString(2)),
                 resultSet.getTimestamp(8).toLocalDateTime(),
-                resultSet.getTimestamp(3).toLocalDateTime())
+                resultSet.getTimestamp(3).toLocalDateTime(),
+                resultSet.getString(10))
     }
 }

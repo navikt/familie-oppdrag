@@ -5,6 +5,7 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
+import no.trygdeetaten.skjema.oppdrag.Mmel
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.springframework.data.relational.core.mapping.Column
 import java.time.LocalDateTime
@@ -17,7 +18,8 @@ data class OppdragLager(val fagsystem: String,
                         val melding: String,
                         val status: OppdragStatus = OppdragStatus.LAGT_PÅ_KØ,
                         @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
-                        @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()) {
+                        @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
+                        @Column val kvitteringsmelding: String?) {
 
     companion object {
         fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag): OppdragLager {
@@ -28,7 +30,8 @@ data class OppdragLager(val fagsystem: String,
                     behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
                     inputData = ObjectMapper().writeValueAsString(utbetalingsoppdrag),
-                    melding = ObjectMapper().writeValueAsString(oppdrag)
+                    melding = ObjectMapper().writeValueAsString(oppdrag),
+                    kvitteringsmelding = null
             )
         }
     }
@@ -38,7 +41,7 @@ data class OppdragLager(val fagsystem: String,
 val Utbetalingsoppdrag.somOppdragLager: OppdragLager
     get() {
         val tilOppdrag110 = OppdragMapper().tilOppdrag110(this)
-        val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110);
+        val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110)
         return OppdragLager.lagFraOppdrag(this, oppdrag)
     }
 

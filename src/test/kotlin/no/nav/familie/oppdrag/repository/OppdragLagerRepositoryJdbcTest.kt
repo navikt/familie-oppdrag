@@ -1,9 +1,12 @@
 package no.nav.familie.oppdrag.repository
 
 
+import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
+import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
@@ -57,6 +60,27 @@ internal class OppdragLagerRepositoryJdbcTest {
         val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(hentetOppdrag.id)
         assertEquals(OppdragStatus.KVITTERT_OK, hentetOppdatertOppdrag.status)
 
+    }
+
+    @Test
+    fun skal_lagre_kvitteringsmelding() {
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+                .copy(status = OppdragStatus.LAGT_PÅ_KØ)
+
+        oppdragLagerRepository.opprettOppdrag(oppdragLager)
+        val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        val kvitteringsmelding = kvitteringsmelding()
+
+        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, kvitteringsmelding)
+
+        val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        assertEquals(objectMapper.writeValueAsString(kvitteringsmelding), hentetOppdatertOppdrag.kvitteringsmelding)
+    }
+
+    private fun kvitteringsmelding(): Mmel {
+        val kvitteringsmelding = Jaxb().tilOppdrag(this::class.java.getResourceAsStream("/kvittering-avvist.xml")
+                .bufferedReader().use { it.readText() })
+        return kvitteringsmelding.mmel
     }
 
 }

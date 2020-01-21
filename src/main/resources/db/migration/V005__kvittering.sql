@@ -8,7 +8,7 @@ ALTER TABLE oppdrag_lager
 
 ALTER TABLE oppdrag_lager
     ALTER COLUMN utbetalingsoppdrag TYPE json USING to_json(utbetalingsoppdrag),
-    ALTER COLUMN utgaaende_oppdrag TYPE json USING to_json(utbetalingsoppdrag);
+    ALTER COLUMN utgaaende_oppdrag TYPE json USING to_json(utgaaende_oppdrag);
 
 ALTER TABLE oppdrag_lager
     ADD COLUMN kvitteringsmelding json;
