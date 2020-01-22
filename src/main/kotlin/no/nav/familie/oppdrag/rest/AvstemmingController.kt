@@ -1,7 +1,6 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
 import no.nav.familie.oppdrag.service.AvstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -15,8 +14,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api")
 @ProtectedWithClaims(issuer = "azuread")
-class AvstemmingController (@Autowired val oppdragProtokollRepository: OppdragProtokollRepository,
-                            @Autowired val avstemmingService: AvstemmingService) {
+class AvstemmingController(@Autowired val avstemmingService: AvstemmingService) {
 
     @PostMapping(path = ["/grensesnittavstemming/{fagsystem}"])
     fun sendGrensesnittavstemming(@PathVariable("fagsystem") fagsystem: String,

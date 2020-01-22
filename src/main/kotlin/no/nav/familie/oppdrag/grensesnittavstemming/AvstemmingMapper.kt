@@ -4,8 +4,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.iverksetting.Jaxb
-import no.nav.familie.oppdrag.repository.OppdragProtokoll
-import no.nav.familie.oppdrag.repository.OppdragProtokollStatus
+import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.math.BigDecimal
@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
+class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
                        private val fagOmråde: String,
                        private val jaxb: Jaxb = Jaxb()) {
     private val ANTALL_DETALJER_PER_MELDING = 70
@@ -83,14 +83,14 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         return oppdragsliste.mapNotNull { oppdrag ->
             val detaljType = opprettDetaljType(oppdrag)
             if (detaljType != null) {
-                val utbetalingsoppdrag = fraInputDataTilUtbetalingsoppdrag(oppdrag.inputData)
+                val utbetalingsoppdrag = fraInputDataTilUtbetalingsoppdrag(oppdrag.utbetalingsoppdrag)
                 Detaljdata().apply {
                     this.detaljType = detaljType
                     this.offnr = utbetalingsoppdrag.aktoer
                     this.avleverendeTransaksjonNokkel = fagOmråde
                     this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
                     if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS)) {
-                        val kvitteringsmelding = fraMeldingTilOppdrag(oppdrag.melding) // TODO hente fra basen i stedet for når det er på plass
+                        val kvitteringsmelding = fraMeldingTilOppdrag(oppdrag.utgåendeOppdrag) // TODO hente fra basen i stedet for når det er på plass
                         this.meldingKode = kvitteringsmelding.mmel.kodeMelding
                         this.alvorlighetsgrad = kvitteringsmelding.mmel.alvorlighetsgrad
                         this.tekstMelding = kvitteringsmelding.mmel.beskrMelding
@@ -102,14 +102,14 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         }
     }
 
-    private fun opprettDetaljType(oppdrag : OppdragProtokoll) : DetaljType? =
+    private fun opprettDetaljType(oppdrag : OppdragLager) : DetaljType? =
             when (oppdrag.status) {
-                OppdragProtokollStatus.LAGT_PÅ_KØ -> DetaljType.MANG
-                OppdragProtokollStatus.KVITTERT_MED_MANGLER -> DetaljType.VARS
-                OppdragProtokollStatus.KVITTERT_FUNKSJONELL_FEIL -> DetaljType.AVVI
-                OppdragProtokollStatus.KVITTERT_TEKNISK_FEIL -> DetaljType.AVVI
-                OppdragProtokollStatus.KVITTERT_OK -> null
-                OppdragProtokollStatus.KVITTERT_UKJENT -> null
+                OppdragStatus.LAGT_PÅ_KØ -> DetaljType.MANG
+                OppdragStatus.KVITTERT_MED_MANGLER -> DetaljType.VARS
+                OppdragStatus.KVITTERT_FUNKSJONELL_FEIL -> DetaljType.AVVI
+                OppdragStatus.KVITTERT_TEKNISK_FEIL -> DetaljType.AVVI
+                OppdragStatus.KVITTERT_OK -> null
+                OppdragStatus.KVITTERT_UKJENT -> null
             }
 
     private fun fraInputDataTilUtbetalingsoppdrag(inputData : String) : Utbetalingsoppdrag =
@@ -147,13 +147,13 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         for (oppdrag in oppdragsliste) {
             val satsbeløp = getSatsBeløp(oppdrag)
             when (oppdrag.status) {
-                OppdragProtokollStatus.LAGT_PÅ_KØ -> {
+                OppdragStatus.LAGT_PÅ_KØ -> {
                     manglerBelop += satsbeløp
                     manglerAntall++ }
-                OppdragProtokollStatus.KVITTERT_OK -> {
+                OppdragStatus.KVITTERT_OK -> {
                     godkjentBelop += satsbeløp
                     godkjentAntall++ }
-                OppdragProtokollStatus.KVITTERT_MED_MANGLER -> {
+                OppdragStatus.KVITTERT_MED_MANGLER -> {
                     varselBelop += satsbeløp
                     varselAntall++ }
                 else -> {
@@ -181,8 +181,8 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
         }
     }
 
-    private fun getSatsBeløp(oppdrag: OppdragProtokoll) : Long =
-            fraInputDataTilUtbetalingsoppdrag(oppdrag.inputData).utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
+    private fun getSatsBeløp(oppdrag: OppdragLager) : Long =
+            fraInputDataTilUtbetalingsoppdrag(oppdrag.utbetalingsoppdrag).utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
 
     private fun getFortegn(satsbeløp: Long): Fortegn {
         return if (satsbeløp >= 0) Fortegn.T else Fortegn.F
@@ -197,7 +197,7 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragProtokoll>,
     }
 
     private fun sortertAvstemmingstidspunkt() =
-            oppdragsliste.map(OppdragProtokoll::avstemmingTidspunkt).sortedDescending()
+            oppdragsliste.map(OppdragLager::avstemmingTidspunkt).sortedDescending()
 
     private fun formaterTilPeriodedataFormat(stringTimestamp: String): String =
             LocalDateTime.parse(stringTimestamp, tidspunktFormatter)

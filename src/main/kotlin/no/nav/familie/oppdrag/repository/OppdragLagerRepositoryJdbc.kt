@@ -71,7 +71,7 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
     }
 
     override fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragLager> {
-        val hentStatement = "SELECT * FROM OPPDRAG_PROTOKOLL WHERE avstemming_tidspunkt >= ? AND avstemming_tidspunkt < ? AND fagsystem = ?"
+        val hentStatement = "SELECT * FROM oppdrag_lager WHERE avstemming_tidspunkt >= ? AND avstemming_tidspunkt < ? AND fagsystem = ?"
 
         return jdbcTemplate.query(hentStatement,
                 arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde),

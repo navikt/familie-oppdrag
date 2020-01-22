@@ -2,7 +2,7 @@ package no.nav.familie.oppdrag.service
 
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.grensesnittavstemming.AvstemmingMapper
-import no.nav.familie.oppdrag.repository.OppdragProtokollRepository
+import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -11,10 +11,10 @@ import java.time.LocalDateTime
 @Service
 class AvstemmingService(
         @Autowired private val avstemmingSender: AvstemmingSender,
-        @Autowired private val oppdragProtokollRepository: OppdragProtokollRepository) {
+        @Autowired private val oppdragLagerRepository: OppdragLagerRepository) {
 
     fun utførGrensesnittavstemming(fagsystem: String, fom: LocalDateTime, tom: LocalDateTime) {
-        val oppdragSomSkalAvstemmes = oppdragProtokollRepository.hentIverksettingerForGrensesnittavstemming(fom, tom, fagsystem)
+        val oppdragSomSkalAvstemmes = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fom, tom, fagsystem)
 
         val meldinger = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem).lagAvstemmingsmeldinger()
 

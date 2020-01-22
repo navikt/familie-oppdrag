@@ -3,7 +3,7 @@ package no.nav.familie.oppdrag.grensesnittavstemming
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
-import no.nav.familie.oppdrag.repository.OppdragProtokoll
+import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -25,8 +25,8 @@ class AvstemmingMapperTest {
 
     @Test
     fun testMappingTilGrensesnittavstemming() {
-        val oppdragProtokoll = lagOppdragProtokoll()
-        val mapper = AvstemmingMapper(listOf(oppdragProtokoll), fagområde)
+        val oppdragLager = lagOppdragProtokoll()
+        val mapper = AvstemmingMapper(listOf(oppdragLager), fagområde)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(3, meldinger.size)
         assertAksjon(AksjonType.START, meldinger.first().aksjon)
@@ -90,9 +90,9 @@ class AvstemmingMapperTest {
     }
 
 
-    fun lagOppdragProtokoll() : OppdragProtokoll {
+    fun lagOppdragProtokoll() : OppdragLager {
         val oppdrag = OppdragMapper().tilOppdrag(oppdrag110)
-        return OppdragProtokoll.lagFraOppdrag(utbetalingsoppdrag, oppdrag)
+        return OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag)
     }
 
     val utbetalingsperiode1 = Utbetalingsperiode(
