@@ -33,6 +33,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
            oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag)
        }.fold(
                onFailure = {
+                   LOG.error("Feil ved iverksetting av oppdrag:", it)
                    ResponseEntity
                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
                            .body(Ressurs.failure(errorMessage = "Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}"))
