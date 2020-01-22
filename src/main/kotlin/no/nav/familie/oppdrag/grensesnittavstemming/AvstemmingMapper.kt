@@ -7,7 +7,7 @@ import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
-import no.trygdeetaten.skjema.oppdrag.Oppdrag
+import no.trygdeetaten.skjema.oppdrag.Mmel
 import java.math.BigDecimal
 import java.nio.ByteBuffer
 import java.time.LocalDateTime
@@ -89,11 +89,11 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
                     this.offnr = utbetalingsoppdrag.aktoer
                     this.avleverendeTransaksjonNokkel = fagOmråde
                     this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
-                    if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS)) {
-                        val kvitteringsmelding = fraMeldingTilOppdrag(oppdrag.utgåendeOppdrag) // TODO hente fra basen i stedet for når det er på plass
-                        this.meldingKode = kvitteringsmelding.mmel.kodeMelding
-                        this.alvorlighetsgrad = kvitteringsmelding.mmel.alvorlighetsgrad
-                        this.tekstMelding = kvitteringsmelding.mmel.beskrMelding
+                    if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS) && oppdrag.kvitteringsmelding != null) {
+                        val kvitteringsmelding = fraKvitteringTilKvitteringsmelding(oppdrag.kvitteringsmelding)
+                        this.meldingKode = kvitteringsmelding.kodeMelding
+                        this.alvorlighetsgrad = kvitteringsmelding.alvorlighetsgrad
+                        this.tekstMelding = kvitteringsmelding.beskrMelding
                     }
                 }
             } else {
@@ -115,8 +115,8 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
     private fun fraInputDataTilUtbetalingsoppdrag(inputData : String) : Utbetalingsoppdrag =
         objectMapper.readValue(inputData)
 
-    private fun fraMeldingTilOppdrag(melding : String) : Oppdrag =
-            jaxb.tilOppdrag(melding)
+    private fun fraKvitteringTilKvitteringsmelding(kvittering : String) : Mmel =
+            objectMapper.readValue(kvittering)
 
     private fun opprettTotalData() : Totaldata {
         val totalBeløp = oppdragsliste.map { getSatsBeløp(it) }.sum()
