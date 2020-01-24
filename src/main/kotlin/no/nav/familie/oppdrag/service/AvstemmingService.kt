@@ -15,17 +15,16 @@ class AvstemmingService(
 
     fun utførGrensesnittavstemming(fagsystem: String, fom: LocalDateTime, tom: LocalDateTime) {
         val oppdragSomSkalAvstemmes = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fom, tom, fagsystem)
+        val avstemmingMapper = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem)
+        val meldinger = avstemmingMapper.lagAvstemmingsmeldinger()
 
-        val meldinger = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem).lagAvstemmingsmeldinger()
-
-        LOG.debug("Utfører grensesnittavstemming for ${meldinger.size} antall meldinger.")
+        LOG.info("Utfører grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}, ${meldinger.size} antall meldinger.")
 
         meldinger.forEach {
             avstemmingSender.sendGrensesnittAvstemming(it)
         }
 
-        // lagre i basen?
-        // oppdatere status til avstemt?
+        LOG.info("Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}")
     }
 
     companion object {

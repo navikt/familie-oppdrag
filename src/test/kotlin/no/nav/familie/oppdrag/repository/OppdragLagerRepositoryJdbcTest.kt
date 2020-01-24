@@ -1,10 +1,10 @@
 package no.nav.familie.oppdrag.repository
 
-
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -17,6 +17,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertFailsWith
 
 @ActiveProfiles("dev")
@@ -83,4 +85,26 @@ internal class OppdragLagerRepositoryJdbcTest {
         return kvitteringsmelding.mmel
     }
 
+    @Test
+    fun skal_kun_hente_ut_ett_BA_oppdrag_for_grensesnittavstemming() {
+        val startenPåDagen = LocalDateTime.now().withHour(0).withMinute(0)
+        val sluttenAvDagen = LocalDateTime.now().withHour(23).withMinute(59)
+
+        val avstemmingsTidspunktetSomSkalKjøres = LocalDateTime.now()
+
+        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
+        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1), "BA").somOppdragLager
+        val efOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), "EF").somOppdragLager
+
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
+        oppdragLagerRepository.opprettOppdrag(efOppdragLager)
+
+        val oppdrageneTilGrensesnittavstemming = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA")
+
+        assertEquals(1, oppdrageneTilGrensesnittavstemming.size)
+        assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
+        assertEquals(avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS")),
+                oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSS")))
+    }
 }

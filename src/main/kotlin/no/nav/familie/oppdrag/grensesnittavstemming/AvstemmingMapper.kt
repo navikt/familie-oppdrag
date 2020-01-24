@@ -3,7 +3,6 @@ package no.nav.familie.oppdrag.grensesnittavstemming
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
-import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
@@ -15,10 +14,10 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
-                       private val fagOmråde: String,
-                       private val jaxb: Jaxb = Jaxb()) {
+                       private val fagOmråde: String) {
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
+    val avstemmingId = encodeUUIDBase64(UUID.randomUUID())
 
     fun lagAvstemmingsmeldinger() : List<Avstemmingsdata> {
         if (oppdragsliste.isEmpty())
@@ -59,7 +58,7 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
             this.underkomponentKode = fagOmråde
             this.nokkelFom = getLavesteAvstemmingstidspunkt().format(tidspunktFormatter)
             this.nokkelTom = getHøyesteAvstemmingstidspunkt().format(tidspunktFormatter)
-            this.avleverendeAvstemmingId = encodeUUIDBase64(UUID.randomUUID())
+            this.avleverendeAvstemmingId = avstemmingId
             this.brukerId = fagOmråde
         }
     }

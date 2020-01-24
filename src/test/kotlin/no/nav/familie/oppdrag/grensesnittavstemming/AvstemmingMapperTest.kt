@@ -1,18 +1,16 @@
 package no.nav.familie.oppdrag.grensesnittavstemming
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
-import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
-import no.nav.familie.oppdrag.iverksetting.OppdragMapper
-import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 class AvstemmingMapperTest {
-    val idag = LocalDate.now()
     val fagområde = "BA"
     val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
@@ -25,22 +23,33 @@ class AvstemmingMapperTest {
 
     @Test
     fun testMappingTilGrensesnittavstemming() {
-        val oppdragLager = lagOppdragProtokoll()
+        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1).withHour(13), fagområde)
+        val oppdragLager = utbetalingsoppdrag.somOppdragLager
         val mapper = AvstemmingMapper(listOf(oppdragLager), fagområde)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(3, meldinger.size)
-        assertAksjon(AksjonType.START, meldinger.first().aksjon)
-        assertAksjon(AksjonType.DATA, meldinger[1].aksjon)
-        assertAksjon(AksjonType.AVSL, meldinger.last().aksjon)
+        assertAksjon(utbetalingsoppdrag, AksjonType.START, meldinger.first().aksjon)
+        assertAksjon(utbetalingsoppdrag, AksjonType.DATA, meldinger[1].aksjon)
+        assertAksjon(utbetalingsoppdrag, AksjonType.AVSL, meldinger.last().aksjon)
 
-        assertDetaljData(meldinger[1].detalj.first())
-
-        assertTotalData(meldinger[1].total)
-        assertPeriodeData(meldinger[1].periode)
-        assertGrunnlagsdata(meldinger[1].grunnlag)
+        assertDetaljData(utbetalingsoppdrag, meldinger[1].detalj.first())
+        assertTotalData(utbetalingsoppdrag, meldinger[1].total)
+        assertPeriodeData(utbetalingsoppdrag, meldinger[1].periode)
+        assertGrunnlagsdata(utbetalingsoppdrag, meldinger[1].grunnlag)
     }
 
-    fun assertAksjon(expected: AksjonType, actual: Aksjonsdata) {
+    @Test
+    fun testerAtFomOgTomBlirSattRiktigVedGrensesnittavstemming() {
+        val baOppdragLager1 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1).withHour(13), fagområde).somOppdragLager
+        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1).withHour(15), fagområde).somOppdragLager
+        val mapper = AvstemmingMapper(listOf(baOppdragLager1, baOppdragLager2), fagområde)
+        val meldinger = mapper.lagAvstemmingsmeldinger()
+        assertEquals(3, meldinger.size)
+        assertEquals(baOppdragLager1.avstemmingTidspunkt.format(tidspunktFormatter), meldinger.first().aksjon.nokkelFom)
+        assertEquals(baOppdragLager2.avstemmingTidspunkt.format(tidspunktFormatter), meldinger.first().aksjon.nokkelTom)
+    }
+
+    fun assertAksjon(utbetalingsoppdrag: Utbetalingsoppdrag, expected: AksjonType, actual: Aksjonsdata) {
         assertEquals(expected, actual.aksjonType)
         assertEquals(KildeType.AVLEV, actual.kildeType)
         assertEquals(AvstemmingType.GRSN, actual.avstemmingType)
@@ -52,7 +61,7 @@ class AvstemmingMapperTest {
         assertEquals(fagområde, actual.brukerId)
     }
 
-    fun assertDetaljData(actual: Detaljdata) {
+    fun assertDetaljData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Detaljdata) {
         assertEquals(DetaljType.MANG, actual.detaljType)
         assertEquals(utbetalingsoppdrag.aktoer, actual.offnr)
         assertEquals(fagområde, actual.avleverendeTransaksjonNokkel)
@@ -62,22 +71,22 @@ class AvstemmingMapperTest {
         assertEquals(null, actual.tekstMelding)
     }
 
-    fun assertTotalData(actual: Totaldata) {
+    fun assertTotalData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Totaldata) {
         assertEquals(1, actual.totalAntall)
         assertEquals(utbetalingsoppdrag.utbetalingsperiode.first().sats, actual.totalBelop)
         assertEquals(Fortegn.T, actual.fortegn)
     }
 
-    fun assertPeriodeData(actual: Periodedata) {
+    fun assertPeriodeData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Periodedata) {
         assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
                 actual.datoAvstemtFom)
         assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
                 actual.datoAvstemtTom)
     }
 
-    fun assertGrunnlagsdata(actual: Grunnlagsdata) {
+    fun assertGrunnlagsdata(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Grunnlagsdata) {
         assertEquals(1, actual.manglerAntall)
-        assertEquals(utbetalingsperiode1.sats, actual.manglerBelop)
+        assertEquals(utbetalingsoppdrag.utbetalingsperiode.first().sats, actual.manglerBelop)
         assertEquals(Fortegn.T, actual.manglerFortegn)
 
         assertEquals(0, actual.godkjentAntall)
@@ -88,35 +97,5 @@ class AvstemmingMapperTest {
         assertEquals(BigDecimal.ZERO, actual.avvistBelop)
         assertEquals(Fortegn.T, actual.avvistFortegn)
     }
-
-
-    fun lagOppdragProtokoll() : OppdragLager {
-        val oppdrag = OppdragMapper().tilOppdrag(oppdrag110)
-        return OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag)
-    }
-
-    val utbetalingsperiode1 = Utbetalingsperiode(
-            erEndringPåEksisterendePeriode = false,
-            opphør = null,
-            datoForVedtak = idag,
-            klassifisering = "BATR",
-            vedtakdatoFom = idag,
-            vedtakdatoTom = idag.plusYears(6),
-            sats = BigDecimal.valueOf(1354L),
-            satsType = Utbetalingsperiode.SatsType.MND,
-            utbetalesTil = "12345678911",
-            behandlingId = 987654321L
-    )
-
-    val utbetalingsoppdrag = Utbetalingsoppdrag(
-            kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-            fagSystem = "BA",
-            saksnummer = "12345678",
-            aktoer = "12345678911",
-            saksbehandlerId = "Z992991",
-            utbetalingsperiode = listOf(utbetalingsperiode1)
-    )
-
-    val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
 
 }
