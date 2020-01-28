@@ -20,10 +20,18 @@ class AvstemmingSenderMQ(val jmsTemplateAvstemming: JmsTemplate,
 
         val avstemmingXml = JaxbAvstemmingsdata.tilXml(avstemmingsdata)
         try {
-            jmsTemplateAvstemming.send { session ->
+/*            jmsTemplateAvstemming.send { session ->
+                session.createProducer(
+                        MQQueue(jmsTemplateAvstemming.defaultDestinationName).apply {
+                            targetClient = WMQConstants.WMQ_CLIENT_NONJMS_MQ
+                        })
                 val msg = session.createTextMessage(avstemmingXml)
                 msg
-            }
+            }*/
+            jmsTemplateAvstemming.convertAndSend(
+                    "queue:///${jmsTemplateAvstemming.defaultDestinationName}?targetClient=1",
+                    avstemmingXml
+            )
             LOG.info("Sendt Avstemming-XML på kø ${jmsTemplateAvstemming.defaultDestinationName} til OS")
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende Avstemming til OS. Feil: ", e)
