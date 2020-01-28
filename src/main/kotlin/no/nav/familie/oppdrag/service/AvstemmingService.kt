@@ -33,14 +33,18 @@ class AvstemmingService(
 
         LOG.info("Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}")
 
-        oppdaterMetrikker(meldinger[1].grunnlag)
+        oppdaterMetrikker(fagsystem, meldinger[1].grunnlag)
     }
 
-    fun oppdaterMetrikker(grunnlag: Grunnlagsdata) {
-        Metrics.counter("grensesnittavstemming","status", Status.GODKJENT.status, "beskrivelse", Status.GODKJENT.beskrivelse).increment(grunnlag.godkjentAntall.toDouble())
-        Metrics.counter("grensesnittavstemming", "avvist", Status.AVVIST.status, "beskrivelse", Status.AVVIST.beskrivelse).increment(grunnlag.avvistAntall.toDouble())
-        Metrics.counter("grensesnittavstemming", "mangler", Status.MANGLER.status, "beskrivelse", Status.MANGLER.beskrivelse).increment(grunnlag.manglerAntall.toDouble())
-        Metrics.counter("grensesnittavstemming", "varsel", Status.VARSEL.status, "beskrivelse", Status.VARSEL.beskrivelse).increment(grunnlag.varselAntall.toDouble())
+    fun oppdaterMetrikker(fagsystem: String, grunnlag: Grunnlagsdata) {
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "status", Status.GODKJENT.status,
+                "beskrivelse", Status.GODKJENT.beskrivelse).increment(grunnlag.godkjentAntall.toDouble())
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "avvist", Status.AVVIST.status,
+                "beskrivelse", Status.AVVIST.beskrivelse).increment(grunnlag.avvistAntall.toDouble())
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "mangler", Status.MANGLER.status,
+                "beskrivelse", Status.MANGLER.beskrivelse).increment(grunnlag.manglerAntall.toDouble())
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "varsel", Status.VARSEL.status,
+                "beskrivelse", Status.VARSEL.beskrivelse).increment(grunnlag.varselAntall.toDouble())
     }
 
     companion object {
