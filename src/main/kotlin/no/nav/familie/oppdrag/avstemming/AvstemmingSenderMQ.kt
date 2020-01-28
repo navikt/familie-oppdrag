@@ -20,14 +20,6 @@ class AvstemmingSenderMQ(val jmsTemplateAvstemming: JmsTemplate,
 
         val avstemmingXml = JaxbAvstemmingsdata.tilXml(avstemmingsdata)
         try {
-/*            jmsTemplateAvstemming.send { session ->
-                session.createProducer(
-                        MQQueue(jmsTemplateAvstemming.defaultDestinationName).apply {
-                            targetClient = WMQConstants.WMQ_CLIENT_NONJMS_MQ
-                        })
-                val msg = session.createTextMessage(avstemmingXml)
-                msg
-            }*/
             jmsTemplateAvstemming.convertAndSend(
                     "queue:///${jmsTemplateAvstemming.defaultDestinationName}?targetClient=1",
                     avstemmingXml
