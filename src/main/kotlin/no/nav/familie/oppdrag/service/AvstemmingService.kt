@@ -17,7 +17,7 @@ class AvstemmingService(
 
     fun utførGrensesnittavstemming(fagsystem: String, fom: LocalDateTime, tom: LocalDateTime) {
         val oppdragSomSkalAvstemmes = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fom, tom, fagsystem)
-        val avstemmingMapper = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem)
+        val avstemmingMapper = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem, fom, tom)
         val meldinger = avstemmingMapper.lagAvstemmingsmeldinger()
 
         if (meldinger.isEmpty()) {
