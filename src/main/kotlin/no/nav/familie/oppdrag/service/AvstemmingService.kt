@@ -39,11 +39,11 @@ class AvstemmingService(
     fun oppdaterMetrikker(fagsystem: String, grunnlag: Grunnlagsdata) {
         Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "status", Status.GODKJENT.status,
                 "beskrivelse", Status.GODKJENT.beskrivelse).increment(grunnlag.godkjentAntall.toDouble())
-        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "avvist", Status.AVVIST.status,
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "status", Status.AVVIST.status,
                 "beskrivelse", Status.AVVIST.beskrivelse).increment(grunnlag.avvistAntall.toDouble())
-        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "mangler", Status.MANGLER.status,
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "status", Status.MANGLER.status,
                 "beskrivelse", Status.MANGLER.beskrivelse).increment(grunnlag.manglerAntall.toDouble())
-        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "varsel", Status.VARSEL.status,
+        Metrics.counter("familie.oppdrag.grensesnittavstemming","fagsystem", fagsystem, "status", Status.VARSEL.status,
                 "beskrivelse", Status.VARSEL.beskrivelse).increment(grunnlag.varselAntall.toDouble())
     }
 
