@@ -10,7 +10,6 @@ import no.trygdeetaten.skjema.oppdrag.Mmel
 import java.math.BigDecimal
 import java.nio.ByteBuffer
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -59,8 +58,8 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
             this.avleverendeKomponentKode = fagOmråde
             this.mottakendeKomponentKode = SystemKode.OPPDRAGSSYSTEMET.kode
             this.underkomponentKode = fagOmråde
-            this.nokkelFom = fom.toLocalDate().atStartOfDay().format(tidspunktFormatter)
-            this.nokkelTom = tom.toLocalDate().atTime(LocalTime.MAX).format(tidspunktFormatter)
+            this.nokkelFom = fom.format(tidspunktFormatter)
+            this.nokkelTom = tom.format(tidspunktFormatter)
             this.avleverendeAvstemmingId = avstemmingId
             this.brukerId = fagOmråde
         }
