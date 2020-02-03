@@ -1,7 +1,7 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.oppdrag.service.AvstemmingService
+import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api")
 @ProtectedWithClaims(issuer = "azuread")
-class AvstemmingController(@Autowired val avstemmingService: AvstemmingService) {
+class AvstemmingController(@Autowired val grensesnittavstemmingService: GrensesnittavstemmingService) {
 
     @PostMapping(path = ["/grensesnittavstemming/{fagsystem}"])
     fun sendGrensesnittavstemming(@PathVariable("fagsystem") fagsystem: String,
@@ -23,7 +23,7 @@ class AvstemmingController(@Autowired val avstemmingService: AvstemmingService) 
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Grensesnittavstemming: Kjører for $fagsystem-oppdrag for $fom til $tom")
 
-        return Result.runCatching {  avstemmingService.utførGrensesnittavstemming(fagsystem, fom, tom) }
+        return Result.runCatching {  grensesnittavstemmingService.utførGrensesnittavstemming(fagsystem, fom, tom) }
                 .fold(
                         onFailure = {
                             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

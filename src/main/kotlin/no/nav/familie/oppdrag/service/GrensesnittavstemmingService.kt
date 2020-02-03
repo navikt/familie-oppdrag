@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class AvstemmingService(
+class GrensesnittavstemmingService(
         @Autowired private val avstemmingSender: AvstemmingSender,
         @Autowired private val oppdragLagerRepository: OppdragLagerRepository) {
 
@@ -48,7 +48,7 @@ class AvstemmingService(
     }
 
     companion object {
-        val LOG = LoggerFactory.getLogger(AvstemmingService::class.java)
+        val LOG = LoggerFactory.getLogger(GrensesnittavstemmingService::class.java)
     }
 
 }
