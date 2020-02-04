@@ -1,6 +1,144 @@
 package no.nav.familie.oppdrag.konsistensavstemming
 
-class KonsistensavstemmingMapper {
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
+import no.nav.familie.oppdrag.iverksetting.OppdragSkjemaConstants
+import no.nav.familie.oppdrag.iverksetting.SatsTypeKode
+import no.nav.familie.oppdrag.iverksetting.UtbetalingsfrekvensKode
+import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.*
+import java.math.BigDecimal
+import java.nio.ByteBuffer
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
+class KonsistensavstemmingMapper(private val fagsystem: String,
+                                 private val utbetalingsoppdrag: List<Utbetalingsoppdrag>,
+                                 private val avstemmingsDato: LocalDateTime) {
+    private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
+    private val datoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val avstemmingId = encodeUUIDBase64(UUID.randomUUID())
+    var totalBeløp = 0L
+
+    fun lagAvstemmingsmeldinger() : List<Konsistensavstemmingsdata>  {
+        return (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagSluttmelding()))
+    }
+
+    private fun lagStartmelding() = lagAksjonsmelding(KonsistensavstemmingConstants.START)
+
+    private fun lagSluttmelding() = lagAksjonsmelding(KonsistensavstemmingConstants.AVSLUTT)
+
+    private fun lagDatameldinger(): List<Konsistensavstemmingsdata> {
+        var totalantall = utbetalingsoppdrag.size
+        val dataListe: MutableList<Konsistensavstemmingsdata> = arrayListOf()
+
+        for (utbetalingsoppdrag in utbetalingsoppdrag) {
+            val konsistensavstemmingsdata = lagAksjonsmelding(KonsistensavstemmingConstants.DATA)
+            konsistensavstemmingsdata.apply {
+                oppdragsdataListe.add(lagOppdragsdata(utbetalingsoppdrag))
+
+            }
+            dataListe.add(konsistensavstemmingsdata)
+        }
+        // legger til totaldata på slutten
+        dataListe.add(lagTotaldata(totalantall))
+        return dataListe
+    }
+
+    private fun lagOppdragsdata(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdragsdata {
+        return Oppdragsdata().apply {
+            fagomradeKode = utbetalingsoppdrag.fagSystem
+            fagsystemId = utbetalingsoppdrag.saksnummer
+            utbetalingsfrekvens = UtbetalingsfrekvensKode.MÅNEDLIG.kode
+            oppdragGjelderId = utbetalingsoppdrag.aktoer
+            oppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.format(datoFormatter)
+            saksbehandlerId = utbetalingsoppdrag.saksbehandlerId
+            oppdragsenhetListe.add(lagEnhet())
+            utbetalingsoppdrag.utbetalingsperiode.mapIndexed { index, periode ->
+                oppdragslinjeListe.add(lagOppdragsLinjeListe(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag,
+                        teller = (index+100)))
+            }
+        }
+    }
+
+    private fun lagOppdragsLinjeListe(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag, teller: Int): Oppdragslinje {
+        akkumulerTotalbeløp(utbetalingsperiode)
+        return Oppdragslinje().apply {
+            vedtakId = utbetalingsperiode.datoForVedtak.format(datoFormatter)
+            delytelseId = utbetalingsoppdrag.saksnummer+teller.toString()
+            klassifikasjonKode = utbetalingsperiode.klassifisering
+            // klassifkasjonFom =
+            vedtakPeriode = Periode().apply {
+                fom = utbetalingsperiode.datoForVedtak.format(datoFormatter) // TODO undersøke denne
+            }
+            sats = utbetalingsperiode.sats
+            satstypeKode = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
+            fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG.value()
+            // skyldnerId =
+            // kravhaverId =
+            saksbehandlerId = utbetalingsoppdrag.saksbehandlerId
+            utbetalesTilId = utbetalingsperiode.utbetalesTil
+            // soknadsType =
+            // attestantListe =
+            // valutaListe =
+        }
+    }
+
+    private fun akkumulerTotalbeløp(utbetalingsperiode: Utbetalingsperiode) {
+        // utlede om utbetalingsperioden er aktuell for avstemmingsdato
+        if (utbetalingsperiode.vedtakdatoFom.isBefore(avstemmingsDato.toLocalDate()) && utbetalingsperiode.vedtakdatoTom.isAfter(avstemmingsDato.toLocalDate())) {
+            totalBeløp+=utbetalingsperiode.sats.toLong()
+        }
+    }
+
+    private fun lagEnhet(): Enhet {
+        return Enhet().apply {
+            enhetType = OppdragSkjemaConstants.ENHET_TYPE
+            enhet = OppdragSkjemaConstants.ENHET
+            enhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.format(datoFormatter)
+        }
+    }
+
+    private fun lagTotaldata(totalantall: Int): Konsistensavstemmingsdata {
+        val konsistensavstemmingsdata = lagAksjonsmelding(KonsistensavstemmingConstants.DATA)
+        konsistensavstemmingsdata.apply {
+            totaldata = Totaldata().apply {
+                totalAntall = totalantall.toBigInteger()
+                totalBelop = BigDecimal.valueOf(totalBeløp)
+                fortegn = getFortegn(totalBeløp)
+            }
+        }
+        return konsistensavstemmingsdata
+    }
+
+    private fun getFortegn(satsbeløp: Long): String {
+        return if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO) KonsistensavstemmingConstants.FORTEGN_T else KonsistensavstemmingConstants.FORTEGN_F
+    }
+
+    private fun lagAksjonsmelding(aksjontype: String): Konsistensavstemmingsdata =
+            Konsistensavstemmingsdata().apply {
+                aksjonsdata = opprettAksjonsdata(aksjontype)
+            }
+
+    private fun opprettAksjonsdata(aksjonstype: String): Aksjonsdata {
+        return Aksjonsdata().apply {
+            this.aksjonsType = aksjonstype
+            this.kildeType = KonsistensavstemmingConstants.KILDETYPE
+            this.avstemmingType = KonsistensavstemmingConstants.KONSISTENSAVSTEMMING
+            this.avleverendeKomponentKode = fagsystem
+            this.mottakendeKomponentKode = "OS" // TODO bruke felles
+            this.underkomponentKode = fagsystem
+            this.tidspunktAvstemmingTom = avstemmingsDato.format(tidspunktFormatter)
+            this.avleverendeAvstemmingId = avstemmingId
+            this.brukerId = fagsystem
+        }
+    }
+
+    private fun encodeUUIDBase64(uuid: UUID): String {
+        val bb = ByteBuffer.wrap(ByteArray(16))
+        bb.putLong(uuid.mostSignificantBits)
+        bb.putLong(uuid.leastSignificantBits)
+        return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
+    }
 
 }
