@@ -10,6 +10,5 @@ class KonsistensavstemmingConstants {
         const val KONSISTENSAVSTEMMING = "KONS"
         const val FORTEGN_T = "T"
         const val FORTEGN_F = "F"
-        const val OS = "OS"
     }
 }

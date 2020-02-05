@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.grensesnittavstemming
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.oppdrag.avstemming.SystemKode
 import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
@@ -11,13 +12,13 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
-class AvstemmingMapperTest {
+class GrensesnittavstemmingMapperTest {
     val fagområde = "BA"
     val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     @Test
     fun testMappingAvTomListe() {
-        val mapper = AvstemmingMapper(emptyList(), fagområde, LocalDateTime.now(), LocalDateTime.now())
+        val mapper = GrensesnittavstemmingMapper(emptyList(), fagområde, LocalDateTime.now(), LocalDateTime.now())
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(0, meldinger.size)
     }
@@ -29,7 +30,7 @@ class AvstemmingMapperTest {
         val avstemmingTom = avstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
         val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingstidspunkt, fagområde)
         val oppdragLager = utbetalingsoppdrag.somOppdragLager
-        val mapper = AvstemmingMapper(listOf(oppdragLager), fagområde, avstemmingFom, avstemmingTom)
+        val mapper = GrensesnittavstemmingMapper(listOf(oppdragLager), fagområde, avstemmingFom, avstemmingTom)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(3, meldinger.size)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.START, meldinger.first().aksjon)
@@ -50,7 +51,7 @@ class AvstemmingMapperTest {
         val avstemmingTom = andreAvstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
         val baOppdragLager1 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somOppdragLager
         val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somOppdragLager
-        val mapper = AvstemmingMapper(listOf(baOppdragLager1, baOppdragLager2), fagområde, avstemmingFom, avstemmingTom)
+        val mapper = GrensesnittavstemmingMapper(listOf(baOppdragLager1, baOppdragLager2), fagområde, avstemmingFom, avstemmingTom)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(3, meldinger.size)
         assertEquals(avstemmingFom.format(tidspunktFormatter), meldinger.first().aksjon.nokkelFom)

@@ -2,12 +2,13 @@ package no.nav.familie.oppdrag.konsistensavstemming
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
+import no.nav.familie.oppdrag.avstemming.AvstemmingMapper
+import no.nav.familie.oppdrag.avstemming.SystemKode
 import no.nav.familie.oppdrag.iverksetting.OppdragSkjemaConstants
 import no.nav.familie.oppdrag.iverksetting.SatsTypeKode
 import no.nav.familie.oppdrag.iverksetting.UtbetalingsfrekvensKode
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.*
 import java.math.BigDecimal
-import java.nio.ByteBuffer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -17,7 +18,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
                                  private val avstemmingsDato: LocalDateTime) {
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     private val datoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val avstemmingId = encodeUUIDBase64(UUID.randomUUID())
+    val avstemmingId = AvstemmingMapper().encodeUUIDBase64(UUID.randomUUID())
     var totalBeløp = 0L
 
     fun lagAvstemmingsmeldinger() : List<Konsistensavstemmingsdata>  {
@@ -130,19 +131,11 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             this.kildeType = KonsistensavstemmingConstants.KILDETYPE
             this.avstemmingType = KonsistensavstemmingConstants.KONSISTENSAVSTEMMING
             this.avleverendeKomponentKode = fagsystem
-            this.mottakendeKomponentKode = KonsistensavstemmingConstants.OS
+            this.mottakendeKomponentKode = SystemKode.OPPDRAGSSYSTEMET.kode
             this.underkomponentKode = fagsystem
             this.tidspunktAvstemmingTom = avstemmingsDato.format(tidspunktFormatter)
             this.avleverendeAvstemmingId = avstemmingId
             this.brukerId = fagsystem
         }
     }
-
-    private fun encodeUUIDBase64(uuid: UUID): String {
-        val bb = ByteBuffer.wrap(ByteArray(16))
-        bb.putLong(uuid.mostSignificantBits)
-        bb.putLong(uuid.leastSignificantBits)
-        return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
-    }
-
 }
