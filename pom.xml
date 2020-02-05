@@ -37,6 +37,7 @@
         <sonar.login>${SONAR_LOGIN}</sonar.login>
         <spring-cloud.version>2.2.0.RELEASE</spring-cloud.version>
         <testcontainers.version>1.12.1</testcontainers.version>
+        <tjenestespesifikasjoner.version>1.2020.01.30-14.36-cdf257baea96</tjenestespesifikasjoner.version>
 
     </properties>
 
@@ -182,6 +183,11 @@
             <groupId>no.nav.familie.kontrakter</groupId>
             <artifactId>felles</artifactId>
             <version>${kontrakter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>avstemming-v1-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
 
         <!-- Diverse -->
