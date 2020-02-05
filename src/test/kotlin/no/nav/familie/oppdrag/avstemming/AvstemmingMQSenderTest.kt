@@ -5,10 +5,13 @@ import com.ibm.msg.client.wmq.WMQConstants
 import io.mockk.called
 import io.mockk.spyk
 import io.mockk.verify
+import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
 import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingMapper
+import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.Konsistensavstemmingsdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Avstemmingsdata
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
@@ -70,9 +73,24 @@ class AvstemmingMQSenderTest {
         verify (exactly = 1) { jmsTemplate.convertAndSend(any<String>(), any<String>()) }
     }
 
+    @Test
+    fun skal_sende_grensesnittavstemming_når_påskrudd() {
+        val avstemmingSender = AvstemmingSenderMQ(jmsTemplate, "true")
+
+        avstemmingSender.sendGrensesnittAvstemming(lagTestGrensesnittavstemming()[0])
+
+        verify (exactly = 1) { jmsTemplate.convertAndSend(any<String>(), any<String>()) }
+    }
+
     private fun lagTestKonsistensavstemming(): List<Konsistensavstemmingsdata> {
         val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(IDAG, FAGOMRÅDE)
         val mapper = KonsistensavstemmingMapper(FAGOMRÅDE, listOf(utbetalingsoppdrag), IDAG)
+        return mapper.lagAvstemmingsmeldinger()
+    }
+
+    private fun lagTestGrensesnittavstemming(): List<Avstemmingsdata> {
+        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(IDAG, FAGOMRÅDE)
+        val mapper = GrensesnittavstemmingMapper(listOf(utbetalingsoppdrag.somOppdragLager), FAGOMRÅDE, IDAG.minusDays(1), IDAG)
         return mapper.lagAvstemmingsmeldinger()
     }
 }
