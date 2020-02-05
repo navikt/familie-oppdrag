@@ -67,20 +67,18 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             vedtakId = utbetalingsperiode.datoForVedtak.format(datoFormatter)
             delytelseId = utbetalingsoppdrag.saksnummer+teller.toString()
             klassifikasjonKode = utbetalingsperiode.klassifisering
-            // klassifkasjonFom =
             vedtakPeriode = Periode().apply {
-                fom = utbetalingsperiode.datoForVedtak.format(datoFormatter) // TODO undersøke denne
+                fom = utbetalingsperiode.vedtakdatoFom.format(datoFormatter) // TODO undersøke denne
+                tom = utbetalingsperiode.vedtakdatoTom.format(datoFormatter) // TODO undersøke denne
             }
             sats = utbetalingsperiode.sats
             satstypeKode = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
+            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN
             fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG.value()
-            // skyldnerId =
-            // kravhaverId =
             saksbehandlerId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
-            // soknadsType =
-            // attestantListe =
-            // valutaListe =
+            henvisning = utbetalingsperiode.behandlingId.toString()
+            attestantListe.add(lagAttestant(utbetalingsoppdrag))
         }
     }
 
@@ -88,6 +86,12 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
         // utlede om utbetalingsperioden er aktuell for avstemmingsdato
         if (utbetalingsperiode.vedtakdatoFom.isBefore(avstemmingsDato.toLocalDate()) && utbetalingsperiode.vedtakdatoTom.isAfter(avstemmingsDato.toLocalDate())) {
             totalBeløp+=utbetalingsperiode.sats.toLong()
+        }
+    }
+
+    private fun lagAttestant(utbetalingsoppdrag: Utbetalingsoppdrag): Attestant {
+        return Attestant().apply {
+            attestantId = utbetalingsoppdrag.saksbehandlerId
         }
     }
 
@@ -126,7 +130,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             this.kildeType = KonsistensavstemmingConstants.KILDETYPE
             this.avstemmingType = KonsistensavstemmingConstants.KONSISTENSAVSTEMMING
             this.avleverendeKomponentKode = fagsystem
-            this.mottakendeKomponentKode = "OS" // TODO bruke felles
+            this.mottakendeKomponentKode = KonsistensavstemmingConstants.OS
             this.underkomponentKode = fagsystem
             this.tidspunktAvstemmingTom = avstemmingsDato.format(tidspunktFormatter)
             this.avleverendeAvstemmingId = avstemmingId
