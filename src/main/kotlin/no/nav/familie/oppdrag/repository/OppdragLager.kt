@@ -4,6 +4,7 @@ import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.domene.OppdragId
+import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.springframework.data.relational.core.mapping.Column
@@ -29,7 +30,7 @@ data class OppdragLager(val fagsystem: String,
                     behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
                     utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
-                    utgåendeOppdrag = objectMapper.writeValueAsString(oppdrag),
+                    utgåendeOppdrag = Jaxb.tilXml(oppdrag),
                     kvitteringsmelding = null
             )
         }

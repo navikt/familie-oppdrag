@@ -80,7 +80,7 @@ internal class OppdragLagerRepositoryJdbcTest {
     }
 
     private fun kvitteringsmelding(): Mmel {
-        val kvitteringsmelding = Jaxb().tilOppdrag(this::class.java.getResourceAsStream("/kvittering-avvist.xml")
+        val kvitteringsmelding = Jaxb.tilOppdrag(this::class.java.getResourceAsStream("/kvittering-avvist.xml")
                 .bufferedReader().use { it.readText() })
         return kvitteringsmelding.mmel
     }

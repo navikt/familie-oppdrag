@@ -21,7 +21,7 @@ class OppdragSenderMQ(val jmsTemplateUtgående: JmsTemplate,
             throw UnsupportedOperationException("Kan ikke sende melding til oppdrag. Integrasjonen er skrudd av.")
         }
 
-        val oppdragXml = Jaxb().tilXml(oppdrag)
+        val oppdragXml = Jaxb.tilXml(oppdrag)
         try {
             jmsTemplateUtgående.send { session ->
                 val msg = session.createTextMessage(oppdragXml)

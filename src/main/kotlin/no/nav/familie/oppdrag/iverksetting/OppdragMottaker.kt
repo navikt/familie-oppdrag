@@ -52,7 +52,7 @@ class OppdragMottaker(
     }
 
     fun lesKvittering(svarFraOppdrag: String): Oppdrag {
-        val kvittering = Jaxb().tilOppdrag(svarFraOppdrag)
+        val kvittering = Jaxb.tilOppdrag(svarFraOppdrag)
         return kvittering
     }
 }
