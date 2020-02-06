@@ -5,7 +5,7 @@ import java.io.StringWriter
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 
-object JaxbAvstemmingsdata {
+object JaxbGrensesnittAvstemmingsdata {
 
     val jaxbContext = JAXBContext.newInstance(Avstemmingsdata::class.java)
     val marshaller = jaxbContext.createMarshaller().apply {
