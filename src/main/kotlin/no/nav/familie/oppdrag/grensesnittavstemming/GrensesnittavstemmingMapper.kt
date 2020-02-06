@@ -3,23 +3,24 @@ package no.nav.familie.oppdrag.grensesnittavstemming
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.oppdrag.avstemming.AvstemmingMapper
+import no.nav.familie.oppdrag.avstemming.SystemKode
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import java.math.BigDecimal
-import java.nio.ByteBuffer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
-                       private val fagOmråde: String,
-                       private val fom: LocalDateTime,
-                       private val tom: LocalDateTime) {
+class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
+                                  private val fagOmråde: String,
+                                  private val fom: LocalDateTime,
+                                  private val tom: LocalDateTime) {
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
-    val avstemmingId = encodeUUIDBase64(UUID.randomUUID())
+    val avstemmingId = AvstemmingMapper().encodeUUIDBase64(UUID.randomUUID())
 
     fun lagAvstemmingsmeldinger() : List<Avstemmingsdata> {
         if (oppdragsliste.isEmpty())
@@ -63,13 +64,6 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
             this.avleverendeAvstemmingId = avstemmingId
             this.brukerId = fagOmråde
         }
-    }
-
-    private fun encodeUUIDBase64(uuid: UUID): String {
-        val bb = ByteBuffer.wrap(ByteArray(16))
-        bb.putLong(uuid.mostSignificantBits)
-        bb.putLong(uuid.leastSignificantBits)
-        return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
     }
 
     private fun opprettAvstemmingsdataLister() : List<Avstemmingsdata> {
@@ -204,8 +198,4 @@ class AvstemmingMapper(private val oppdragsliste: List<OppdragLager>,
             LocalDateTime.parse(stringTimestamp, tidspunktFormatter)
                     .format(DateTimeFormatter.ofPattern("yyyyMMddHH"))
 
-}
-
-enum class SystemKode(val kode : String) {
-    OPPDRAGSSYSTEMET("OS")
 }
