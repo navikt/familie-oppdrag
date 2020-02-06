@@ -19,8 +19,7 @@ class GrensesnittavstemmingService(
 
     init {
         enumValues<Fagsystem>().forEach {
-            val metrikkerForFagsystem = opprettMetrikkerForFagsystem(it)
-            countere[it.name] = metrikkerForFagsystem
+            countere[it.name] = opprettMetrikkerForFagsystem(it)
         }
     }
 
@@ -91,7 +90,7 @@ enum class Status(val status: String, val beskrivelse: String) {
     VARSEL("varsel", "Antall oppdrag som har fått kvittering med mangler (alvorlighetsgrad 04).")
 }
 
-enum class Fagsystem() {
+enum class Fagsystem {
     BA,
     EF,
     KS
