@@ -21,14 +21,13 @@ class OppdragSenderMQ(val jmsTemplateUtgående: JmsTemplate,
             throw UnsupportedOperationException("Kan ikke sende melding til oppdrag. Integrasjonen er skrudd av.")
         }
 
-        val oppdragXml = Jaxb().tilXml(oppdrag)
+        val oppdragXml = Jaxb.tilXml(oppdrag)
         try {
             jmsTemplateUtgående.send { session ->
                 val msg = session.createTextMessage(oppdragXml)
                 msg.jmsReplyTo = MQQueue(kvitteringsKø)
                 msg
             }
-            LOG.info("Sendt Oppdrag110-XML over MQ til OS med data $oppdragXml")
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende Oppdrag til OS. Feil: ", e)
             throw e

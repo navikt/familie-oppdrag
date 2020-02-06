@@ -1,23 +1,22 @@
 package no.nav.familie.oppdrag.service
 
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Metrics
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
-import no.nav.familie.oppdrag.grensesnittavstemming.AvstemmingMapper
+import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class AvstemmingService(
-        @Autowired private val avstemmingSender: AvstemmingSender,
-        @Autowired private val oppdragLagerRepository: OppdragLagerRepository) {
+class GrensesnittavstemmingService(
+        private val avstemmingSender: AvstemmingSender,
+        private val oppdragLagerRepository: OppdragLagerRepository) {
 
     fun utførGrensesnittavstemming(fagsystem: String, fom: LocalDateTime, tom: LocalDateTime) {
         val oppdragSomSkalAvstemmes = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fom, tom, fagsystem)
-        val avstemmingMapper = AvstemmingMapper(oppdragSomSkalAvstemmes, fagsystem, fom, tom)
+        val avstemmingMapper = GrensesnittavstemmingMapper(oppdragSomSkalAvstemmes, fagsystem, fom, tom)
         val meldinger = avstemmingMapper.lagAvstemmingsmeldinger()
 
         if (meldinger.isEmpty()) {
@@ -48,7 +47,7 @@ class AvstemmingService(
     }
 
     companion object {
-        val LOG = LoggerFactory.getLogger(AvstemmingService::class.java)
+        val LOG = LoggerFactory.getLogger(GrensesnittavstemmingService::class.java)
     }
 
 }

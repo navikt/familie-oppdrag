@@ -8,7 +8,7 @@ import javax.xml.bind.Marshaller
 import javax.xml.stream.XMLInputFactory
 import javax.xml.transform.stream.StreamSource
 
-class Jaxb {
+object Jaxb {
 
     val jaxbContext = JAXBContext.newInstance(Oppdrag::class.java)
     val marshaller = jaxbContext.createMarshaller().apply {
