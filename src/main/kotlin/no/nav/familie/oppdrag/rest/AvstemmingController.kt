@@ -1,7 +1,9 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
+import no.nav.familie.oppdrag.service.KonsistensavstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +16,8 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api")
 @ProtectedWithClaims(issuer = "azuread")
-class AvstemmingController(@Autowired val grensesnittavstemmingService: GrensesnittavstemmingService) {
+class AvstemmingController(@Autowired val grensesnittavstemmingService: GrensesnittavstemmingService,
+                           @Autowired val konsistensavstemmingService: KonsistensavstemmingService) {
 
     @PostMapping(path = ["/grensesnittavstemming/{fagsystem}"])
     fun sendGrensesnittavstemming(@PathVariable("fagsystem") fagsystem: String,
@@ -33,6 +36,25 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
                             ResponseEntity.ok(Ressurs.Companion.success("Grensesnittavstemming sendt ok"))
                         }
 
+                )
+    }
+
+    @PostMapping(path = ["/konsistensavstemming/{fagsystem}"])
+    fun sendKonsistensavstemming(@PathVariable("fagsystem") fagsystem: String,
+                                 @RequestParam("utbetalingsoppdrag") utbetalingsoppdrag: List<Utbetalingsoppdrag>,
+                                 @RequestParam("avstemmingsdato") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) avstemmingsdato: LocalDateTime
+    ): ResponseEntity<Ressurs<String>> {
+        LOG.info("Konsistensavstemming: Kjører for $fagsystem-oppdrag for $avstemmingsdato med ${utbetalingsoppdrag.size} antall utbetalingsoppdrag")
+
+        return Result.runCatching { konsistensavstemmingService.utførKonsistensavstemming(fagsystem, utbetalingsoppdrag, avstemmingsdato) }
+                .fold(
+                        onFailure = {
+                            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                    .body(Ressurs.failure("Konsistensavstemming feilet", it))
+                        },
+                        onSuccess = {
+                            ResponseEntity.ok(Ressurs.Companion.success("Konsistensavstemming sendt ok"))
+                        }
                 )
     }
 
