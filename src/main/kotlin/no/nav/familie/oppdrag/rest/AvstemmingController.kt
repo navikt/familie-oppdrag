@@ -41,7 +41,7 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
 
     @PostMapping(path = ["/konsistensavstemming/{fagsystem}"])
     fun sendKonsistensavstemming(@PathVariable("fagsystem") fagsystem: String,
-                                 @RequestParam("utbetalingsoppdrag") utbetalingsoppdrag: List<Utbetalingsoppdrag>,
+                                 @RequestBody utbetalingsoppdrag: List<Utbetalingsoppdrag>,
                                  @RequestParam("avstemmingsdato") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) avstemmingsdato: LocalDateTime
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Konsistensavstemming: Kjører for $fagsystem-oppdrag for $avstemmingsdato med ${utbetalingsoppdrag.size} antall utbetalingsoppdrag")
