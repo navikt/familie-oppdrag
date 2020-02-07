@@ -20,6 +20,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
     private val datoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val avstemmingId = AvstemmingMapper().encodeUUIDBase64(UUID.randomUUID())
     var totalBeløp = 0L
+    var totalantall = 0
 
     fun lagAvstemmingsmeldinger() : List<Konsistensavstemmingsdata>  {
         return (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagSluttmelding()))
@@ -30,7 +31,6 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
     private fun lagSluttmelding() = lagAksjonsmelding(KonsistensavstemmingConstants.AVSLUTT)
 
     private fun lagDatameldinger(): List<Konsistensavstemmingsdata> {
-        var totalantall = utbetalingsoppdrag.size
         val dataListe: MutableList<Konsistensavstemmingsdata> = arrayListOf()
 
         for (utbetalingsoppdrag in utbetalingsoppdrag) {
@@ -42,7 +42,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             dataListe.add(konsistensavstemmingsdata)
         }
         // legger til totaldata på slutten
-        dataListe.add(lagTotaldata(totalantall))
+        dataListe.add(lagTotaldata())
         return dataListe
     }
 
@@ -69,8 +69,8 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             delytelseId = utbetalingsoppdrag.saksnummer+teller.toString()
             klassifikasjonKode = utbetalingsperiode.klassifisering
             vedtakPeriode = Periode().apply {
-                fom = utbetalingsperiode.vedtakdatoFom.format(datoFormatter) // TODO undersøke denne
-                tom = utbetalingsperiode.vedtakdatoTom.format(datoFormatter) // TODO undersøke denne
+                fom = utbetalingsperiode.vedtakdatoFom.format(datoFormatter)
+                tom = utbetalingsperiode.vedtakdatoTom.format(datoFormatter)
             }
             sats = utbetalingsperiode.sats
             satstypeKode = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
@@ -87,6 +87,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
         // utlede om utbetalingsperioden er aktuell for avstemmingsdato
         if (utbetalingsperiode.vedtakdatoFom.isBefore(avstemmingsDato.toLocalDate()) && utbetalingsperiode.vedtakdatoTom.isAfter(avstemmingsDato.toLocalDate())) {
             totalBeløp+=utbetalingsperiode.sats.toLong()
+            totalantall++
         }
     }
 
@@ -104,7 +105,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
         }
     }
 
-    private fun lagTotaldata(totalantall: Int): Konsistensavstemmingsdata {
+    private fun lagTotaldata(): Konsistensavstemmingsdata {
         val konsistensavstemmingsdata = lagAksjonsmelding(KonsistensavstemmingConstants.DATA)
         konsistensavstemmingsdata.apply {
             totaldata = Totaldata().apply {
