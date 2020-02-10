@@ -110,9 +110,9 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun skal_hente_ut_oppdrag_for_konsistensavstemming() {
-        val iDag = LocalDateTime.now()
-        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(iDag, "BA").somOppdragLager
-        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1), "BA").somOppdragLager
+        val forrigeMåned = LocalDateTime.now().minusMonths(1)
+        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA").somOppdragLager
+        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA").somOppdragLager
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
 
