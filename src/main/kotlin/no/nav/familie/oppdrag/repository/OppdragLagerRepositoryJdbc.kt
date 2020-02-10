@@ -1,7 +1,6 @@
 package no.nav.familie.oppdrag.repository
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.minidev.json.JSONObject
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.OppdragId
