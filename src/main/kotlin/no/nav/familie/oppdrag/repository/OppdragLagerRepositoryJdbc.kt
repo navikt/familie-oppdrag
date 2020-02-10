@@ -1,5 +1,7 @@
 package no.nav.familie.oppdrag.repository
 
+import com.fasterxml.jackson.module.kotlin.readValue
+import net.minidev.json.JSONObject
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.OppdragId
@@ -82,9 +84,11 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
     override fun hentUtbetalingsoppdrag(oppdragId: OppdragId): Utbetalingsoppdrag {
         val hentStatement = "SELECT utbetalingsoppdrag FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
 
-        return jdbcTemplate.queryForObject(hentStatement,
+        val jsonUtbetalingsoppdrag = jdbcTemplate.queryForObject(hentStatement,
                 arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
-                Utbetalingsoppdrag::class.java)
+                String::class.java)
+
+        return objectMapper.readValue(jsonUtbetalingsoppdrag)
     }
 
 }

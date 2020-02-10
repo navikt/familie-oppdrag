@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.repository
 
 import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
@@ -106,5 +107,20 @@ internal class OppdragLagerRepositoryJdbcTest {
         assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
         assertEquals(avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")),
                 oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")))
+    }
+
+    @Test
+    fun skal_hente_ut_oppdrag_for_konsistensavstemming() {
+        val iDag = LocalDateTime.now()
+        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(iDag, "BA").somOppdragLager
+        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1), "BA").somOppdragLager
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
+
+        val utbetalingsoppdrag = oppdragLagerRepository.hentUtbetalingsoppdrag(baOppdragLager.id)
+        val utbetalingsoppdrag2 = oppdragLagerRepository.hentUtbetalingsoppdrag(baOppdragLager2.id)
+
+        assertEquals(baOppdragLager.utbetalingsoppdrag, objectMapper.writeValueAsString(utbetalingsoppdrag))
+        assertEquals(baOppdragLager2.utbetalingsoppdrag, objectMapper.writeValueAsString(utbetalingsoppdrag2))
     }
 }
