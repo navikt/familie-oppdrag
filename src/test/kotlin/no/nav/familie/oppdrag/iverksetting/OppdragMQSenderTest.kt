@@ -23,8 +23,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
-private const val FAGOMRÅDE_BARNETRYGD = "IT05"
-private const val KLASSEKODE_BARNETRYGD = "BAOROSMS"
+private const val FAGOMRÅDE_BARNETRYGD = "BA"
+private const val KLASSEKODE_BARNETRYGD = "BATR"
 private const val SATS_BARNETRYGD = 1054
 private const val TESTKØ = "DEV.QUEUE.1"
 private const val TEST_FAGSAKID = "123456789"

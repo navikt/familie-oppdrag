@@ -21,15 +21,17 @@ object TestUtbetalingsoppdrag {
             "SAKSBEHANDLERID",
             localDateTimeNow,
             listOf(Utbetalingsperiode(false,
-                                      Opphør(localDateNow),
-                                      localDateNow,
-                                      "KLASSE A",
-                                      localDateNow,
-                                      localDateNow,
-                                      BigDecimal.ONE,
-                                      Utbetalingsperiode.SatsType.MND,
-                                      "UTEBETALES_TIL",
-                                      1))
+                    Opphør(localDateNow),
+                    1,
+                    null,
+                    localDateNow,
+                    "KLASSE A",
+                    localDateNow,
+                    localDateNow,
+                    BigDecimal.ONE,
+                    Utbetalingsperiode.SatsType.MND,
+                    "UTEBETALES_TIL",
+                    1))
     )
 
 }

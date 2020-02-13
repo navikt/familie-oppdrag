@@ -23,6 +23,8 @@ object TestOppdragMedAvstemmingsdato {
             avstemmingstidspunkt,
             listOf(Utbetalingsperiode(false,
                     null,
+                    1,
+                    null,
                     LocalDate.now(),
                     if (fagområde.equals("BA")) "BATR" else "EF",
                     LocalDate.now().withDayOfMonth(1),

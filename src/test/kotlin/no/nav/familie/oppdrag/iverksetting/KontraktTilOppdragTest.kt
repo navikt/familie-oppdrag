@@ -19,6 +19,8 @@ class KontraktTilOppdragTest {
         val utbetalingsperiode1 = Utbetalingsperiode(
                 erEndringPåEksisterendePeriode = false,
                 opphør = null,
+                periodeId = 1,
+                forrigePeriodeId = null,
                 datoForVedtak = idag,
                 klassifisering = "BAOROSMS",
                 vedtakdatoFom = idag,
@@ -32,6 +34,8 @@ class KontraktTilOppdragTest {
         val utbetalingsperiode2 = Utbetalingsperiode(
                 erEndringPåEksisterendePeriode = false,
                 opphør = null,
+                periodeId = 2,
+                forrigePeriodeId = 1,
                 datoForVedtak = idag,
                 klassifisering = "BAOROSMS",
                 vedtakdatoFom = idag.plusYears(6).plusMonths(1),
@@ -44,7 +48,7 @@ class KontraktTilOppdragTest {
 
         val utbetalingsoppdrag = Utbetalingsoppdrag(
                 kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-                fagSystem = "IT05",
+                fagSystem = "BATR",
                 saksnummer = "12345678",
                 aktoer = "12345678911",
                 saksbehandlerId = "Z992991",
@@ -54,8 +58,8 @@ class KontraktTilOppdragTest {
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
-        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0), 100)
-        assertOppdragslinje150(utbetalingsperiode2, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(1), 101)
+        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150[0], 101)
+        assertOppdragslinje150(utbetalingsperiode2, utbetalingsoppdrag, oppdrag110.oppdragsLinje150[1], 102)
     }
 
     @Test
@@ -64,6 +68,8 @@ class KontraktTilOppdragTest {
         val utbetalingsperiode1 = Utbetalingsperiode(
                 erEndringPåEksisterendePeriode = true,
                 opphør = Opphør(idag.plusMonths(1)),
+                periodeId = 3,
+                forrigePeriodeId = 2,
                 datoForVedtak = idag,
                 klassifisering = "BAOROSMS",
                 vedtakdatoFom = idag,
@@ -85,7 +91,7 @@ class KontraktTilOppdragTest {
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
-        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0), 100)
+        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0), 103)
     }
 
     fun assertOppdrag110(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag110: Oppdrag110) {
@@ -100,9 +106,9 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsoppdrag.fagSystem, oppdrag110.avstemming115.kodeKomponent)
         Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter), oppdrag110.avstemming115.nokkelAvstemming)
         Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter), oppdrag110.avstemming115.tidspktMelding)
-        Assertions.assertEquals(OppdragSkjemaConstants.ENHET_TYPE, oppdrag110.oppdragsEnhet120.get(0).typeEnhet)
-        Assertions.assertEquals(OppdragSkjemaConstants.ENHET, oppdrag110.oppdragsEnhet120.get(0).enhet)
-        Assertions.assertEquals(OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate(), oppdrag110.oppdragsEnhet120.get(0).datoEnhetFom)
+        Assertions.assertEquals(OppdragSkjemaConstants.ENHET_TYPE, oppdrag110.oppdragsEnhet120[0].typeEnhet)
+        Assertions.assertEquals(OppdragSkjemaConstants.ENHET, oppdrag110.oppdragsEnhet120[0].enhet)
+        Assertions.assertEquals(OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate(), oppdrag110.oppdragsEnhet120[0].datoEnhetFom)
     }
 
     fun assertOppdragslinje150(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag, oppdragsLinje150: OppdragsLinje150,
@@ -121,7 +127,7 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.saksbehId)
         Assertions.assertEquals(utbetalingsoppdrag.aktoer, oppdragsLinje150.utbetalesTilId)
         Assertions.assertEquals(utbetalingsperiode.behandlingId.toString(), oppdragsLinje150.henvisning)
-        Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.attestant180.get(0).attestantId)
+        Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.attestant180[0].attestantId)
     }
 
     fun assertOpphør(utbetalingsperiode: Utbetalingsperiode, oppdragsLinje150: OppdragsLinje150) {
