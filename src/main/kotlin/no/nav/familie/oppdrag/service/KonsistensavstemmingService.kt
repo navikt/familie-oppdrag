@@ -16,7 +16,7 @@ class KonsistensavstemmingService(private val avstemmingSender: AvstemmingSender
 
     fun utførKonsistensavstemming(fagsystem: String, oppdragIdListe: List<OppdragIdForFagsystem>, avstemmingsdato: LocalDateTime) {
 
-        val utbetalingsoppdrag = oppdragIdListe.map { id -> oppdragLagerRepository.hentUtbetalingsoppdrag(OppdragId(fagsystem, id.personIdent, id.behandlingsId)) }
+        val utbetalingsoppdrag = oppdragIdListe.map { id -> oppdragLagerRepository.hentUtbetalingsoppdrag(OppdragId(fagsystem, id.personIdent, id.behandlingsId.toString())) }
 
         val konsistensavstemmingMapper = KonsistensavstemmingMapper(fagsystem, utbetalingsoppdrag, avstemmingsdato)
         val meldinger = konsistensavstemmingMapper.lagAvstemmingsmeldinger()
