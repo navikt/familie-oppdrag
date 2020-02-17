@@ -41,12 +41,12 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
 
     @PostMapping(path = ["/konsistensavstemming/{fagsystem}"])
     fun sendKonsistensavstemming(@PathVariable("fagsystem") fagsystem: String,
-                                 @RequestBody utbetalingsoppdrag: List<Utbetalingsoppdrag>,
+                                 @RequestBody oppdragIdListe: List<OppdragIdForFagsystem>,
                                  @RequestParam("avstemmingsdato") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) avstemmingsdato: LocalDateTime
     ): ResponseEntity<Ressurs<String>> {
-        LOG.info("Konsistensavstemming: Kjører for $fagsystem-oppdrag for $avstemmingsdato med ${utbetalingsoppdrag.size} antall utbetalingsoppdrag")
+        LOG.info("Konsistensavstemming: Kjører for $fagsystem-oppdrag for $avstemmingsdato med ${oppdragIdListe.size} antall utbetalingsoppdrag")
 
-        return Result.runCatching { konsistensavstemmingService.utførKonsistensavstemming(fagsystem, utbetalingsoppdrag, avstemmingsdato) }
+        return Result.runCatching { konsistensavstemmingService.utførKonsistensavstemming(fagsystem, oppdragIdListe, avstemmingsdato) }
                 .fold(
                         onFailure = {
                             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

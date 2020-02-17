@@ -23,6 +23,10 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
     var totalantall = 0
 
     fun lagAvstemmingsmeldinger() : List<Konsistensavstemmingsdata>  {
+        if (utbetalingsoppdrag.isEmpty()) {
+            return emptyList()
+        }
+
         return (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagSluttmelding()))
     }
 

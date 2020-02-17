@@ -1,6 +1,8 @@
 package no.nav.familie.oppdrag.repository
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.OppdragId
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.slf4j.LoggerFactory
@@ -76,6 +78,16 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
         return jdbcTemplate.query(hentStatement,
                 arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde),
                 OppdragLagerRowMapper())
+    }
+
+    override fun hentUtbetalingsoppdrag(oppdragId: OppdragId): Utbetalingsoppdrag {
+        val hentStatement = "SELECT utbetalingsoppdrag FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
+
+        val jsonUtbetalingsoppdrag = jdbcTemplate.queryForObject(hentStatement,
+                arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
+                String::class.java)
+
+        return objectMapper.readValue(jsonUtbetalingsoppdrag)
     }
 
 }
