@@ -91,7 +91,7 @@ class KontraktTilOppdragTest {
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
-        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150.get(0), 103)
+        assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150[0], 103)
     }
 
     fun assertOppdrag110(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag110: Oppdrag110) {
@@ -128,6 +128,8 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsoppdrag.aktoer, oppdragsLinje150.utbetalesTilId)
         Assertions.assertEquals(utbetalingsperiode.behandlingId.toString(), oppdragsLinje150.henvisning)
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.attestant180[0].attestantId)
+
+        if (utbetalingsperiode.forrigePeriodeId !== null) Assertions.assertEquals(utbetalingsoppdrag.saksnummer + (delytelseIdTeller - 1), oppdragsLinje150.refDelytelseId)
     }
 
     fun assertOpphør(utbetalingsperiode: Utbetalingsperiode, oppdragsLinje150: OppdragsLinje150) {
