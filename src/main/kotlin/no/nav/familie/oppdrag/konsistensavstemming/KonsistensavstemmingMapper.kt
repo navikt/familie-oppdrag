@@ -65,9 +65,9 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
         akkumulerTotalbeløp(utbetalingsperiode)
         return Oppdragslinje().apply {
             vedtakId = utbetalingsperiode.datoForVedtak.format(datoFormatter)
-            delytelseId = utbetalingsoppdrag.saksnummer + (utbetalingsperiode.periodeId + 100)
+            delytelseId = utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId
             utbetalingsperiode.forrigePeriodeId?.let {
-                refDelytelseId = utbetalingsoppdrag.saksnummer + (it + 100)
+                refDelytelseId = utbetalingsoppdrag.saksnummer + it
             }
             klassifikasjonKode = utbetalingsperiode.klassifisering
             vedtakPeriode = Periode().apply {

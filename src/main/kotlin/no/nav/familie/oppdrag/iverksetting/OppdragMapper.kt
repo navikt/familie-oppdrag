@@ -58,10 +58,10 @@ class OppdragMapper {
                 datoStatusFom = it.opphørDatoFom.toXMLDate()
             }
             utbetalingsperiode.forrigePeriodeId?.let {
-                refDelytelseId = utbetalingsoppdrag.saksnummer + (it + 100)
+                refDelytelseId = utbetalingsoppdrag.saksnummer + it
             }
             vedtakId = utbetalingsperiode.datoForVedtak.toString()
-            delytelseId = utbetalingsoppdrag.saksnummer + (utbetalingsperiode.periodeId + 100)
+            delytelseId = utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId
             kodeKlassifik = utbetalingsperiode.klassifisering
             datoVedtakFom = utbetalingsperiode.vedtakdatoFom.toXMLDate()
             datoVedtakTom = utbetalingsperiode.vedtakdatoTom.toXMLDate()
