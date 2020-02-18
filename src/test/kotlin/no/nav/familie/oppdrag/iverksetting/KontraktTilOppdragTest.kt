@@ -48,7 +48,7 @@ class KontraktTilOppdragTest {
 
         val utbetalingsoppdrag = Utbetalingsoppdrag(
                 kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-                fagSystem = "BATR",
+                fagSystem = "BA",
                 saksnummer = "12345678",
                 aktoer = "12345678911",
                 saksbehandlerId = "Z992991",

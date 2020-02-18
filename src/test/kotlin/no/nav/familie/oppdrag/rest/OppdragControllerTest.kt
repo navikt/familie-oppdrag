@@ -22,7 +22,7 @@ internal class OppdragControllerTest {
 
     val utbetalingsoppdrag = Utbetalingsoppdrag(
             Utbetalingsoppdrag.KodeEndring.NY,
-            "FAGSYSTEM_TEST",
+            "BA",
             "SAKSNR",
             "PERSONID",
             "SAKSBEHANDLERID",
@@ -32,7 +32,7 @@ internal class OppdragControllerTest {
                     2,
                     1,
                     localDateNow,
-                    "KLASSE A",
+                    "BATR",
                     localDateNow,
                     localDateNow,
                     BigDecimal.ONE,
@@ -58,7 +58,7 @@ internal class OppdragControllerTest {
 
         verify {
             oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
-                it.utgåendeOppdrag.contains("FAGSYSTEM_TEST")
+                it.utgåendeOppdrag.contains("BA")
                         && it.status == OppdragStatus.LAGT_PÅ_KØ
                         && it.opprettetTidspunkt > localDateTimeNow
             })
