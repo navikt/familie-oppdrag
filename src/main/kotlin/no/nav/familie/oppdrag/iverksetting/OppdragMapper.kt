@@ -37,16 +37,15 @@ class OppdragMapper {
             saksbehId = utbetalingsoppdrag.saksbehandlerId
             avstemming115 = avstemming
             oppdragsEnhet120.add(oppdragsEnhet)
-            utbetalingsoppdrag.utbetalingsperiode.mapIndexed { index, periode ->
-                oppdragsLinje150.add(tilOppdragsLinje150(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag,
-                        teller = (index+100)))
+            utbetalingsoppdrag.utbetalingsperiode.map { periode ->
+                oppdragsLinje150.add(tilOppdragsLinje150(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag))
             }
         }
 
         return oppdrag110
     }
 
-    private fun tilOppdragsLinje150(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag, teller: Int): OppdragsLinje150 {
+    private fun tilOppdragsLinje150(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag): OppdragsLinje150 {
 
         val attestant = objectFactory.createAttestant180().apply {
             attestantId = utbetalingsoppdrag.saksbehandlerId
@@ -58,8 +57,11 @@ class OppdragMapper {
                 kodeStatusLinje = TkodeStatusLinje.OPPH
                 datoStatusFom = it.opphørDatoFom.toXMLDate()
             }
+            utbetalingsperiode.forrigePeriodeId?.let {
+                refDelytelseId = utbetalingsoppdrag.saksnummer + it
+            }
             vedtakId = utbetalingsperiode.datoForVedtak.toString()
-            delytelseId = utbetalingsoppdrag.saksnummer+teller.toString()
+            delytelseId = utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId
             kodeKlassifik = utbetalingsperiode.klassifisering
             datoVedtakFom = utbetalingsperiode.vedtakdatoFom.toXMLDate()
             datoVedtakTom = utbetalingsperiode.vedtakdatoTom.toXMLDate()

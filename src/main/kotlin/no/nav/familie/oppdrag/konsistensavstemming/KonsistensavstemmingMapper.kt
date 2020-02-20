@@ -59,18 +59,20 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             oppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.format(datoFormatter)
             saksbehandlerId = utbetalingsoppdrag.saksbehandlerId
             oppdragsenhetListe.add(lagEnhet())
-            utbetalingsoppdrag.utbetalingsperiode.mapIndexed { index, periode ->
-                oppdragslinjeListe.add(lagOppdragsLinjeListe(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag,
-                        teller = (index+100)))
+            utbetalingsoppdrag.utbetalingsperiode.map { periode ->
+                oppdragslinjeListe.add(lagOppdragsLinjeListe(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag))
             }
         }
     }
 
-    private fun lagOppdragsLinjeListe(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag, teller: Int): Oppdragslinje {
+    private fun lagOppdragsLinjeListe(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag): Oppdragslinje {
         akkumulerTotalbeløp(utbetalingsperiode)
         return Oppdragslinje().apply {
             vedtakId = utbetalingsperiode.datoForVedtak.format(datoFormatter)
-            delytelseId = utbetalingsoppdrag.saksnummer+teller.toString()
+            delytelseId = utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId
+            utbetalingsperiode.forrigePeriodeId?.let {
+                refDelytelseId = utbetalingsoppdrag.saksnummer + it
+            }
             klassifikasjonKode = utbetalingsperiode.klassifisering
             vedtakPeriode = Periode().apply {
                 fom = utbetalingsperiode.vedtakdatoFom.format(datoFormatter)

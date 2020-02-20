@@ -15,28 +15,30 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-internal class OppdragControllerTest{
+internal class OppdragControllerTest {
 
     val localDateTimeNow = LocalDateTime.now()
     val localDateNow = LocalDate.now()
 
     val utbetalingsoppdrag = Utbetalingsoppdrag(
             Utbetalingsoppdrag.KodeEndring.NY,
-            "FAGSYSTEM_TEST",
+            "BA",
             "SAKSNR",
             "PERSONID",
             "SAKSBEHANDLERID",
             localDateTimeNow,
-            listOf(Utbetalingsperiode(false,
-                                      Opphør(localDateNow),
-                                      localDateNow,
-                                      "KLASSE A",
-                                      localDateNow,
-                                      localDateNow,
-                                      BigDecimal.ONE,
-                                      Utbetalingsperiode.SatsType.MND,
-                                      "UTEBETALES_TIL",
-                                      1))
+            listOf(Utbetalingsperiode(true,
+                    Opphør(localDateNow),
+                    2,
+                    1,
+                    localDateNow,
+                    "BATR",
+                    localDateNow,
+                    localDateNow,
+                    BigDecimal.ONE,
+                    Utbetalingsperiode.SatsType.MND,
+                    "UTEBETALES_TIL",
+                    1))
     )
 
     @Test
@@ -48,7 +50,7 @@ internal class OppdragControllerTest{
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
-        val oppdragService = OppdragService(oppdragSender,oppdragLagerRepository)
+        val oppdragService = OppdragService(oppdragSender, oppdragLagerRepository)
 
         val oppdragController = OppdragController(oppdragService, mapper)
 
@@ -56,9 +58,9 @@ internal class OppdragControllerTest{
 
         verify {
             oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
-                it.utgåendeOppdrag.contains("FAGSYSTEM_TEST")
-                && it.status == OppdragStatus.LAGT_PÅ_KØ
-                && it.opprettetTidspunkt > localDateTimeNow
+                it.utgåendeOppdrag.contains("BA")
+                        && it.status == OppdragStatus.LAGT_PÅ_KØ
+                        && it.opprettetTidspunkt > localDateTimeNow
             })
         }
     }
