@@ -59,6 +59,7 @@ class OppdragMapper {
             }
             utbetalingsperiode.forrigePeriodeId?.let {
                 refDelytelseId = utbetalingsoppdrag.saksnummer + it
+                refFagsystemId = utbetalingsoppdrag.saksnummer
             }
             vedtakId = utbetalingsperiode.datoForVedtak.toString()
             delytelseId = utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId
