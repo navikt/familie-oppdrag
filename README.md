@@ -68,4 +68,3 @@ Databasen heter `familie-oppdrag` og i skrivende stund er IP-adressen til server
 
 ## Kontaktinfo
 For NAV-interne kan henvendelser om appen rettes til #team-familie på slack. Ellers kan man opprette et issue her på github.
-
