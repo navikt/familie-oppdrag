@@ -57,9 +57,11 @@ class OppdragMapper {
                 kodeStatusLinje = TkodeStatusLinje.OPPH
                 datoStatusFom = it.opphørDatoFom.toXMLDate()
             }
-            utbetalingsperiode.forrigePeriodeId?.let {
-                refDelytelseId = utbetalingsoppdrag.saksnummer + it
-                refFagsystemId = utbetalingsoppdrag.saksnummer
+            if (!utbetalingsperiode.erEndringPåEksisterendePeriode) {
+                utbetalingsperiode.forrigePeriodeId?.let {
+                    refDelytelseId = utbetalingsoppdrag.saksnummer + it
+                    refFagsystemId = utbetalingsoppdrag.saksnummer
+                }
             }
             vedtakId = utbetalingsperiode.datoForVedtak.toString()
             delytelseId = utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId
