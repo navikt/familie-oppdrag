@@ -5,8 +5,8 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
 import no.trygdeetaten.skjema.oppdrag.OppdragsLinje150
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -128,7 +128,7 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsperiode.behandlingId.toString(), oppdragsLinje150.henvisning)
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.attestant180[0].attestantId)
 
-        if (utbetalingsperiode.forrigePeriodeId !== null) Assertions.assertEquals(utbetalingsoppdrag.saksnummer + utbetalingsperiode.forrigePeriodeId.toString(), oppdragsLinje150.refDelytelseId)
+        if (utbetalingsperiode.forrigePeriodeId !== null && !utbetalingsperiode.erEndringPåEksisterendePeriode) Assertions.assertEquals(utbetalingsoppdrag.saksnummer + utbetalingsperiode.forrigePeriodeId.toString(), oppdragsLinje150.refDelytelseId)
     }
 
     fun assertOpphør(utbetalingsperiode: Utbetalingsperiode, oppdragsLinje150: OppdragsLinje150) {
