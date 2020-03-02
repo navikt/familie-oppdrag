@@ -48,7 +48,7 @@ internal class OppdragControllerTest {
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
-        every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
+        every { oppdragLagerRepository.opprettOppdrag(any(), any()) } just Runs
 
         val oppdragService = OppdragService(oppdragSender, oppdragLagerRepository)
 
@@ -61,7 +61,7 @@ internal class OppdragControllerTest {
                 it.utgåendeOppdrag.contains("BA")
                         && it.status == OppdragStatus.LAGT_PÅ_KØ
                         && it.opprettetTidspunkt > localDateTimeNow
-            })
+            }, any())
         }
     }
 }

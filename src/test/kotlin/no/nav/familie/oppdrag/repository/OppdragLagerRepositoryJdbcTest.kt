@@ -39,10 +39,10 @@ internal class OppdragLagerRepositoryJdbcTest {
 
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
 
-        oppdragLagerRepository.opprettOppdrag(oppdragLager)
+        oppdragLagerRepository.opprettOppdrag(oppdragLager, 0)
 
         assertFailsWith<DuplicateKeyException> {
-            oppdragLagerRepository.opprettOppdrag(oppdragLager)
+            oppdragLagerRepository.opprettOppdrag(oppdragLager, 0)
         }
     }
 
@@ -52,7 +52,7 @@ internal class OppdragLagerRepositoryJdbcTest {
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
                 .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
-        oppdragLagerRepository.opprettOppdrag(oppdragLager)
+        oppdragLagerRepository.opprettOppdrag(oppdragLager, 0)
 
         val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
         assertEquals(OppdragStatus.LAGT_PÅ_KØ, hentetOppdrag.status)
@@ -69,7 +69,7 @@ internal class OppdragLagerRepositoryJdbcTest {
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
                 .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
-        oppdragLagerRepository.opprettOppdrag(oppdragLager)
+        oppdragLagerRepository.opprettOppdrag(oppdragLager, 0)
         val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
         val kvitteringsmelding = kvitteringsmelding()
 
@@ -96,9 +96,9 @@ internal class OppdragLagerRepositoryJdbcTest {
         val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1), "BA").somOppdragLager
         val efOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), "EF").somOppdragLager
 
-        oppdragLagerRepository.opprettOppdrag(baOppdragLager)
-        oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
-        oppdragLagerRepository.opprettOppdrag(efOppdragLager)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager, 0)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager2, 0)
+        oppdragLagerRepository.opprettOppdrag(efOppdragLager, 0)
 
         val oppdrageneTilGrensesnittavstemming = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA")
 
@@ -113,8 +113,8 @@ internal class OppdragLagerRepositoryJdbcTest {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
         val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA").somOppdragLager
         val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA").somOppdragLager
-        oppdragLagerRepository.opprettOppdrag(baOppdragLager)
-        oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager, 0)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager2, 0)
 
         val utbetalingsoppdrag = oppdragLagerRepository.hentUtbetalingsoppdrag(baOppdragLager.id)
         val utbetalingsoppdrag2 = oppdragLagerRepository.hentUtbetalingsoppdrag(baOppdragLager2.id)

@@ -9,7 +9,7 @@ interface OppdragLagerRepository {
 
     fun hentOppdrag(oppdragId : OppdragId): OppdragLager
     fun hentUtbetalingsoppdrag(oppdragId: OppdragId): Utbetalingsoppdrag
-    fun opprettOppdrag(oppdragLager: OppdragLager)
+    fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int)
     fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus)
     fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel)
     fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragLager>

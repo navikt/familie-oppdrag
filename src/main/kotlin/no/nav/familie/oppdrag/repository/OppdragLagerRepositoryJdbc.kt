@@ -37,7 +37,7 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
         }
     }
 
-    override fun opprettOppdrag(oppdragLager: OppdragLager) {
+    override fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int) {
         val insertStatement = "INSERT INTO oppdrag_lager VALUES (?,?,?,?,?,?,?,?,?)"
 
         jdbcTemplate.update(insertStatement,
