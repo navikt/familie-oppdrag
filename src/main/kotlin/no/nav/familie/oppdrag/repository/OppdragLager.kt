@@ -19,7 +19,8 @@ data class OppdragLager(val fagsystem: String,
                         val status: OppdragStatus = OppdragStatus.LAGT_PÅ_KØ,
                         @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
                         @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
-                        val kvitteringsmelding: String?) {
+                        val kvitteringsmelding: String?,
+                        val versjon: Int = 0) {
 
     companion object {
         fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag): OppdragLager {

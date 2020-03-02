@@ -1,0 +1,2 @@
+ALTER TABLE oppdrag_lager
+    ADD COLUMN versjon BIGINT NOT NULL DEFAULT 0;

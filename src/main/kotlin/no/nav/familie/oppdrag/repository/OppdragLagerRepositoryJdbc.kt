@@ -17,11 +17,11 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
 
     internal var LOG = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
 
-    override fun hentOppdrag(oppdragId: OppdragId): OppdragLager {
-        val hentStatement = "SELECT * FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
+    override fun hentOppdrag(oppdragId: OppdragId, versjon: Int): OppdragLager {
+        val hentStatement = "SELECT * FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ? AND versjon = ?"
 
         val listeAvOppdrag = jdbcTemplate.query(hentStatement,
-                                  arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
+                                  arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem, versjon),
                                   OppdragLagerRowMapper())
 
         return when( listeAvOppdrag.size ) {
@@ -37,8 +37,10 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
         }
     }
 
-    override fun opprettOppdrag(oppdragLager: OppdragLager) {
-        val insertStatement = "INSERT INTO oppdrag_lager VALUES (?,?,?,?,?,?,?,?,?)"
+    override fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int) {
+        val insertStatement = "INSERT INTO oppdrag_lager " +
+                "(utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
+                " VALUES (?,?,?,?,?,?,?,?,?,?)"
 
         jdbcTemplate.update(insertStatement,
                             oppdragLager.utgåendeOppdrag,
@@ -49,27 +51,30 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
                             oppdragLager.behandlingId,
                             oppdragLager.fagsystem,
                             oppdragLager.avstemmingTidspunkt,
-                            oppdragLager.utbetalingsoppdrag)
+                            oppdragLager.utbetalingsoppdrag,
+                            versjon)
     }
 
-    override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus) {
+    override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int) {
 
         val update = "UPDATE oppdrag_lager SET status = '${oppdragStatus.name}' " +
                      "WHERE person_ident = '${oppdragId.personIdent}' " +
                      "AND fagsystem = '${oppdragId.fagsystem}' " +
-                     "AND behandling_id = '${oppdragId.behandlingsId}'"
+                     "AND behandling_id = '${oppdragId.behandlingsId}'" +
+                     "AND versjon = $versjon"
 
         jdbcTemplate.execute(update)
     }
 
-    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel) {
-        val updateStatement = "UPDATE oppdrag_lager SET kvitteringsmelding = ? WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ?"
+    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel, versjon: Int) {
+        val updateStatement = "UPDATE oppdrag_lager SET kvitteringsmelding = ? WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ? AND versjon = ?"
 
         jdbcTemplate.update(updateStatement,
                 objectMapper.writeValueAsString(kvittering),
                 oppdragId.personIdent,
                 oppdragId.fagsystem,
-                oppdragId.behandlingsId)
+                oppdragId.behandlingsId,
+                versjon)
     }
 
     override fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragLager> {
@@ -80,16 +85,23 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
                 OppdragLagerRowMapper())
     }
 
-    override fun hentUtbetalingsoppdrag(oppdragId: OppdragId): Utbetalingsoppdrag {
-        val hentStatement = "SELECT utbetalingsoppdrag FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
+    override fun hentUtbetalingsoppdrag(oppdragId: OppdragId, versjon: Int): Utbetalingsoppdrag {
+        val hentStatement = "SELECT utbetalingsoppdrag FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ? AND versjon = ?"
 
         val jsonUtbetalingsoppdrag = jdbcTemplate.queryForObject(hentStatement,
-                arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
+                arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem, versjon),
                 String::class.java)
 
         return objectMapper.readValue(jsonUtbetalingsoppdrag)
     }
 
+    override fun hentAlleVersjonerAvOppdrag(oppdragId: OppdragId): List<OppdragLager> {
+        val hentStatement = "SELECT * FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
+
+        return jdbcTemplate.query(hentStatement,
+                arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
+                OppdragLagerRowMapper())
+    }
 }
 
 class OppdragLagerRowMapper : RowMapper<OppdragLager> {
@@ -105,6 +117,7 @@ class OppdragLagerRowMapper : RowMapper<OppdragLager> {
                 OppdragStatus.valueOf(resultSet.getString(2)),
                 resultSet.getTimestamp(8).toLocalDateTime(),
                 resultSet.getTimestamp(3).toLocalDateTime(),
-                resultSet.getString(10))
+                resultSet.getString(10),
+                resultSet.getInt(11))
     }
 }
