@@ -45,7 +45,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
        )
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPåNytt"])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt"])
     fun sendOppdragPåNytt(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag,
                           @Valid @RequestBody versjon: Int): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {

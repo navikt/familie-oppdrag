@@ -77,7 +77,7 @@ class OppdragMQMottakTest {
 
         every { oppdragLagerRepository.hentOppdrag(any()) } throws Exception()
 
-        every { oppdragLagerRepository.opprettOppdrag(any(), any()) } just Runs
+        every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
         oppdragMottaker.LOG = mockk()
@@ -86,7 +86,7 @@ class OppdragMQMottakTest {
         every { oppdragMottaker.LOG.error(any()) } just Runs
 
         assertThrows<Exception> { oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage) }
-        verify(exactly = 0) { oppdragLagerRepository.opprettOppdrag(any<OppdragLager>(), any()) }
+        verify(exactly = 0) { oppdragLagerRepository.opprettOppdrag(any<OppdragLager>()) }
     }
 
     @Test
@@ -94,7 +94,7 @@ class OppdragMQMottakTest {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
         every { oppdragLagerRepository.hentOppdrag(any()) } throws Exception()
-        every { oppdragLagerRepository.opprettOppdrag(any(), any()) } just Runs
+        every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
         oppdragMottaker.LOG = mockk()
@@ -103,7 +103,7 @@ class OppdragMQMottakTest {
         every { oppdragMottaker.LOG.error(any()) } just Runs
 
         assertThrows<Exception> { oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage) }
-        verify(exactly = 0) { oppdragLagerRepository.opprettOppdrag(any<OppdragLager>(), any()) }
+        verify(exactly = 0) { oppdragLagerRepository.opprettOppdrag(any<OppdragLager>()) }
     }
 
     @Test
