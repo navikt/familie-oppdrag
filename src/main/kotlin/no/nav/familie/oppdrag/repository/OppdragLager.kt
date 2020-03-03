@@ -16,14 +16,14 @@ data class OppdragLager(val fagsystem: String,
                         @Column("behandling_id") val behandlingId: String,
                         val utbetalingsoppdrag: String,
                         @Column("utgaaende_oppdrag") val utgåendeOppdrag: String,
-                        val status: OppdragStatus = OppdragStatus.LAGT_PÅ_KØ,
+                        var status: OppdragStatus = OppdragStatus.LAGT_PÅ_KØ,
                         @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
                         @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
                         val kvitteringsmelding: String?,
                         val versjon: Int = 0) {
 
     companion object {
-        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag): OppdragLager {
+        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int = 0): OppdragLager {
             return OppdragLager(
                     personIdent = utbetalingsoppdrag.aktoer,
                     fagsystem = utbetalingsoppdrag.fagSystem,
@@ -32,11 +32,18 @@ data class OppdragLager(val fagsystem: String,
                     avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
                     utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
                     utgåendeOppdrag = Jaxb.tilXml(oppdrag),
-                    kvitteringsmelding = null
+                    kvitteringsmelding = null,
+                    versjon = versjon
             )
         }
     }
 
+}
+
+fun Utbetalingsoppdrag.somOppdragLagerMedVersjon(versjon: Int): OppdragLager {
+    val tilOppdrag110 = OppdragMapper().tilOppdrag110(this)
+    val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110)
+    return OppdragLager.lagFraOppdrag(this, oppdrag, versjon)
 }
 
 val Utbetalingsoppdrag.somOppdragLager: OppdragLager

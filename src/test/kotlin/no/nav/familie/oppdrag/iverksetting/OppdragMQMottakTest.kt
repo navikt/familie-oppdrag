@@ -1,10 +1,7 @@
 package no.nav.familie.oppdrag.iverksetting
 
 import io.mockk.*
-import no.nav.familie.oppdrag.repository.OppdragLager
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.OppdragStatus
-import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.repository.*
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,8 +52,8 @@ class OppdragMQMottakTest {
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentOppdrag(any()) } returns
-                oppdragLager
+        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
+                listOf(oppdragLager)
 
         every { oppdragLagerRepository.oppdaterStatus(any(),any()) } just Runs
         every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
@@ -65,9 +62,32 @@ class OppdragMQMottakTest {
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
-        verify(exactly = 1) { oppdragLagerRepository.hentOppdrag(any()) }
+        verify(exactly = 1) { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) }
         verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(),any()) }
         verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) }
+    }
+
+    @Test
+    fun skal_lagre_kvittering_på_riktig_versjon() {
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager.apply { status = OppdragStatus.KVITTERT_OK }
+        val oppdragLagerV1 = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLagerMedVersjon(1)
+
+        val oppdragLagerRepository = mockk<OppdragLagerRepository>()
+
+        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
+                listOf(oppdragLager, oppdragLagerV1)
+
+        every { oppdragLagerRepository.oppdaterStatus(any(), any(), any()) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any()) } just Runs
+
+        val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
+
+        oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
+
+        verify(exactly = 0) { oppdragLagerRepository.oppdaterStatus(any(), any(), 0) }
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(), any(), 1) }
+        verify(exactly = 0) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), 0) }
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), 1) }
     }
 
     @Test
@@ -75,7 +95,7 @@ class OppdragMQMottakTest {
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentOppdrag(any()) } throws Exception()
+        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } throws Exception()
 
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
@@ -93,7 +113,7 @@ class OppdragMQMottakTest {
     fun skal_logge_error_hvis_oppdraget_mangler_i_databasen() {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentOppdrag(any()) } throws Exception()
+        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } throws Exception()
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
@@ -112,8 +132,8 @@ class OppdragMQMottakTest {
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentOppdrag(any()) } returns
-                oppdragLager.copy(status = OppdragStatus.KVITTERT_OK)
+        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
+                listOf(oppdragLager.copy(status = OppdragStatus.KVITTERT_OK))
 
         every { oppdragLagerRepository.oppdaterStatus(any(),OppdragStatus.KVITTERT_OK) } just Runs
         every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
@@ -127,9 +147,8 @@ class OppdragMQMottakTest {
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
-        verify(exactly = 1) { oppdragLagerRepository.hentOppdrag(any()) }
+        verify(exactly = 1) { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) }
         verify(exactly = 1) { oppdragMottaker.LOG.warn(any()) }
-        verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(),any()) }
     }
 
     private fun lesKvittering(filnavn: String): String {
