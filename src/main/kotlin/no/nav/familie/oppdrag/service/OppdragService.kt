@@ -19,13 +19,13 @@ class OppdragService(
         @Autowired private val oppdragLagerRepository: OppdragLagerRepository) {
 
     @Transactional(rollbackFor = [Throwable::class])
-    fun opprettOppdrag(utbetalingsoppdrag : Utbetalingsoppdrag, oppdrag: Oppdrag) {
+    fun opprettOppdrag(utbetalingsoppdrag : Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
 
         LOG.debug("Legger oppdrag på kø "+oppdrag.id)
         oppdragSender.sendOppdrag(oppdrag)
 
         LOG.debug("Lagrer oppdrag i databasen "+oppdrag.id)
-        oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag))
+        oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)
      }
 
     fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragStatus {

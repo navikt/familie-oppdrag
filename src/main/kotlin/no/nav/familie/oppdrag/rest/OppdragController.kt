@@ -9,12 +9,13 @@ import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 
@@ -30,7 +31,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
            val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-           oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag)
+           oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag, 0)
        }.fold(
                onFailure = {
                    SECURE_LOG.error("Feil ved iverksetting av oppdrag:", it)
@@ -42,6 +43,27 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                    ResponseEntity.ok(Ressurs.success("Oppdrag sendt OK"))
                }
        )
+    }
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt"])
+    fun sendOppdragPåNytt(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag,
+                          @Valid @RequestBody versjon: Int): ResponseEntity<Ressurs<String>> {
+        return Result.runCatching {
+            val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
+            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+
+            oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag, versjon)
+        }.fold(
+                onFailure = {
+                    SECURE_LOG.error("Feil ved iverksetting av oppdrag:", it)
+                    ResponseEntity
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(Ressurs.failure(errorMessage = "Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}"))
+                },
+                onSuccess = {
+                    ResponseEntity.ok(Ressurs.success("Oppdrag sendt OK"))
+                }
+        )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])
