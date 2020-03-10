@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 
@@ -45,9 +42,9 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
        )
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt"])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
     fun sendOppdragPåNytt(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag,
-                          @Valid @RequestBody versjon: Int): ResponseEntity<Ressurs<String>> {
+                          @PathVariable versjon: Int): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
             val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
             val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
