@@ -1,4 +1,3 @@
-# NB! Dette skal ikke skrus på i produksjon før avstemming er på plass!
 oppdrag.mq:
   queuemanager: MPLSC02
   send: QA.P231.OB04_OPPDRAG_XML
@@ -9,7 +8,7 @@ oppdrag.mq:
   port: 1414
   user: ${MQ_SRVBRUKER}
   password: ${MQ_PASSWORD}
-  enabled: false
+  enabled: true
 
 no.nav.security.jwt:
   issuer.azuread:
