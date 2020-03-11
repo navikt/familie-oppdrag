@@ -10,6 +10,7 @@ import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.*
 import org.junit.jupiter.api.Test
 import java.math.BigInteger
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
@@ -48,6 +49,18 @@ class KonsistensavstemmingMapperTest {
         assertEquals(5, meldinger.size)
         assertEquals(KonsistensavstemmingConstants.DATA, meldinger[3].aksjonsdata.aksjonsType)
         assertEquals(BigInteger.TWO, meldinger[3].totaldata.totalAntall)
+    }
+
+    @Test
+    fun totaldata_skal_ikke_akkumulere_opp_utbetalingsperioder_som_har_passert() {
+        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(idag.plusYears(7), fagområde)
+        val utbetalingsoppdrag2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdragMedPeriode(idag.plusYears(7),
+                fagområde, LocalDate.now().plusYears(6).withDayOfMonth(1), LocalDate.now().plusYears(12))
+        val mapper = KonsistensavstemmingMapper(fagområde, listOf(utbetalingsoppdrag, utbetalingsoppdrag2), idag.plusYears(7))
+        val meldinger = mapper.lagAvstemmingsmeldinger()
+        assertEquals(5, meldinger.size)
+        assertEquals(KonsistensavstemmingConstants.DATA, meldinger[3].aksjonsdata.aksjonsType)
+        assertEquals(BigInteger.ONE, meldinger[3].totaldata.totalAntall)
     }
 
     fun assertAksjon(expected: String, actual: Aksjonsdata) {

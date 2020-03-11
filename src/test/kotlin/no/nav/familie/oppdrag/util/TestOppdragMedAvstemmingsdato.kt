@@ -34,4 +34,25 @@ object TestOppdragMedAvstemmingsdato {
                     AKTOER,
                     Random.nextLong()))
     )
+
+    fun lagTestUtbetalingsoppdragMedPeriode(avstemmingstidspunkt : LocalDateTime, fagområde: String, fom: LocalDate, tom: LocalDate) = Utbetalingsoppdrag(
+            Utbetalingsoppdrag.KodeEndring.NY,
+            fagområde,
+            FAGSAKID,
+            AKTOER,
+            "Z999999",
+            avstemmingstidspunkt,
+            listOf(Utbetalingsperiode(false,
+                    null,
+                    1,
+                    null,
+                    LocalDate.now(),
+                    if (fagområde.equals("BA")) "BATR" else "EF",
+                    fom,
+                    tom,
+                    SATS,
+                    Utbetalingsperiode.SatsType.MND,
+                    AKTOER,
+                    Random.nextLong()))
+    )
 }
