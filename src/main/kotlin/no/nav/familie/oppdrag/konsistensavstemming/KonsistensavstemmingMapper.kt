@@ -90,6 +90,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
     }
 
     private fun akkumulerTotalbeløp(utbetalingsperiode: Utbetalingsperiode) {
+        // utlede om utbetalingsperioden er aktuell for avstemmingsdato
         if (erPeriodenAktiv(utbetalingsperiode)) {
             totalBeløp+=utbetalingsperiode.sats.toLong()
             totalantall++
@@ -97,13 +98,12 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
     }
 
     private fun erPeriodenAktiv(utbetalingsperiode: Utbetalingsperiode): Boolean {
-        // utlede om utbetalingsperioden er aktuell for avstemmingsdato
-        if (utbetalingsperiode.vedtakdatoFom.isBefore(avstemmingsDato.toLocalDate()) && utbetalingsperiode.vedtakdatoTom.isAfter(avstemmingsDato.toLocalDate())) {
-            return true
-        } else if (utbetalingsperiode.vedtakdatoFom.isAfter(avstemmingsDato.toLocalDate())) {
-            return true
-        }
-        return false
+        val utbetalingsperiodeFom = utbetalingsperiode.vedtakdatoFom
+        val utbetalingsperiodeTom = utbetalingsperiode.vedtakdatoTom
+        val avstemmingsdato = avstemmingsDato.toLocalDate()
+
+        return (utbetalingsperiodeFom.isBefore(avstemmingsdato) && utbetalingsperiodeTom.isAfter(avstemmingsdato))
+                || utbetalingsperiodeFom.isAfter(avstemmingsdato)
     }
 
     private fun lagAttestant(utbetalingsoppdrag: Utbetalingsoppdrag): Attestant {
