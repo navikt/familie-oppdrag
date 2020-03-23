@@ -32,6 +32,10 @@ class OppdragService(
         return oppdragLagerRepository.hentOppdrag(oppdragId).status
     }
 
+    fun hentUtbetalingsoppdrag(oppdragId: OppdragId): Utbetalingsoppdrag {
+        return oppdragLagerRepository.hentUtbetalingsoppdrag(oppdragId)
+    }
+
     companion object {
         val LOG = LoggerFactory.getLogger(OppdragService::class.java)
     }
