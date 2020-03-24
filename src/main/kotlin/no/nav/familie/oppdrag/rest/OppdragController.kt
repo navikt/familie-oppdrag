@@ -78,17 +78,21 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                 )
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/utbetalingsoppdrag/{fagsystem}"])
-    fun hentUtbetalingsoppdrag(@PathVariable fagsystem: String, @Valid @RequestBody oppdragId: OppdragIdForFagsystem): ResponseEntity<Ressurs<Utbetalingsoppdrag>> {
+    @GetMapping(path = ["/utbetalingsoppdrag/{fagsystem}"])
+    fun hentUtbetalingsoppdrag(@PathVariable fagsystem: String,
+                               @RequestParam personId: String,
+                               @RequestParam behandlingId: String): ResponseEntity<Ressurs<Utbetalingsoppdrag>> {
         return Result.runCatching {
-            oppdragService.hentUtbetalingsoppdrag(OppdragId(fagsystem, oppdragId.personIdent, oppdragId.behandlingsId.toString()))
+            oppdragService.hentUtbetalingsoppdrag(OppdragId(fagsystem, personId, behandlingId))
         }
                 .fold(
                         onFailure = {
-                            print("Fant ikke oppdrag med id $oppdragId")
+                            print("Fant ikke oppdrag på behandling $behandlingId")
                             ResponseEntity
                                     .status(HttpStatus.NOT_FOUND)
-                                    .body(Ressurs.failure(errorMessage = "Fant ikke oppdrag med id $oppdragId"))
+                                    .body(Ressurs.failure(
+                                            errorMessage = "Fant ikke oppdrag på behandling $behandlingId"
+                                    ))
                         },
                         onSuccess = {
                             ResponseEntity.ok(Ressurs.success(it))
