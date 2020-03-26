@@ -78,28 +78,6 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                 )
     }
 
-    @GetMapping(path = ["/utbetalingsoppdrag/{fagsystem}"])
-    fun hentUtbetalingsoppdrag(@PathVariable fagsystem: String,
-                               @RequestParam personId: String,
-                               @RequestParam behandlingId: String): ResponseEntity<Ressurs<Utbetalingsoppdrag>> {
-        return Result.runCatching {
-            oppdragService.hentUtbetalingsoppdrag(OppdragId(fagsystem, personId, behandlingId))
-        }
-                .fold(
-                        onFailure = {
-                            print("Fant ikke oppdrag på behandling $behandlingId")
-                            ResponseEntity
-                                    .status(HttpStatus.NOT_FOUND)
-                                    .body(Ressurs.failure(
-                                            errorMessage = "Fant ikke oppdrag på behandling $behandlingId"
-                                    ))
-                        },
-                        onSuccess = {
-                            ResponseEntity.ok(Ressurs.success(it))
-                        }
-                )
-    }
-
     companion object {
         val SECURE_LOG = LoggerFactory.getLogger("secureLogger")
     }
