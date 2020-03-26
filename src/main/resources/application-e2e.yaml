@@ -1,3 +1,9 @@
+no.nav.security.jwt:
+  issuer.azuread:
+    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
+    accepted_audience: ${OPPDRAG_CLIENT_ID}
+    cookie_name: azure_token
+
 oppdrag.mq:
   queuemanager: QM1
   queuename: DEV.QUEUE.1
@@ -7,3 +13,10 @@ oppdrag.mq:
   user: admin
   password: passw0rd
   enabled: true
+
+spring.datasource:
+  url: jdbc:postgresql://postgres-oppdrag:5432/familieoppdrag
+  username: familie
+  password: familie-pwd
+
+ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}
