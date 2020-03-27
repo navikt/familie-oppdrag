@@ -21,4 +21,4 @@ spring.datasource:
   username: familie
   password: familie-pwd
 
-ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}
+ACCEPTED_CLIENTS: ${OPPDRAG_BA_SAK_CLIENT_ID}
