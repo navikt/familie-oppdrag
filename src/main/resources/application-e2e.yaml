@@ -1,7 +1,7 @@
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
-    accepted_audience: ${OPPDRAG_CLIENT_ID}
+    discoveryurl: http://host.docker.internal:1111/v2.0/.well-known/openid-configuration
+    accepted_audience: api://${OPPDRAG_CLIENT_ID}/.default
     cookie_name: azure_token
 
 oppdrag.mq:
