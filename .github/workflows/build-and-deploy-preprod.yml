@@ -42,6 +42,6 @@ jobs:
       - name: Deploy til dev-fss
         uses: nais/deploy/actions/deploy@v1
         env:
-          APIKEY: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: app-preprod.yaml
