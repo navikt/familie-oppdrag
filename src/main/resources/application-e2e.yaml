@@ -16,9 +16,14 @@ oppdrag.mq:
   password: passw0rd
   enabled: true
 
-spring.datasource:
-  url: jdbc:postgresql://postgres-oppdrag:5432/familieoppdrag
-  username: familie
-  password: familie-pwd
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-oppdrag:5432/familieoppdrag
+    username: familie
+    password: familie-pwd
+  cloud:
+    vault:
+      database:
+        role: familie
 
 ACCEPTED_CLIENTS: ${OPPDRAG_BA_SAK_CLIENT_ID}
