@@ -10,7 +10,7 @@ oppdrag.mq:
   mottak: DEV.QUEUE.1
   avstemming: DEV.QUEUE.2
   channel: DEV.ADMIN.SVRCONN
-  hostname: localhost
+  hostname: host.docker.internal
   port: 1414
   user: admin
   password: passw0rd
