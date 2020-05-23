@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.rest
 
 import io.mockk.*
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Opphør
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
@@ -8,7 +9,6 @@ import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.service.OppdragService
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal

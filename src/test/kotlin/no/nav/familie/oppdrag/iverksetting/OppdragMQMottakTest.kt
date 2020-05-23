@@ -2,6 +2,10 @@ package no.nav.familie.oppdrag.iverksetting
 
 import io.mockk.*
 import no.nav.familie.oppdrag.repository.*
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
+import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

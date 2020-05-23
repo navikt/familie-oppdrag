@@ -1,11 +1,8 @@
 package no.nav.familie.oppdrag.repository
 
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.iverksetting.Status
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
-
-enum class OppdragStatus {
-    LAGT_PÅ_KØ, KVITTERT_OK, KVITTERT_MED_MANGLER, KVITTERT_FUNKSJONELL_FEIL, KVITTERT_TEKNISK_FEIL, KVITTERT_UKJENT
-}
 
 val Oppdrag.oppdragStatus: OppdragStatus
     get() {

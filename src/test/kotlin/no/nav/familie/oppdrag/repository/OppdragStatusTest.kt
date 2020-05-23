@@ -4,6 +4,7 @@ import no.trygdeetaten.skjema.oppdrag.Mmel
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 
 internal class OppdragStatusTest {
 

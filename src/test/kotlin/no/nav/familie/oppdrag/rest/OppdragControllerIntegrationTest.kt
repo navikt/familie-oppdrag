@@ -1,9 +1,10 @@
 package no.nav.familie.oppdrag.rest
 
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
+import no.nav.familie.kontrakter.felles.oppdrag.oppdragId
 import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
@@ -48,7 +49,7 @@ internal class OppdragControllerIntegrasjonTest {
         var oppdragStatus: OppdragStatus
 
         do {
-            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.id)
+            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.oppdragId)
 
             oppdragStatus = oppdrag.status
         } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
