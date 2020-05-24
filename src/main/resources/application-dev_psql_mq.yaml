@@ -1,0 +1,23 @@
+oppdrag.mq:
+  queuemanager: QM1
+  send: DEV.QUEUE.1
+  mottak: DEV.QUEUE.1
+  avstemming: DEV.QUEUE.2
+  channel: DEV.ADMIN.SVRCONN
+  hostname: localhost
+  # port: <settes i kode i DevPsqlMqLauncher>
+  user: admin
+  password: passw0rd
+  enabled: true
+
+no.nav.security.jwt:
+  issuer.azuread:
+    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
+    accepted_audience: ${CLIENT_ID}
+    cookie_name: azure_token
+
+ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}
+
+# spring.datasource.url: <settes i kode i DevPsqlMqLauncher>
+# spring.datasource.username: <settes i kode i DevPsqlMqLauncher>
+# spring.datasource.password: <settes i kode i DevPsqlMqLauncher>

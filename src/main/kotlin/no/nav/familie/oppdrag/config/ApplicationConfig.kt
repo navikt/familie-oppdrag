@@ -16,6 +16,7 @@ import org.springframework.context.annotation.ComponentScan
 @EnableJwtTokenValidation
 class ApplicationConfig {
 
+
     @Bean
     fun servletWebServerFactory(): ServletWebServerFactory {
         val serverFactory = JettyServletWebServerFactory()
@@ -33,5 +34,6 @@ class ApplicationConfig {
 
     companion object {
         const val pakkenavn = "no.nav.familie.oppdrag"
+        val LOKALE_PROFILER = setOf("dev", "e2e", "dev_psql_mq")
     }
 }

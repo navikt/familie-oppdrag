@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.config
 
+import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.sikkerhet.AuthorizationFilter
 import no.nav.familie.sikkerhet.OIDCUtil
 import org.springframework.beans.factory.annotation.Value
@@ -20,8 +21,7 @@ class AuthorizationConfig(
         return AuthorizationFilter(oidcUtil = oidcUtil,
                                    acceptedClients = acceptedClients,
                                    disabled = environment.activeProfiles.any {
-                                       listOf("e2e", "dev")
-                                               .contains(it.trim(' '))
+                                       LOKALE_PROFILER.contains(it.trim(' '))
                                    })
     }
 }

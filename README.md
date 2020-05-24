@@ -5,8 +5,17 @@ Generell proxy mot Oppdragsystemet (OS) for familie-ytelsene
 Bygging gjøres med `mvn clean install`. 
 
 ## Kjøring lokalt
-For å kjøre opp appen lokalt kan en kjøre `DevLauncher` med Spring-profilen `dev` satt.
-Appen tilgjengeliggjøres da på `localhost:8087`.
+
+### Kjøring der app'en starter containere for postgres og MQ
+For å kjøre opp appen lokalt kan en kjøre `DevPsqlMqLauncher`, som har spring-profilen `dev_psql_mq` satt.
+Appen vil starte containere for siste versjoner av PostgresSql og IBM MQ.
+
+Appen tilgjengeliggjøres på `localhost:8087`.
+
+### Kjøring med separate containere for postgres og MQ
+For å kjøre opp appen lokalt kan en kjøre `DevLauncher`, som har spring-profilen `dev` satt.
+Appen tilgjengeliggjøres på `localhost:8087`.
+
 I tillegg må man kjøre opp en MQ-container med docker:
 ```
 docker run \

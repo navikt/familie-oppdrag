@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.iverksetting
 
+import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.repository.OppdragStatus
@@ -24,7 +25,7 @@ class OppdragMottaker(
     @JmsListener(destination = "\${oppdrag.mq.mottak}", containerFactory = "jmsListenerContainerFactory")
     fun mottaKvitteringFraOppdrag(melding: TextMessage) {
         var svarFraOppdrag = melding.text as String
-        if (!env.activeProfiles.contains("dev") && !env.activeProfiles.contains("e2e")) {
+        if (!env.activeProfiles.any { it in LOKALE_PROFILER}) {
             svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
         }
 
