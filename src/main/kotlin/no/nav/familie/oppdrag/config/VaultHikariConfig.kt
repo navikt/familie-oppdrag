@@ -25,9 +25,13 @@ class VaultHikariConfig(private val container: SecretLeaseContainer,
                 logger.info("Rotating creds for path: " + leaseEvent.getSource().path)
                 val username = leaseEvent.secrets["username"].toString()
                 val password = leaseEvent.secrets["password"].toString()
-                hikariDataSource.username = username
-                hikariDataSource.password = password
-                hikariDataSource.hikariPoolMXBean.softEvictConnections()
+
+                hikariDataSource.hikariPoolMXBean?.let {
+                    logger.info("Prøv hikariPoolMXBean.softEvictConnections() ")
+                    hikariDataSource.hikariConfigMXBean.setUsername(username)
+                    hikariDataSource.hikariConfigMXBean.setPassword(password)
+                    it.softEvictConnections()
+                }
             }
         }
         container.addRequestedSecret(secret)

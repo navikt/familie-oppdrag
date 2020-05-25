@@ -20,6 +20,8 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertFailsWith
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
+
 
 @ActiveProfiles("dev")
 @ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))

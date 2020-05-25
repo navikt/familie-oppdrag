@@ -1,10 +1,10 @@
 package no.nav.familie.oppdrag.service
 
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
-import no.nav.familie.oppdrag.domene.OppdragId
 import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingMapper
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.rest.OppdragIdForFagsystem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
