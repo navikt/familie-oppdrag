@@ -30,7 +30,7 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
                 .fold(
                         onFailure = {
                             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .body(Ressurs.failure("Grensesnittavstemming feilet", it))
+                                    .body(Ressurs.failure("Grensesnittavstemming feilet", "Grensesnittavstemming feilet", it))
                         },
                         onSuccess = {
                             ResponseEntity.ok(Ressurs.Companion.success("Grensesnittavstemming sendt ok"))
@@ -50,7 +50,7 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
                 .fold(
                         onFailure = {
                             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .body(Ressurs.failure("Konsistensavstemming feilet", it))
+                                    .body(Ressurs.failure("Konsistensavstemming feilet", "Konsistensavstemming feilet",it))
                         },
                         onSuccess = {
                             ResponseEntity.ok(Ressurs.Companion.success("Konsistensavstemming sendt ok"))

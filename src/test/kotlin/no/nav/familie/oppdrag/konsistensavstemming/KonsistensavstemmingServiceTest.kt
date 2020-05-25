@@ -1,9 +1,9 @@
 package no.nav.familie.oppdrag.konsistensavstemming
 
 import io.mockk.*
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.OppdragStatus
 import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.repository.somOppdragLagerMedVersjon
 import no.nav.familie.oppdrag.rest.OppdragIdForFagsystem
