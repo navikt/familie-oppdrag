@@ -38,3 +38,4 @@ management:
       enabled: true
 
 BA_SAK_CLIENT_ID: ""
+EF_SAK_CLIENT_ID: ""
