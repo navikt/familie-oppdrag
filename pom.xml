@@ -16,7 +16,7 @@
 
     <properties>
         <revision>1.0</revision>
-        <sha1></sha1>
+        <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>11</jvmTarget>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.8</version>
+            <version>42.2.12.jre7</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
