@@ -18,24 +18,23 @@ object DevPsqlMqLauncher {
         psql.start()
 
         val mq = KGenericContainer("ibmcom/mq")
-                .withEnv("LICENSE","accept")
-                .withEnv("MQ_QMGR_NAME","QM1")
-                .withExposedPorts(1414,9443)
+                .withEnv("LICENSE", "accept")
+                .withEnv("MQ_QMGR_NAME", "QM1")
+                .withExposedPorts(1414, 9443)
 
         mq.start()
 
         val properties = Properties()
-        properties.put("spring.datasource.url",psql.jdbcUrl)
-        properties.put("spring.datasource.username", psql.username)
-        properties.put("spring.datasource.password", psql.password)
+        properties["SPRING_DATASOURCE_URL_OVERRIDE"] = psql.jdbcUrl
+        properties["SPRING_DATASOURCE_USERNAME_OVERRIDE"] = psql.username
+        properties["SPRING_DATASOURCE_PASSWORD_OVERRIDE"] = psql.password
+        properties["SPRING_DATASOURCE_DRIVER_OVERRIDE"] = "org.postgresql.Driver"
+        properties.put("OPPDRAG_MQ_PORT_OVERRIDE", mq.getMappedPort(1414))
 
-        properties.put("oppdrag.mq.port",mq.getMappedPort(1414))
-
-         val app = SpringApplicationBuilder(ApplicationConfig::class.java)
+        SpringApplicationBuilder(ApplicationConfig::class.java)
                 .profiles("dev_psql_mq")
                 .properties(properties)
-
-        app.run(*args)
+                .run(*args)
     }
 }
 

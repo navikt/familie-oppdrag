@@ -26,4 +26,4 @@ spring:
       database:
         role: familie
 
-ACCEPTED_CLIENTS: ${OPPDRAG_BA_SAK_CLIENT_ID}
+ACCEPTED_CLIENTS: ${OPPDRAG_BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}

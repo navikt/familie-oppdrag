@@ -5,7 +5,7 @@ oppdrag.mq:
   avstemming: DEV.QUEUE.2
   channel: DEV.ADMIN.SVRCONN
   hostname: localhost
-  # port: <settes i kode i DevPsqlMqLauncher>
+  port: ${OPPDRAG_MQ_PORT_OVERRIDE}
   user: admin
   password: passw0rd
   enabled: true
@@ -16,8 +16,9 @@ no.nav.security.jwt:
     accepted_audience: ${CLIENT_ID}
     cookie_name: azure_token
 
-ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}
+ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}
 
-# spring.datasource.url: <settes i kode i DevPsqlMqLauncher>
-# spring.datasource.username: <settes i kode i DevPsqlMqLauncher>
-# spring.datasource.password: <settes i kode i DevPsqlMqLauncher>
+spring.datasource.url: ${SPRING_DATASOURCE_URL_OVERRIDE}
+spring.datasource.username: ${SPRING_DATASOURCE_USERNAME_OVERRIDE}
+spring.datasource.password: ${SPRING_DATASOURCE_PASSWORD_OVERRIDE}
+spring.datasource.driver-class-name: ${SPRING_DATASOURCE_DRIVER_OVERRIDE}
