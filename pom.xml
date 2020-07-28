@@ -23,7 +23,7 @@
         <kotlin.version>1.3.72</kotlin.version>
         <felles.version>1.20200514152201_7054ead</felles.version>
         <kontrakter.version>2.0_20200522143947_ea010a5</kontrakter.version>
-        <token-validation-spring.version>1.1.5</token-validation-spring.version>
+        <token-validation-spring.version>1.1.6</token-validation-spring.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
         <jaxb-impl.version>2.3.3</jaxb-impl.version>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>6.4.2</version>
+            <version>6.4.3</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
