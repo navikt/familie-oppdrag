@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.jms.JmsException
 import java.lang.UnsupportedOperationException
 
 
 @Service
+@Profile("!e2e")
 class OppdragSenderMQ(val jmsTemplateUtgående: JmsTemplate,
                       @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
                       @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String) : OppdragSender {

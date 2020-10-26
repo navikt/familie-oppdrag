@@ -9,7 +9,7 @@ import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.service.OppdragService
+import no.nav.familie.oppdrag.service.OppdragServiceImpl
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -50,7 +50,7 @@ internal class OppdragControllerTest {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
-        val oppdragService = OppdragService(oppdragSender, oppdragLagerRepository)
+        val oppdragService = OppdragServiceImpl(oppdragSender, oppdragLagerRepository)
 
         val oppdragController = OppdragController(oppdragService, mapper)
 
