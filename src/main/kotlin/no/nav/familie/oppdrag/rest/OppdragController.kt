@@ -4,19 +4,16 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.oppdrag.common.RessursUtils.illegalState
+import no.nav.familie.oppdrag.common.RessursUtils.notFound
+import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 
@@ -26,24 +23,21 @@ import javax.validation.Valid
 class OppdragController(@Autowired val oppdragService: OppdragService,
                         @Autowired val oppdragMapper: OppdragMapper) {
 
-   @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
-   fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
-       return Result.runCatching {
-           val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-           val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
+    fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
+        return Result.runCatching {
+            val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
+            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-           oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag, 0)
-       }.fold(
-               onFailure = {
-                   SECURE_LOG.error("Feil ved iverksetting av oppdrag:", it)
-                   ResponseEntity
-                           .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                           .body(Ressurs.failure(errorMessage = "Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}"))
-               },
-               onSuccess = {
-                   ResponseEntity.ok(Ressurs.success("Oppdrag sendt OK"))
-               }
-       )
+            oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, 0)
+        }.fold(
+                onFailure = {
+                    illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
+                },
+                onSuccess = {
+                    ok("Oppdrag sendt OK")
+                }
+        )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
@@ -53,16 +47,13 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
             val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
             val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-            oppdragService.opprettOppdrag(utbetalingsoppdrag,oppdrag, versjon)
+            oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, versjon)
         }.fold(
                 onFailure = {
-                    SECURE_LOG.error("Feil ved iverksetting av oppdrag:", it)
-                    ResponseEntity
-                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(Ressurs.failure(errorMessage = "Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}"))
+                    illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
                 },
                 onSuccess = {
-                    ResponseEntity.ok(Ressurs.success("Oppdrag sendt OK"))
+                    ok("Oppdrag sendt OK")
                 }
         )
     }
@@ -72,17 +63,11 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
         return Result.runCatching { oppdragService.hentStatusForOppdrag(oppdragId) }
                 .fold(
                         onFailure = {
-                            ResponseEntity
-                                    .status(HttpStatus.NOT_FOUND)
-                                    .body(Ressurs.failure(errorMessage = "Fant ikke oppdrag med id $oppdragId"))
+                            notFound("Fant ikke oppdrag med id $oppdragId")
                         },
                         onSuccess = {
-                            ResponseEntity.ok(Ressurs.success(it))
+                            ok(it)
                         }
                 )
-    }
-
-    companion object {
-        val SECURE_LOG = LoggerFactory.getLogger("secureLogger")
     }
 }

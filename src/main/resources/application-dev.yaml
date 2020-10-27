@@ -21,3 +21,8 @@ ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}
 spring.datasource.url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
 spring.datasource.username: postgres
 spring.datasource.password: test
+
+OPPDRAG_SERVICE_URL: #Mockes ut lokalt
+SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
+CREDENTIAL_USERNAME: not-a-real-srvuser
+CREDENTIAL_PASSWORD: not-a-real-pw

@@ -1,13 +1,14 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.oppdrag.common.RessursUtils.illegalState
+import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
 import no.nav.familie.oppdrag.service.KonsistensavstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -26,15 +27,13 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Grensesnittavstemming: Kjører for $fagsystem-oppdrag for $fom til $tom")
 
-        return Result.runCatching {  grensesnittavstemmingService.utførGrensesnittavstemming(fagsystem, fom, tom) }
+        return Result.runCatching { grensesnittavstemmingService.utførGrensesnittavstemming(fagsystem, fom, tom) }
                 .fold(
                         onFailure = {
-                            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .body(Ressurs.failure("Grensesnittavstemming feilet",
-                                                          "Grensesnittavstemming feilet",it))
+                            illegalState("Grensesnittavstemming feilet", it)
                         },
                         onSuccess = {
-                            ResponseEntity.ok(Ressurs.Companion.success("Grensesnittavstemming sendt ok"))
+                            ok("Grensesnittavstemming sendt ok")
                         }
 
                 )
@@ -43,24 +42,28 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
     @PostMapping(path = ["/konsistensavstemming/{fagsystem}"], consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun sendKonsistensavstemming(@PathVariable("fagsystem") fagsystem: String,
                                  @RequestBody oppdragIdListe: List<OppdragIdForFagsystem>,
-                                 @RequestParam("avstemmingsdato") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) avstemmingsdato: LocalDateTime
+                                 @RequestParam("avstemmingsdato") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                 avstemmingsdato: LocalDateTime
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Konsistensavstemming: Kjører for $fagsystem-oppdrag for $avstemmingsdato med ${oppdragIdListe.size} antall utbetalingsoppdrag")
 
-        return Result.runCatching { konsistensavstemmingService.utførKonsistensavstemming(fagsystem, oppdragIdListe, avstemmingsdato) }
+        return Result.runCatching {
+            konsistensavstemmingService.utførKonsistensavstemming(fagsystem,
+                                                                  oppdragIdListe,
+                                                                  avstemmingsdato)
+        }
                 .fold(
                         onFailure = {
-                            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .body(Ressurs.failure("Konsistensavstemming feilet",
-                                                          "Konsistensavstemming feilet",it))
+                            illegalState("Konsistensavstemming feilet", it)
                         },
                         onSuccess = {
-                            ResponseEntity.ok(Ressurs.Companion.success("Konsistensavstemming sendt ok"))
+                            ok("Konsistensavstemming sendt ok")
                         }
                 )
     }
 
     companion object {
+
         val LOG = LoggerFactory.getLogger(AvstemmingController::class.java)
     }
 

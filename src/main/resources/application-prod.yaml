@@ -22,3 +22,6 @@ ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}
 spring:
   datasource:
     url: jdbc:postgresql://A01DBVL011.adeo.no:5432/familie-oppdrag
+
+OPPDRAG_SERVICE_URL: https://wasapp.adeo.no/cics/services/simulerFpServiceWSBinding
+SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/

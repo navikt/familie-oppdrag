@@ -7,6 +7,7 @@ import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.repository.oppdragStatus
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Profile
 import org.springframework.core.env.Environment
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 import javax.jms.TextMessage
 
 @Service
+@Profile("!e2e")
 class OppdragMottaker(
         val oppdragLagerRepository: OppdragLagerRepository,
         val env: Environment
