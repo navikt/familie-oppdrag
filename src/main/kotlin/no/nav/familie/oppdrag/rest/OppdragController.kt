@@ -40,6 +40,23 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
         )
     }
 
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag/v2"])
+    fun sendOppdragV2(@Valid @RequestBody restSendOppdrag: RestSendOppdrag): ResponseEntity<Ressurs<String>> {
+        return Result.runCatching {
+            val oppdrag110 = oppdragMapper.tilOppdrag110(restSendOppdrag.utbetalingsoppdrag)
+            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+
+            oppdragService.opprettOppdragV2(restSendOppdrag, oppdrag, 0)
+        }.fold(
+                onFailure = {
+                    illegalState("Klarte ikke sende oppdrag for saksnr ${restSendOppdrag.utbetalingsoppdrag.saksnummer}", it)
+                },
+                onSuccess = {
+                    ok("Oppdrag sendt OK")
+                }
+        )
+    }
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
     fun sendOppdragPåNytt(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag,
                           @PathVariable versjon: Int): ResponseEntity<Ressurs<String>> {
@@ -71,3 +88,8 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                 )
     }
 }
+
+data class RestSendOppdrag(
+        val utbetalingsoppdrag: Utbetalingsoppdrag,
+        val gjeldendeBehandlingId: Long
+)

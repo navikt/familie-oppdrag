@@ -28,17 +28,17 @@ internal class OppdragControllerTest {
             "SAKSBEHANDLERID",
             localDateTimeNow,
             listOf(Utbetalingsperiode(true,
-                    Opphør(localDateNow),
-                    2,
-                    1,
-                    localDateNow,
-                    "BATR",
-                    localDateNow,
-                    localDateNow,
-                    BigDecimal.ONE,
-                    Utbetalingsperiode.SatsType.MND,
-                    "UTEBETALES_TIL",
-                    1))
+                                      Opphør(localDateNow),
+                                      2,
+                                      1,
+                                      localDateNow,
+                                      "BATR",
+                                      localDateNow,
+                                      localDateNow,
+                                      BigDecimal.ONE,
+                                      Utbetalingsperiode.SatsType.MND,
+                                      "UTEBETALES_TIL",
+                                      1))
     )
 
     @Test
@@ -59,8 +59,37 @@ internal class OppdragControllerTest {
         verify {
             oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
                 it.utgåendeOppdrag.contains("BA")
-                        && it.status == OppdragStatus.LAGT_PÅ_KØ
-                        && it.opprettetTidspunkt > localDateTimeNow
+                && it.status == OppdragStatus.LAGT_PÅ_KØ
+                && it.opprettetTidspunkt > localDateTimeNow
+            })
+        }
+    }
+
+    @Test
+    fun skal_lagre_oppdrag_for_utbetalingoppdrag_v2() {
+
+        val mapper = OppdragMapper()
+        val oppdragSender = mockk<OppdragSender>(relaxed = true)
+
+        val oppdragLagerRepository = mockk<OppdragLagerRepository>()
+        every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
+
+        val oppdragService = OppdragServiceImpl(oppdragSender, oppdragLagerRepository)
+
+        val oppdragController = OppdragController(oppdragService, mapper)
+
+        val gjeldendeBehandlingId = 12L
+        oppdragController.sendOppdragV2(RestSendOppdrag(
+                utbetalingsoppdrag = utbetalingsoppdrag,
+                gjeldendeBehandlingId = gjeldendeBehandlingId
+        ))
+
+        verify {
+            oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
+                it.utgåendeOppdrag.contains("BA")
+                && it.status == OppdragStatus.LAGT_PÅ_KØ
+                && it.opprettetTidspunkt > localDateTimeNow
+                && it.behandlingId == gjeldendeBehandlingId.toString()
             })
         }
     }
