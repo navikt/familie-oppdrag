@@ -5,7 +5,6 @@ import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Opphør
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
-import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
@@ -43,8 +42,6 @@ internal class OppdragControllerTest {
 
     @Test
     fun skal_lagre_oppdrag_for_utbetalingoppdrag() {
-
-        val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
@@ -52,7 +49,7 @@ internal class OppdragControllerTest {
 
         val oppdragService = OppdragServiceImpl(oppdragSender, oppdragLagerRepository)
 
-        val oppdragController = OppdragController(oppdragService, mapper)
+        val oppdragController = OppdragController(oppdragService)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
@@ -67,8 +64,6 @@ internal class OppdragControllerTest {
 
     @Test
     fun skal_lagre_oppdrag_for_utbetalingoppdrag_v2() {
-
-        val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
@@ -76,7 +71,7 @@ internal class OppdragControllerTest {
 
         val oppdragService = OppdragServiceImpl(oppdragSender, oppdragLagerRepository)
 
-        val oppdragController = OppdragController(oppdragService, mapper)
+        val oppdragController = OppdragController(oppdragService)
 
         val gjeldendeBehandlingId = 12L
         oppdragController.sendOppdragV2(RestSendOppdrag(

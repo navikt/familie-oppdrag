@@ -55,7 +55,7 @@ class KontraktTilOppdragTest {
                 utbetalingsperiode = listOf(utbetalingsperiode1, utbetalingsperiode2)
         )
 
-        val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
+        val oppdrag110 = OppdragMapper.tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
         assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150[0])
@@ -88,7 +88,7 @@ class KontraktTilOppdragTest {
                 utbetalingsperiode = listOf(utbetalingsperiode1)
         )
 
-        val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
+        val oppdrag110 = OppdragMapper.tilOppdrag110(utbetalingsoppdrag)
 
         assertOppdrag110(utbetalingsoppdrag, oppdrag110)
         assertOppdragslinje150(utbetalingsperiode1, utbetalingsoppdrag, oppdrag110.oppdragsLinje150[0])
@@ -104,8 +104,8 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate(), oppdrag110.datoOppdragGjelderFom)
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdrag110.saksbehId)
         Assertions.assertEquals(utbetalingsoppdrag.fagSystem, oppdrag110.avstemming115.kodeKomponent)
-        Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter), oppdrag110.avstemming115.nokkelAvstemming)
-        Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter), oppdrag110.avstemming115.tidspktMelding)
+        Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper.tidspunktFormatter), oppdrag110.avstemming115.nokkelAvstemming)
+        Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper.tidspunktFormatter), oppdrag110.avstemming115.tidspktMelding)
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET_TYPE, oppdrag110.oppdragsEnhet120[0].typeEnhet)
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET, oppdrag110.oppdragsEnhet120[0].enhet)
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate(), oppdrag110.oppdragsEnhet120[0].datoEnhetFom)
