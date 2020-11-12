@@ -25,36 +25,35 @@ data class OppdragLager(val fagsystem: String,
 
     companion object {
 
-        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int = 0): OppdragLager {
-            return OppdragLager(
-                    personIdent = utbetalingsoppdrag.aktoer,
-                    fagsystem = utbetalingsoppdrag.fagSystem,
-                    fagsakId = utbetalingsoppdrag.saksnummer,
-                    behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
-                    avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
-                    utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
-                    utgåendeOppdrag = Jaxb.tilXml(oppdrag),
-                    kvitteringsmelding = null,
-                    versjon = versjon
-            )
-        }
+        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int = 0) =
+                OppdragLager(
+                        personIdent = utbetalingsoppdrag.aktoer,
+                        fagsystem = utbetalingsoppdrag.fagSystem,
+                        fagsakId = utbetalingsoppdrag.saksnummer,
+                        behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
+                        avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
+                        utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
+                        utgåendeOppdrag = Jaxb.tilXml(oppdrag),
+                        kvitteringsmelding = null,
+                        versjon = versjon
+                )
 
         fun lagFraOppdragV2(utbetalingsoppdrag: Utbetalingsoppdrag,
                             gjeldendeBehandlingId: String,
                             oppdrag: Oppdrag,
-                            versjon: Int = 0): OppdragLager {
-            return OppdragLager(
-                    personIdent = utbetalingsoppdrag.aktoer,
-                    fagsystem = utbetalingsoppdrag.fagSystem,
-                    fagsakId = utbetalingsoppdrag.saksnummer,
-                    behandlingId = gjeldendeBehandlingId,
-                    avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
-                    utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
-                    utgåendeOppdrag = Jaxb.tilXml(oppdrag),
-                    kvitteringsmelding = null,
-                    versjon = versjon
-            )
-        }
+                            versjon: Int = 0) =
+                OppdragLager(personIdent = utbetalingsoppdrag.aktoer,
+                             fagsystem = utbetalingsoppdrag.fagSystem,
+                             fagsakId = utbetalingsoppdrag.saksnummer,
+                             behandlingId = gjeldendeBehandlingId,
+                             avstemmingTidspunkt = utbetalingsoppdrag.avstemmingTidspunkt,
+                             utbetalingsoppdrag = objectMapper.writeValueAsString(
+                                     utbetalingsoppdrag),
+                             utgåendeOppdrag = Jaxb.tilXml(oppdrag),
+                             kvitteringsmelding = null,
+                             versjon = versjon
+                )
+
     }
 
 }
