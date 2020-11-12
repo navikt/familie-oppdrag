@@ -23,7 +23,7 @@ class OppdragServiceImpl(
         @Autowired private val oppdragLagerRepository: OppdragLagerRepository) : OppdragService {
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag,versjon: Int) {
+    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, versjon: Int) {
 
         val oppdrag = utbetalingsoppdrag.tilOppdragSkjema()
 
