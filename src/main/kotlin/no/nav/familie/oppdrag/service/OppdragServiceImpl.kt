@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.service
 
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragRequest
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.id
@@ -8,7 +9,6 @@ import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.rest.RestSendOppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,16 +35,16 @@ class OppdragServiceImpl(
     }
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdragV2(restSendOppdrag: RestSendOppdrag,versjon: Int) {
+    override fun opprettOppdragV2(oppdragRequest: OppdragRequest,versjon: Int) {
 
-        val oppdrag = restSendOppdrag.utbetalingsoppdrag.tilOppdragSkjema()
+        val oppdrag = oppdragRequest.utbetalingsoppdrag.tilOppdragSkjema()
 
         LOG.debug("Legger oppdrag på kø " + oppdrag.id)
         oppdragSender.sendOppdrag(oppdrag)
 
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
-        oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdragV2(utbetalingsoppdrag = restSendOppdrag.utbetalingsoppdrag,
-                                                                           gjeldendeBehandlingId = restSendOppdrag.gjeldendeBehandlingId.toString(),
+        oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdragV2(utbetalingsoppdrag = oppdragRequest.utbetalingsoppdrag,
+                                                                           gjeldendeBehandlingId = oppdragRequest.gjeldendeBehandlingId.toString(),
                                                                            oppdrag = oppdrag), versjon)
     }
 

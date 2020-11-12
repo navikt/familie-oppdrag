@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragRequest
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
@@ -37,12 +38,12 @@ class OppdragController(@Autowired val oppdragService: OppdragService) {
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag/v2"])
-    fun sendOppdragV2(@Valid @RequestBody restSendOppdrag: RestSendOppdrag): ResponseEntity<Ressurs<String>> {
+    fun sendOppdragV2(@Valid @RequestBody oppdragRequest: OppdragRequest): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
-            oppdragService.opprettOppdragV2(restSendOppdrag, 0)
+            oppdragService.opprettOppdragV2(oppdragRequest, 0)
         }.fold(
                 onFailure = {
-                    illegalState("Klarte ikke sende oppdrag for saksnr ${restSendOppdrag.utbetalingsoppdrag.saksnummer}", it)
+                    illegalState("Klarte ikke sende oppdrag for saksnr ${oppdragRequest.utbetalingsoppdrag.saksnummer}", it)
                 },
                 onSuccess = {
                     ok("Oppdrag sendt OK")
@@ -51,13 +52,13 @@ class OppdragController(@Autowired val oppdragService: OppdragService) {
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
-    fun sendOppdragPåNytt(@Valid @RequestBody restSendOppdrag: RestSendOppdrag,
+    fun sendOppdragPåNytt(@Valid @RequestBody oppdragRequest: OppdragRequest,
                           @PathVariable versjon: Int): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
-            oppdragService.opprettOppdragV2(restSendOppdrag, versjon)
+            oppdragService.opprettOppdragV2(oppdragRequest, versjon)
         }.fold(
                 onFailure = {
-                    illegalState("Klarte ikke sende oppdrag for saksnr ${restSendOppdrag.utbetalingsoppdrag.saksnummer}", it)
+                    illegalState("Klarte ikke sende oppdrag for saksnr ${oppdragRequest.utbetalingsoppdrag.saksnummer}", it)
                 },
                 onSuccess = {
                     ok("Oppdrag sendt OK")
@@ -78,8 +79,3 @@ class OppdragController(@Autowired val oppdragService: OppdragService) {
                 )
     }
 }
-
-data class RestSendOppdrag(
-        val utbetalingsoppdrag: Utbetalingsoppdrag,
-        val gjeldendeBehandlingId: Long
-)
