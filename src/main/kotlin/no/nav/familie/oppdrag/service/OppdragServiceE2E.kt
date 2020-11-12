@@ -8,6 +8,7 @@ import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.rest.RestSendOppdrag
+import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -17,13 +18,11 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Profile("e2e")
 class OppdragServiceE2E(
-        @Autowired private val oppdragLagerRepository: OppdragLagerRepository,
-        @Autowired val oppdragMapper: OppdragMapper) : OppdragService {
+        @Autowired private val oppdragLagerRepository: OppdragLagerRepository) : OppdragService {
 
     @Transactional(rollbackFor = [Throwable::class])
     override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, versjon: Int) {
-        val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-        val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+        val oppdrag = utbetalingsoppdrag.somOppdragSkjema
 
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)
@@ -34,8 +33,8 @@ class OppdragServiceE2E(
 
     @Transactional(rollbackFor = [Throwable::class])
     override fun opprettOppdragV2(restSendOppdrag: RestSendOppdrag, versjon: Int) {
-        val oppdrag110 = oppdragMapper.tilOppdrag110(restSendOppdrag.utbetalingsoppdrag)
-        val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+
+        val oppdrag = restSendOppdrag.utbetalingsoppdrag.somOppdragSkjema
 
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdragV2(utbetalingsoppdrag = restSendOppdrag.utbetalingsoppdrag,
@@ -53,5 +52,12 @@ class OppdragServiceE2E(
     companion object {
 
         val LOG = LoggerFactory.getLogger(OppdragServiceE2E::class.java)
+
+        val Utbetalingsoppdrag.somOppdragSkjema: Oppdrag
+            get() {
+                val oppdrag110 = OppdragMapper.tilOppdrag110(this)
+                return OppdragMapper.tilOppdrag(oppdrag110)
+            }
+
     }
 }

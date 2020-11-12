@@ -59,15 +59,15 @@ data class OppdragLager(val fagsystem: String,
 }
 
 fun Utbetalingsoppdrag.somOppdragLagerMedVersjon(versjon: Int): OppdragLager {
-    val tilOppdrag110 = OppdragMapper().tilOppdrag110(this)
-    val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110)
+    val tilOppdrag110 = OppdragMapper.tilOppdrag110(this)
+    val oppdrag = OppdragMapper.tilOppdrag(tilOppdrag110)
     return OppdragLager.lagFraOppdrag(this, oppdrag, versjon)
 }
 
 val Utbetalingsoppdrag.somOppdragLager: OppdragLager
     get() {
-        val tilOppdrag110 = OppdragMapper().tilOppdrag110(this)
-        val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110)
+        val tilOppdrag110 = OppdragMapper.tilOppdrag110(this)
+        val oppdrag = OppdragMapper.tilOppdrag(tilOppdrag110)
         return OppdragLager.lagFraOppdrag(this, oppdrag)
     }
 
