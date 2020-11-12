@@ -5,6 +5,7 @@ import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.AvstemmingMapper
+import no.nav.familie.oppdrag.avstemming.AvstemmingMapper.fagområdeTilAvleverendeKomponentKode
 import no.nav.familie.oppdrag.avstemming.SystemKode
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
@@ -15,12 +16,12 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
-                                  private val fagOmråde: String,
+                                  private val fagområde: String,
                                   private val fom: LocalDateTime,
                                   private val tom: LocalDateTime) {
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
-    val avstemmingId = AvstemmingMapper().encodeUUIDBase64(UUID.randomUUID())
+    val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
 
     fun lagAvstemmingsmeldinger() : List<Avstemmingsdata> {
         if (oppdragsliste.isEmpty())
@@ -56,13 +57,13 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
             this.aksjonType = aksjonType
             this.kildeType = KildeType.AVLEV
             this.avstemmingType = AvstemmingType.GRSN
-            this.avleverendeKomponentKode = fagOmråde
+            this.avleverendeKomponentKode = fagområdeTilAvleverendeKomponentKode(fagområde)
             this.mottakendeKomponentKode = SystemKode.OPPDRAGSSYSTEMET.kode
-            this.underkomponentKode = fagOmråde
+            this.underkomponentKode = fagområde
             this.nokkelFom = fom.format(tidspunktFormatter)
             this.nokkelTom = tom.format(tidspunktFormatter)
             this.avleverendeAvstemmingId = avstemmingId
-            this.brukerId = fagOmråde
+            this.brukerId = fagområde
         }
     }
 
@@ -82,7 +83,7 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
                 Detaljdata().apply {
                     this.detaljType = detaljType
                     this.offnr = utbetalingsoppdrag.aktoer
-                    this.avleverendeTransaksjonNokkel = fagOmråde
+                    this.avleverendeTransaksjonNokkel = fagområde
                     this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
                     if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS) && oppdrag.kvitteringsmelding != null) {
                         val kvitteringsmelding = fraKvitteringTilKvitteringsmelding(oppdrag.kvitteringsmelding)

@@ -18,7 +18,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
                                  private val avstemmingsDato: LocalDateTime) {
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     private val datoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val avstemmingId = AvstemmingMapper().encodeUUIDBase64(UUID.randomUUID())
+    val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
     var totalBeløp = 0L
     var totalantall = 0
 
@@ -146,7 +146,7 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
             this.aksjonsType = aksjonstype
             this.kildeType = KonsistensavstemmingConstants.KILDETYPE
             this.avstemmingType = KonsistensavstemmingConstants.KONSISTENSAVSTEMMING
-            this.avleverendeKomponentKode = fagsystem
+            this.avleverendeKomponentKode = AvstemmingMapper.fagområdeTilAvleverendeKomponentKode(fagsystem)
             this.mottakendeKomponentKode = SystemKode.OPPDRAGSSYSTEMET.kode
             this.underkomponentKode = fagsystem
             this.tidspunktAvstemmingTom = avstemmingsDato.format(tidspunktFormatter)
