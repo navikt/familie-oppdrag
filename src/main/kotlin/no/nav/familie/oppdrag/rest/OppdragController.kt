@@ -7,7 +7,6 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.ok
-import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,16 +19,13 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/api")
 @ProtectedWithClaims(issuer = "azuread")
-class OppdragController(@Autowired val oppdragService: OppdragService,
-                        @Autowired val oppdragMapper: OppdragMapper) {
+class OppdragController(@Autowired val oppdragService: OppdragService) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
     fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
-            val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-            oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, 0)
+            oppdragService.opprettOppdrag(utbetalingsoppdrag, 0)
         }.fold(
                 onFailure = {
                     illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
@@ -43,10 +39,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag/v2"])
     fun sendOppdragV2(@Valid @RequestBody restSendOppdrag: RestSendOppdrag): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
-            val oppdrag110 = oppdragMapper.tilOppdrag110(restSendOppdrag.utbetalingsoppdrag)
-            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
-
-            oppdragService.opprettOppdragV2(restSendOppdrag, oppdrag, 0)
+            oppdragService.opprettOppdragV2(restSendOppdrag, 0)
         }.fold(
                 onFailure = {
                     illegalState("Klarte ikke sende oppdrag for saksnr ${restSendOppdrag.utbetalingsoppdrag.saksnummer}", it)
@@ -61,10 +54,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
     fun sendOppdragPåNytt(@Valid @RequestBody restSendOppdrag: RestSendOppdrag,
                           @PathVariable versjon: Int): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
-            val oppdrag110 = oppdragMapper.tilOppdrag110(restSendOppdrag.utbetalingsoppdrag)
-            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
-
-            oppdragService.opprettOppdragV2(restSendOppdrag, oppdrag, versjon)
+            oppdragService.opprettOppdragV2(restSendOppdrag, versjon)
         }.fold(
                 onFailure = {
                     illegalState("Klarte ikke sende oppdrag for saksnr ${restSendOppdrag.utbetalingsoppdrag.saksnummer}", it)

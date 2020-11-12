@@ -4,10 +4,10 @@ import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.id
+import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.rest.RestSendOppdrag
-import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -17,10 +17,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Profile("e2e")
 class OppdragServiceE2E(
-        @Autowired private val oppdragLagerRepository: OppdragLagerRepository) : OppdragService {
+        @Autowired private val oppdragLagerRepository: OppdragLagerRepository,
+        @Autowired val oppdragMapper: OppdragMapper) : OppdragService {
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
+    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, versjon: Int) {
+        val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
+        val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)
 
@@ -29,7 +33,10 @@ class OppdragServiceE2E(
     }
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdragV2(restSendOppdrag: RestSendOppdrag, oppdrag: Oppdrag, versjon: Int) {
+    override fun opprettOppdragV2(restSendOppdrag: RestSendOppdrag, versjon: Int) {
+        val oppdrag110 = oppdragMapper.tilOppdrag110(restSendOppdrag.utbetalingsoppdrag)
+        val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdragV2(utbetalingsoppdrag = restSendOppdrag.utbetalingsoppdrag,
                                                                            gjeldendeBehandlingId = restSendOppdrag.gjeldendeBehandlingId.toString(),

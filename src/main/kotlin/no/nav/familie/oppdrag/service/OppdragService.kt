@@ -7,7 +7,7 @@ import no.nav.familie.oppdrag.rest.RestSendOppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 
 interface OppdragService {
-    fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int)
-    fun opprettOppdragV2(restSendOppdrag: RestSendOppdrag, oppdrag: Oppdrag, versjon: Int)
+    fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, versjon: Int)
+    fun opprettOppdragV2(restSendOppdrag: RestSendOppdrag, versjon: Int)
     fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragStatus
 }
