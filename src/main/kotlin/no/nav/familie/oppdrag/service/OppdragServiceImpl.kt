@@ -27,7 +27,7 @@ class OppdragServiceImpl(
 
         val oppdrag = utbetalingsoppdrag.tilOppdragSkjema()
 
-        LOG.debug("Legger oppdrag på kø " + oppdrag.id)
+        LOG.debug("Legger oppdrag på kø ${oppdrag.id}")
         oppdragSender.sendOppdrag(oppdrag)
 
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
