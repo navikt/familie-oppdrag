@@ -15,7 +15,7 @@ object TestUtbetalingsoppdrag {
 
     fun utbetalingsoppdragMedTilfeldigAktoer() = Utbetalingsoppdrag(
             Utbetalingsoppdrag.KodeEndring.NY,
-            "TEST",
+            "BA",
             "SAKSNR",
             UUID.randomUUID().toString(), // Foreløpig plass til en 50-tegn string og ingen gyldighetssjekk
             "SAKSBEHANDLERID",
