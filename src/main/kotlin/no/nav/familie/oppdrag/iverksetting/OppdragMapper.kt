@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.iverksetting
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
+import no.nav.familie.oppdrag.avstemming.AvstemmingMapper.fagområdeTilAvleverendeKomponentKode
 import no.trygdeetaten.skjema.oppdrag.*
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
@@ -16,7 +17,7 @@ class OppdragMapper {
 
         val avstemming = objectFactory.createAvstemming115().apply {
             nokkelAvstemming = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
-            kodeKomponent = utbetalingsoppdrag.fagSystem
+            kodeKomponent = fagområdeTilAvleverendeKomponentKode(utbetalingsoppdrag.fagSystem)
             tidspktMelding = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
         }
 

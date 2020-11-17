@@ -83,7 +83,7 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
                 Detaljdata().apply {
                     this.detaljType = detaljType
                     this.offnr = utbetalingsoppdrag.aktoer
-                    this.avleverendeTransaksjonNokkel = fagområdeTilAvleverendeKomponentKode(fagområde)
+                    this.avleverendeTransaksjonNokkel = fagområde
                     this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
                     if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS) && oppdrag.kvitteringsmelding != null) {
                         val kvitteringsmelding = fraKvitteringTilKvitteringsmelding(oppdrag.kvitteringsmelding)
