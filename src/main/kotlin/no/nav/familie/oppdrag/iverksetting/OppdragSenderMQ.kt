@@ -24,6 +24,7 @@ class OppdragSenderMQ(val jmsTemplateUtgående: JmsTemplate,
         }
 
         val oppdragXml = Jaxb.tilXml(oppdrag)
+        LOG.info("Sender oppdrag for fagsystem ${oppdrag.oppdrag110.kodeFagomraade} og fagsak ${oppdrag.oppdrag110.fagsystemId} til Oppdragsystemet")
         try {
             jmsTemplateUtgående.send { session ->
                 val msg = session.createTextMessage(oppdragXml)
