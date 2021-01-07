@@ -103,9 +103,9 @@ class KonsistensavstemmingMapper(private val fagsystem: String,
     private fun verifiserAtPerioderErAktiv(utbetalingsperiode: Utbetalingsperiode): Boolean {
         val avstemmingsdato = avstemmingsDato.toLocalDate()
         val vedtakdatoTom = utbetalingsperiode.vedtakdatoTom
-        val aktiv = !vedtakdatoTom.isAfter(avstemmingsdato)
+        val aktiv = !vedtakdatoTom.isBefore(avstemmingsdato)
         if (!aktiv) {
-            LOG.error("fagsystem=${fagsystem} vedtakdatoTom=$vedtakdatoTom er etter avstemmingsdato=$avstemmingsdato for" +
+            LOG.error("fagsystem=${fagsystem} vedtakdatoTom=$vedtakdatoTom (periodens tom-dato) er etter avstemmingsdato=$avstemmingsdato for" +
                   " periodeId=${utbetalingsperiode.periodeId} behandlingId=${utbetalingsperiode.behandlingId}")
         }
         return aktiv

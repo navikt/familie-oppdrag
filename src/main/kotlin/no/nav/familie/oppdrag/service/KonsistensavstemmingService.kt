@@ -50,7 +50,7 @@ class KonsistensavstemmingService(
         }
 
         LOG.info("Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}, " +
-                 "antall meldinger er ${meldinger.size}")
+                 "antall meldinger er ${meldinger.size} (inkl. de tre meldingene start, totalinfo og stopp)")
         meldinger.forEach {
                 avstemmingSender.sendKonsistensAvstemming(it)
         }
