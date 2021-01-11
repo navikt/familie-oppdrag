@@ -3,7 +3,7 @@ package no.nav.familie.oppdrag.konsistensavstemming
 import io.mockk.*
 import no.nav.familie.kontrakter.felles.oppdrag.*
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragRepository
 import no.nav.familie.oppdrag.repository.UtbetalingsoppdragForKonsistensavstemming
 import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.repository.somOppdragLagerMedVersjon
@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 class KonsistensavstemmingServiceTest {
 
     private lateinit var konsistensavstemmingService: KonsistensavstemmingService
-    private lateinit var oppdragLagerRepository: OppdragLagerRepository
+    private lateinit var oppdragLagerRepository: OppdragRepository
     private lateinit var avstemmingSender: AvstemmingSender
 
     private val saksnummer = "1"
@@ -59,9 +59,9 @@ class KonsistensavstemmingServiceTest {
         val oppdragV1 = TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer().somOppdragLagerMedVersjon(1)
                 .apply { status = OppdragStatus.KVITTERT_OK }
 
-        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
+        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any(), any(),any()) } returns
                 listOf(oppdrag, oppdragV1)
-        every { oppdragLagerRepository.hentUtbetalingsoppdrag(any(), any()) } returns
+        every { oppdragLagerRepository.hentUtbetalingsoppdrag(any(), any(),any(),any()) } returns
                 TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer()
 
         konsistensavstemmingService.utførKonsistensavstemming(KonsistensavstemmingRequest(
@@ -71,8 +71,8 @@ class KonsistensavstemmingServiceTest {
         ))
 
         verify(exactly = 4) { avstemmingSender.sendKonsistensAvstemming(any()) }
-        verify(exactly = 0) { oppdragLagerRepository.hentUtbetalingsoppdrag(any(), 0) }
-        verify(exactly = 1) { oppdragLagerRepository.hentUtbetalingsoppdrag(any(), 1) }
+        verify(exactly = 0) { oppdragLagerRepository.hentUtbetalingsoppdrag(any(),any(),any(), 0) }
+        verify(exactly = 1) { oppdragLagerRepository.hentUtbetalingsoppdrag(any(),any(),any(), 1) }
     }
 
     @Test

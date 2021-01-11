@@ -3,7 +3,7 @@ package no.nav.familie.oppdrag.rest
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.oppdragId
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragRepository
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
@@ -29,9 +29,10 @@ import kotlin.test.assertEquals
 internal class OppdragControllerIntegrasjonTest {
 
     @Autowired lateinit var oppdragService: OppdragService
-    @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
+    @Autowired lateinit var oppdragLagerRepository: OppdragRepository
 
     companion object {
+
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
         @Container var ibmMQContainer = Containers.ibmMQContainer
     }
@@ -48,11 +49,13 @@ internal class OppdragControllerIntegrasjonTest {
         var oppdragStatus: OppdragStatus
 
         do {
-            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.oppdragId)
+            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.oppdragId.fagsystem,
+                                                             utbetalingsoppdrag.oppdragId.personIdent,
+                                                             utbetalingsoppdrag.oppdragId.behandlingsId)
 
             oppdragStatus = oppdrag.status
         } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
 
-        assertEquals( OppdragStatus.KVITTERT_OK,oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_OK, oppdragStatus)
     }
 }

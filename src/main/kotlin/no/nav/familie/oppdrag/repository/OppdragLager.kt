@@ -14,16 +14,16 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class OppdragLager(@Id
-                        @Column("id") val uuid: UUID = UUID.randomUUID(),
+                        val id: UUID = UUID.randomUUID(),
                         val fagsystem: String,
-                        @Column("person_ident") val personIdent: String,
-                        @Column("fagsak_id") val fagsakId: String,
-                        @Column("behandling_id") val behandlingId: String,
+                        val personIdent: String,
+                        val fagsakId: String,
+                        val behandlingId: String,
                         val utbetalingsoppdrag: Utbetalingsoppdrag,
                         @Column("utgaaende_oppdrag") val utgåendeOppdrag: String,
                         var status: OppdragStatus = OppdragStatus.LAGT_PÅ_KØ,
-                        @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
-                        @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
+                        val avstemmingTidspunkt: LocalDateTime,
+                        val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
                         val kvitteringsmelding: Mmel?,
                         val versjon: Int = 0) {
 
@@ -55,9 +55,4 @@ val Utbetalingsoppdrag.somOppdragLager: OppdragLager
         val tilOppdrag110 = OppdragMapper().tilOppdrag110(this)
         val oppdrag = OppdragMapper().tilOppdrag(tilOppdrag110)
         return OppdragLager.lagFraOppdrag(this, oppdrag)
-    }
-
-val OppdragLager.id: OppdragId
-    get() {
-        return OppdragId(this.fagsystem, this.personIdent, this.behandlingId)
     }

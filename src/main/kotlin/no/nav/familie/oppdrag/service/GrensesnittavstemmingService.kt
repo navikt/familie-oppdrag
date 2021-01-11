@@ -5,7 +5,7 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragRepository
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,9 +13,8 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class GrensesnittavstemmingService(
-        private val avstemmingSender: AvstemmingSender,
-        private val oppdragLagerRepository: OppdragLagerRepository) {
+class GrensesnittavstemmingService(private val avstemmingSender: AvstemmingSender,
+                                   private val oppdragLagerRepository: OppdragRepository) {
 
     private var countere: MutableMap<String, Map<String, Counter>> = HashMap()
 

@@ -1,9 +1,12 @@
 package no.nav.familie.oppdrag.service
 
-import no.nav.familie.kontrakter.felles.oppdrag.*
+import no.nav.familie.kontrakter.felles.oppdrag.KonsistensavstemmingRequest
+import no.nav.familie.kontrakter.felles.oppdrag.KonsistensavstemmingRequestV2
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingMapper
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragRepository
 import no.nav.familie.oppdrag.repository.UtbetalingsoppdragForKonsistensavstemming
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,10 +15,8 @@ import java.time.LocalDateTime
 
 
 @Service
-class KonsistensavstemmingService(
-        private val avstemmingSender: AvstemmingSender,
-        private val oppdragLagerRepository: OppdragLagerRepository,
-) {
+class KonsistensavstemmingService(private val avstemmingSender: AvstemmingSender,
+                                  private val oppdragLagerRepository: OppdragRepository) {
 
     @Deprecated("Bruk KonsistensavstemmingRequestV2")
     fun utførKonsistensavstemming(request: KonsistensavstemmingRequest) {
@@ -24,12 +25,16 @@ class KonsistensavstemmingService(
         val avstemmingstidspunkt = request.avstemmingstidspunkt
 
         val utbetalingsoppdrag = oppdragIdListe.map { id ->
-            val oppdragLager = oppdragLagerRepository.hentAlleVersjonerAvOppdrag(OppdragId(fagsystem,
-                                                                                           id.personIdent,
-                                                                                           id.behandlingsId.toString()))
-                    .find { oppdragLager -> oppdragLager.status == OppdragStatus.KVITTERT_OK
-                                            || oppdragLager.status == OppdragStatus.KVITTERT_MED_MANGLER }
-            oppdragLagerRepository.hentUtbetalingsoppdrag(OppdragId(fagsystem, id.personIdent, id.behandlingsId.toString()),
+            val oppdragLager = oppdragLagerRepository.hentAlleVersjonerAvOppdrag(fagsystem,
+                                                                                 id.personIdent,
+                                                                                 id.behandlingsId.toString())
+                    .find { oppdragLager ->
+                        oppdragLager.status == OppdragStatus.KVITTERT_OK
+                        || oppdragLager.status == OppdragStatus.KVITTERT_MED_MANGLER
+                    }
+            oppdragLagerRepository.hentUtbetalingsoppdrag(fagsystem,
+                                                          id.personIdent,
+                                                          id.behandlingsId.toString(),
                                                           oppdragLager!!.versjon)
         }
 
@@ -52,7 +57,7 @@ class KonsistensavstemmingService(
         LOG.info("Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}, " +
                  "antall meldinger er ${meldinger.size} (inkl. de tre meldingene start, totalinfo og stopp)")
         meldinger.forEach {
-                avstemmingSender.sendKonsistensAvstemming(it)
+            avstemmingSender.sendKonsistensAvstemming(it)
         }
 
         LOG.info("Fullført konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}")
@@ -66,7 +71,7 @@ class KonsistensavstemmingService(
         verifyUnikeBehandlinger(perioderPåBehandling, request)
 
         val utbetalingsoppdragForKonsistensavstemming =
-            oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)
+                oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)
 
         val utbetalingsoppdrag = leggAktuellePerioderISisteUtbetalingsoppdraget(utbetalingsoppdragForKonsistensavstemming,
                                                                                 perioderPåBehandling)
@@ -93,8 +98,9 @@ class KonsistensavstemmingService(
             val aktuellePeriodeIderForFagsak =
                     perioderPåBehandling.filter { behandlingsIderForFagsak.contains(it.key) }.values.flatten()
 
-            val perioderTilKonsistensavstemming = utbetalingsoppdragListe.flatMap { it.utbetalingsoppdrag.utbetalingsperiode
-                    .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
+            val perioderTilKonsistensavstemming = utbetalingsoppdragListe.flatMap {
+                it.utbetalingsoppdrag.utbetalingsperiode
+                        .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
             }
 
             senesteUtbetalingsoppdrag.copy(utbetalingsperiode = perioderTilKonsistensavstemming)
@@ -104,7 +110,7 @@ class KonsistensavstemmingService(
     private fun verifyUnikeBehandlinger(periodeIderPåBehandling: Map<String, Set<Long>>, request: KonsistensavstemmingRequestV2) {
         if (periodeIderPåBehandling.size != request.perioderForBehandlinger.size) {
             val duplikateBehandlinger =
-                request.perioderForBehandlinger.map { it.behandlingId }.groupingBy { it }.eachCount().filter { it.value > 1 }
+                    request.perioderForBehandlinger.map { it.behandlingId }.groupingBy { it }.eachCount().filter { it.value > 1 }
             error("Behandling finnes flere ganger i requesten: ${duplikateBehandlinger.keys}")
         }
     }

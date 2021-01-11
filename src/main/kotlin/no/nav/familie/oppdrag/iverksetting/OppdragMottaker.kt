@@ -1,9 +1,9 @@
 package no.nav.familie.oppdrag.iverksetting
 
-import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
+import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.oppdrag.domene.id
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragRepository
 import no.nav.familie.oppdrag.repository.oppdragStatus
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
@@ -17,7 +17,7 @@ import javax.jms.TextMessage
 @Service
 @Profile("!e2e")
 class OppdragMottaker(
-        val oppdragLagerRepository: OppdragLagerRepository,
+        val oppdragLagerRepository: OppdragRepository,
         val env: Environment
 ) {
 
@@ -27,7 +27,7 @@ class OppdragMottaker(
     @JmsListener(destination = "\${oppdrag.mq.mottak}", containerFactory = "jmsListenerContainerFactory")
     fun mottaKvitteringFraOppdrag(melding: TextMessage) {
         var svarFraOppdrag = melding.text as String
-        if (!env.activeProfiles.any { it in LOKALE_PROFILER}) {
+        if (!env.activeProfiles.any { it in LOKALE_PROFILER }) {
             svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
         }
 
@@ -38,23 +38,24 @@ class OppdragMottaker(
 
         LOG.debug("Henter oppdrag $oppdragId fra databasen")
 
-        val førsteOppdragUtenKvittering = oppdragLagerRepository.hentAlleVersjonerAvOppdrag(oppdragId)
-                .find { oppdrag -> oppdrag.status == OppdragStatus.LAGT_PÅ_KØ }
+        val førsteOppdragUtenKvittering =
+                oppdragLagerRepository.hentAlleVersjonerAvOppdrag(oppdragId.fagsystem,
+                                                                  oppdragId.personIdent,
+                                                                  oppdragId.behandlingsId)
+                        .find { oppdrag -> oppdrag.status == OppdragStatus.LAGT_PÅ_KØ }
         if (førsteOppdragUtenKvittering == null) {
             LOG.warn("Oppdraget tilknyttet mottatt kvittering har uventet status i databasen. Oppdraget er: $oppdragId")
             return
         }
 
-        if (kvittering.mmel != null) {
-            oppdragLagerRepository.oppdaterKvitteringsmelding(oppdragId, kvittering.mmel, førsteOppdragUtenKvittering.versjon)
+        val status = if (!env.activeProfiles.contains("dev") && !env.activeProfiles.contains("e2e")) {
+            LOG.debug("Lagrer oppdatert oppdrag $oppdragId i databasen med ny status ${kvittering.oppdragStatus}")
+            kvittering.oppdragStatus
+        } else {
+            OppdragStatus.KVITTERT_OK
         }
 
-        if (!env.activeProfiles.contains("dev") && !env.activeProfiles.contains("e2e")) {
-            LOG.debug("Lagrer oppdatert oppdrag $oppdragId i databasen med ny status ${kvittering.oppdragStatus}")
-            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.oppdragStatus, førsteOppdragUtenKvittering.versjon)
-        } else {
-            oppdragLagerRepository.oppdaterStatus(oppdragId, OppdragStatus.KVITTERT_OK, førsteOppdragUtenKvittering.versjon)
-        }
+        oppdragLagerRepository.update(førsteOppdragUtenKvittering.copy(kvitteringsmelding = kvittering.mmel, status = status))
     }
 
     fun lesKvittering(svarFraOppdrag: String): Oppdrag {

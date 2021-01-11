@@ -8,7 +8,7 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.OppdragRepository
 import no.nav.familie.oppdrag.service.OppdragServiceImpl
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -47,8 +47,8 @@ internal class OppdragControllerTest {
         val mapper = OppdragMapper()
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
-        val oppdragLagerRepository = mockk<OppdragLagerRepository>()
-        every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
+        val oppdragLagerRepository = mockk<OppdragRepository>()
+        every { oppdragLagerRepository.insert(any()) } returns mockk()
 
         val oppdragService = OppdragServiceImpl(oppdragSender, oppdragLagerRepository)
 
@@ -57,7 +57,7 @@ internal class OppdragControllerTest {
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
         verify {
-            oppdragLagerRepository.opprettOppdrag(match<OppdragLager> {
+            oppdragLagerRepository.insert(match<OppdragLager> {
                 it.utgåendeOppdrag.contains("BA")
                         && it.status == OppdragStatus.LAGT_PÅ_KØ
                         && it.opprettetTidspunkt > localDateTimeNow
