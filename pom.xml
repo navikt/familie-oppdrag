@@ -34,7 +34,8 @@
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
         <sonar.organization>navit</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>**/config/FlywayConfig.kt,**/OppdragServiceE2E.kt,**/simulering/SimuleringLagerTjenesteE2E.kt</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/config/FlywayConfig.kt,**/OppdragServiceE2E.kt
+        </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
         <spring-cloud.version>2.2.6.RELEASE</spring-cloud.version>

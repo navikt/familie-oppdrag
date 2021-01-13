@@ -57,7 +57,7 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
         }
     }
 
-    override fun utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat {
+    override fun utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat? {
         val simulerBeregningRequest = simulerBeregningRequestMapper.tilSimulerBeregningRequest(utbetalingsoppdrag)
 
         secureLogger.info("Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
@@ -71,7 +71,7 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
         simuleringsLager.responseXml = Jaxb.tilXml(respons)
         simuleringLagerTjeneste.oppdater(simuleringsLager)
 
-        val beregning = respons.response.simulering
+        val beregning = respons.response?.simulering ?: return null
         return simuleringResultatTransformer.mapSimulering(beregning = beregning, utbetalingsoppdrag = utbetalingsoppdrag)
     }
 

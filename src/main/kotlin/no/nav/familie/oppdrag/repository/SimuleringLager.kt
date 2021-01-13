@@ -1,6 +1,5 @@
 package no.nav.familie.oppdrag.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
@@ -11,7 +10,6 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.*
-import javax.persistence.Convert
 
 @Table("simulering_lager")
 data class SimuleringLager(@Id val id: UUID = UUID.randomUUID(),

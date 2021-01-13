@@ -4,6 +4,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.RestSimulerResultat
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
+import no.nav.familie.oppdrag.common.RessursUtils.noContent
 import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.simulering.SimuleringTjeneste
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -12,7 +13,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
@@ -28,8 +32,14 @@ class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste
     }
 
     @PostMapping(path = ["/v1"])
-    fun utførSimuleringOgHentResultat(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
-        return ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
+    fun utførSimuleringOgHentResultat(@Valid @RequestBody
+                                      utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
+        val detaljertSimuleringResultat: DetaljertSimuleringResultat? =
+                simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag)
+        if (detaljertSimuleringResultat != null) {
+            return ok(detaljertSimuleringResultat)
+        }
+        return noContent()
     }
 
     //Temporær funksjon som skal brukes for å teste responser fra oppdrag.

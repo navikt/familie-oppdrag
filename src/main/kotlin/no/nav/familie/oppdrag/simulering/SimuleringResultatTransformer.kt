@@ -13,22 +13,25 @@ import java.time.format.DateTimeFormatter
 class SimuleringResultatTransformer {
 
     fun mapSimulering(beregning: Beregning, utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat {
-        val simuleringMottakerListe: List<SimuleringMottaker> = mutableListOf()
+        val mottakerMap = hashMapOf<String, MutableList<SimulertPostering>>()
         for (periode in beregning.beregningsPeriode) {
             for (stoppnivaa in periode.beregningStoppnivaa) {
-                val mottakerId = hentOrgNrEllerFnr(stoppnivaa.utbetalesTilId)
-                val requestMottakerId = hentOrgNrEllerFnr(utbetalingsoppdrag.aktoer)
-                val harSammeAktørIdSomBruker = requestMottakerId == mottakerId
-                val posteringer: List<SimulertPostering> = mutableListOf()
+                val posteringer = arrayListOf<SimulertPostering>()
                 for (detaljer in stoppnivaa.beregningStoppnivaaDetaljer) {
                     val postering: SimulertPostering = mapPostering(false, stoppnivaa, detaljer)
-                    posteringer.plus(postering)
+                    posteringer.add(postering)
                 }
-                val mottaker = SimuleringMottaker(simulertPostering = posteringer, mottakerNummer = beregning.gjelderId,
-                                                  mottakerType = utledMottakerType(stoppnivaa.utbetalesTilId,
-                                                                                   harSammeAktørIdSomBruker))
-                simuleringMottakerListe.plus(mottaker)
+                val utbetalesTilId = stoppnivaa.utbetalesTilId
+                val posteringListe = mottakerMap.getOrPut(utbetalesTilId) { mutableListOf() }
+                posteringListe.addAll(posteringer)
             }
+        }
+
+        val requestMottakerId = hentOrgNrEllerFnr(utbetalingsoppdrag.aktoer)
+        val simuleringMottakerListe = mottakerMap.map { (utbetalesTilId, simulertPostering) ->
+            SimuleringMottaker(mottakerNummer = utbetalesTilId,
+                               simulertPostering = simulertPostering,
+                               mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId))
         }
         return DetaljertSimuleringResultat(simuleringMottakerListe)
     }

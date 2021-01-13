@@ -61,19 +61,20 @@ class GrensesnittavstemmingService(private val avstemmingSender: AvstemmingSende
     }
 
     private fun opprettMetrikkerForFagsystem(fagsystem: Fagsystem): Map<String, Counter> {
-        val godkjentCounter = Metrics.counter("familie.oppdrag.grensesnittavstemming",
+        val PACKAGE_NAME = "familie.oppdrag.grensesnittavstemming"
+        val godkjentCounter = Metrics.counter(PACKAGE_NAME,
                                               "fagsystem", fagsystem.name,
                                               "status", Status.GODKJENT.status,
                                               "beskrivelse", Status.GODKJENT.beskrivelse)
-        val avvistCounter = Metrics.counter("familie.oppdrag.grensesnittavstemming",
+        val avvistCounter = Metrics.counter(PACKAGE_NAME,
                                             "fagsystem", fagsystem.name,
                                             "status", Status.AVVIST.status,
                                             "beskrivelse", Status.AVVIST.beskrivelse)
-        val manglerCounter = Metrics.counter("familie.oppdrag.grensesnittavstemming",
+        val manglerCounter = Metrics.counter(PACKAGE_NAME,
                                              "fagsystem", fagsystem.name,
                                              "status", Status.MANGLER.status,
                                              "beskrivelse", Status.MANGLER.beskrivelse)
-        val varselCounter = Metrics.counter("familie.oppdrag.grensesnittavstemming",
+        val varselCounter = Metrics.counter(PACKAGE_NAME,
                                             "fagsystem", fagsystem.name,
                                             "status", Status.VARSEL.status,
                                             "beskrivelse", Status.VARSEL.beskrivelse)
