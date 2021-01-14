@@ -26,6 +26,9 @@ spring:
       database:
         role: familie
 
+logging:
+  config: "classpath:logback-e2e.xml"
+
 ACCEPTED_CLIENTS: ${OPPDRAG_BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
 CREDENTIAL_USERNAME: not-a-real-srvuser
