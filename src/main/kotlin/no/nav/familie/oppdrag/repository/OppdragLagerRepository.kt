@@ -15,4 +15,7 @@ interface OppdragLagerRepository {
     fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int = 0)
     fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel, versjon: Int = 0)
     fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragLager>
+
+    fun hentUtbetalingsoppdragForKonsistensavstemming(fagsystem: String,
+                                                      behandlingIder: Set<String>): List<UtbetalingsoppdragForKonsistensavstemming>
 }

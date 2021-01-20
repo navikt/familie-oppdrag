@@ -2,7 +2,6 @@ package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.oppdragId
-import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.service.OppdragService

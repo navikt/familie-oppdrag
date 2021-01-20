@@ -27,6 +27,8 @@ object RessursUtils {
 
     fun <T> ok(data: T): ResponseEntity<Ressurs<T>> = ResponseEntity.ok(Ressurs.success(data))
 
+    fun <T> noContent(): ResponseEntity<Ressurs<T>> = ResponseEntity.noContent().build()
+
     private fun <T> errorResponse(httpStatus: HttpStatus,
                                   errorMessage: String,
                                   throwable: Throwable?): ResponseEntity<Ressurs<T>> {

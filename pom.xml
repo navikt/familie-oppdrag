@@ -20,10 +20,10 @@
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>11</jvmTarget>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <kotlin.version>1.4.10</kotlin.version>
-        <felles.version>1.20200514152201_7054ead</felles.version>
+        <kotlin.version>1.4.20</kotlin.version>
+        <felles.version>1.20210114091432_ef96974</felles.version>
         <common-java-modules.version>1.2020.11.16_14.52-3f16e0d8c867</common-java-modules.version>
-        <kontrakter.version>2.0_20201104125652_0e8004b</kontrakter.version>
+        <kontrakter.version>2.0_20210119112648_d10ba4d</kontrakter.version>
         <token-validation-spring.version>1.3.1</token-validation-spring.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-core.version>2.3.0.1</jaxb-core.version>
@@ -34,13 +34,15 @@
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
         <sonar.organization>navit</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>**/config/FlywayConfig.kt,**/OppdragServiceE2E.kt</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/config/FlywayConfig.kt,**/OppdragServiceE2E.kt
+        </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
         <spring-cloud.version>2.2.6.RELEASE</spring-cloud.version>
         <spring.vault>2.2.2.RELEASE</spring.vault>
         <testcontainers.version>1.12.1</testcontainers.version>
-        <tjenestespesifikasjoner.version>1.2020.01.30-14.36-cdf257baea96</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.2020.10.07-08.40-90b3ab7bad15</tjenestespesifikasjoner.version>
+        <swagger.version>3.0.0</swagger.version>
 
     </properties>
 

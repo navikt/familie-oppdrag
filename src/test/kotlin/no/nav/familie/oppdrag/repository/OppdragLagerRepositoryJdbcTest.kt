@@ -1,12 +1,14 @@
 package no.nav.familie.oppdrag.repository
 
 import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import no.trygdeetaten.skjema.oppdrag.Mmel
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
@@ -19,8 +21,8 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.test.assertFailsWith
-import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 
 
 @ActiveProfiles("dev")
@@ -78,7 +80,7 @@ internal class OppdragLagerRepositoryJdbcTest {
         oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, kvitteringsmelding)
 
         val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
-        assertEquals(objectMapper.writeValueAsString(kvitteringsmelding), hentetOppdatertOppdrag.kvitteringsmelding)
+        assertThat(kvitteringsmelding).isEqualToComparingFieldByField(hentetOppdatertOppdrag.kvitteringsmelding)
     }
 
     private fun kvitteringsmelding(): Mmel {
@@ -89,14 +91,15 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun skal_kun_hente_ut_ett_BA_oppdrag_for_grensesnittavstemming() {
-        val startenPåDagen = LocalDateTime.now().withHour(0).withMinute(0)
-        val sluttenAvDagen = LocalDateTime.now().withHour(23).withMinute(59)
+        val dag = LocalDateTime.now();
+        val startenPåDagen = dag.withHour(0).withMinute(0)
+        val sluttenAvDagen = dag.withHour(23).withMinute(59)
 
-        val avstemmingsTidspunktetSomSkalKjøres = LocalDateTime.now()
+        val avstemmingsTidspunktetSomSkalKjøres = dag
 
         val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
-        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now().minusDays(1), "BA").somOppdragLager
-        val efOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), "EFOG").somOppdragLager
+        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag.minusDays(1), "BA").somOppdragLager
+        val efOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag, "EFOG").somOppdragLager
 
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
@@ -106,8 +109,8 @@ internal class OppdragLagerRepositoryJdbcTest {
 
         assertEquals(1, oppdrageneTilGrensesnittavstemming.size)
         assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
-        assertEquals(avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")),
-                oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")))
+        assertEquals(avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")),
+                oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")))
     }
 
     @Test
@@ -121,7 +124,34 @@ internal class OppdragLagerRepositoryJdbcTest {
         val utbetalingsoppdrag = oppdragLagerRepository.hentUtbetalingsoppdrag(baOppdragLager.id)
         val utbetalingsoppdrag2 = oppdragLagerRepository.hentUtbetalingsoppdrag(baOppdragLager2.id)
 
-        assertEquals(baOppdragLager.utbetalingsoppdrag, objectMapper.writeValueAsString(utbetalingsoppdrag))
-        assertEquals(baOppdragLager2.utbetalingsoppdrag, objectMapper.writeValueAsString(utbetalingsoppdrag2))
+        assertEquals(baOppdragLager.utbetalingsoppdrag, utbetalingsoppdrag)
+        assertEquals(baOppdragLager2.utbetalingsoppdrag, utbetalingsoppdrag2)
+    }
+
+    @Test
+    fun `hentUtbetalingsoppdragForKonsistensavstemming går fint`() {
+        val forrigeMåned = LocalDateTime.now().minusMonths(1)
+        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA")
+        val baOppdragLager = utbetalingsoppdrag.somOppdragLager.copy(status = OppdragStatus.KVITTERT_OK)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager, 1)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager, 2)
+        val behandlingB = baOppdragLager.copy(behandlingId = UUID.randomUUID().toString())
+        oppdragLagerRepository.opprettOppdrag(behandlingB)
+
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager.copy(fagsakId = UUID.randomUUID().toString(),
+                                                                  behandlingId = UUID.randomUUID().toString()))
+        assertThat(oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(baOppdragLager.fagsystem,
+                                                                                        setOf("finnes ikke")))
+                .isEmpty()
+
+        assertThat(oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(baOppdragLager.fagsystem,
+                                                                                        setOf(baOppdragLager.behandlingId)))
+                .hasSize(1)
+
+        assertThat(oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(baOppdragLager.fagsystem,
+                                                                                        setOf(baOppdragLager.behandlingId,
+                                                                                              behandlingB.behandlingId)))
+                .hasSize(2)
     }
 }

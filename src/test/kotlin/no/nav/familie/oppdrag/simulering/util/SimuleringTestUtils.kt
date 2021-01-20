@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.simulering.util
 
+import io.mockk.InternalPlatformDsl.toStr
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.nav.familie.oppdrag.simulering.TypeKlasse
@@ -11,7 +12,6 @@ import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.S
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Month
 import java.time.YearMonth
 import java.time.temporal.TemporalAdjusters
 import java.util.*
@@ -96,7 +96,7 @@ fun lagBeregningStoppnivaFeilUtbetaling(date: LocalDate,
     beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
     beregningStoppnivaa.kodeFagomraade = fagOmrade
 
-    lagBeregningStoppnivaaDetaljer(TypeKlasse.FEIL.name)
+    beregningStoppnivaa.beregningStoppnivaaDetaljer.add(lagBeregningStoppnivaaDetaljer(TypeKlasse.FEIL.name))
 
     return beregningStoppnivaa
 }
@@ -109,7 +109,8 @@ fun lagBeregningStoppniva(date: LocalDate,
     beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
     beregningStoppnivaa.kodeFagomraade = fagOmrade
 
-    beregningStoppnivaa.beregningStoppnivaaDetaljer.add(lagBeregningStoppnivaaDetaljer())
+    beregningStoppnivaa.beregningStoppnivaaDetaljer.add(lagBeregningStoppnivaaDetaljer(dato = date))
+    beregningStoppnivaa.utbetalesTilId = "1234567890"
 
     return beregningStoppnivaa
 }
@@ -128,9 +129,12 @@ fun lagBeregningStoppnivaRevurdering(date: LocalDate,
 }
 
 private fun lagBeregningStoppnivaaDetaljer(typeKlasse: String = TypeKlasse.YTEL.name,
-                                           belop: BigDecimal = BigDecimal(1000)): BeregningStoppnivaaDetaljer {
+                                           belop: BigDecimal = BigDecimal(1000),
+                                           dato: LocalDate? = null): BeregningStoppnivaaDetaljer {
     val beregningStoppnivaaDetaljer = BeregningStoppnivaaDetaljer()
     beregningStoppnivaaDetaljer.typeKlasse = typeKlasse
     beregningStoppnivaaDetaljer.belop = belop
+    beregningStoppnivaaDetaljer.faktiskFom = dato?.toStr()
+    beregningStoppnivaaDetaljer.faktiskTom = dato?.plusMonths(1).toStr()
     return beregningStoppnivaaDetaljer
 }

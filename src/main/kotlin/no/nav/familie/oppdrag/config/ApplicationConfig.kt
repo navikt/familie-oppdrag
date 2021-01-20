@@ -9,11 +9,13 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootConfiguration
 @EntityScan(ApplicationConfig.pakkenavn, "no.nav.familie.sikkerhet")
 @ComponentScan(ApplicationConfig.pakkenavn, "no.nav.familie.sikkerhet")
-@EnableJwtTokenValidation
+@EnableScheduling
+@EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger"])
 class ApplicationConfig {
 
 

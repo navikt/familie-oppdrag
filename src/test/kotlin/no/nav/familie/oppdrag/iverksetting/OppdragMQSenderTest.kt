@@ -12,6 +12,7 @@ import no.trygdeetaten.skjema.oppdrag.Oppdrag110
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
+import org.springframework.jms.annotation.EnableJms
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.test.context.ContextConfiguration
@@ -32,6 +33,7 @@ private const val TEST_FAGSAKID = "123456789"
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
 @ContextConfiguration(initializers = arrayOf(Containers.MQInitializer::class))
+@EnableJms
 class OppdragMQSenderTest {
 
     companion object {

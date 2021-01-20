@@ -40,6 +40,7 @@ private fun finnEtterbetalingPerPeriode(beregningsPeriode: BeregningsPeriode, da
 private fun forfallPassert(forfall: String, dato: LocalDate): Boolean =
         dato >= LocalDate.parse(forfall, DateTimeFormatter.ISO_DATE)
 
+// TODO: Er dette det same som PosteringType?
 enum class TypeKlasse {
     FEIL,
     YTEL
