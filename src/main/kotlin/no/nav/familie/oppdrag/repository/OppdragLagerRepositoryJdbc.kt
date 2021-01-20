@@ -9,12 +9,17 @@ import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.slf4j.LoggerFactory
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.NoSuchElementException
 
 @Repository
-class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerRepository {
+class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate,
+                                 val namedParameterJdbcTemplate: NamedParameterJdbcTemplate) : OppdragLagerRepository {
 
     internal var LOG = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
 
@@ -22,7 +27,10 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
         val hentStatement = "SELECT * FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ? AND versjon = ?"
 
         val listeAvOppdrag = jdbcTemplate.query(hentStatement,
-                                  arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem, versjon),
+                                  arrayOf(oppdragId.behandlingsId,
+                                          oppdragId.personIdent,
+                                          oppdragId.fagsystem,
+                                          versjon),
                                   OppdragLagerRowMapper())
 
         return when( listeAvOppdrag.size ) {
@@ -40,10 +48,11 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
 
     override fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int) {
         val insertStatement = "INSERT INTO oppdrag_lager " +
-                "(utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
-                " VALUES (?,?,?,?,?,?,?,?,?,?)"
+                "(id, utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?)"
 
         jdbcTemplate.update(insertStatement,
+                            UUID.randomUUID(),
                             oppdragLager.utgåendeOppdrag,
                             oppdragLager.status.name,
                             oppdragLager.opprettetTidspunkt,
@@ -52,7 +61,7 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
                             oppdragLager.behandlingId,
                             oppdragLager.fagsystem,
                             oppdragLager.avstemmingTidspunkt,
-                            oppdragLager.utbetalingsoppdrag,
+                            objectMapper.writeValueAsString(oppdragLager.utbetalingsoppdrag),
                             versjon)
     }
 
@@ -103,22 +112,49 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: JdbcTemplate) : OppdragLagerR
                 arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
                 OppdragLagerRowMapper())
     }
+
+    override fun hentUtbetalingsoppdragForKonsistensavstemming(fagsystem: String,
+                                                               behandlingIder: Set<String>)
+    : List<UtbetalingsoppdragForKonsistensavstemming> {
+
+        val query = """SELECT fagsak_id, behandling_id, utbetalingsoppdrag FROM (
+                        SELECT fagsak_id, behandling_id, utbetalingsoppdrag, 
+                          row_number() OVER (PARTITION BY fagsak_id, behandling_id ORDER BY versjon DESC) rn
+                          FROM oppdrag_lager WHERE fagsystem=:fagsystem AND behandling_id IN (:behandlingIder)
+                          AND status IN (:status)) q 
+                        WHERE rn = 1"""
+
+        val status = setOf(OppdragStatus.KVITTERT_OK, OppdragStatus.KVITTERT_MED_MANGLER).map { it.name }
+        val values = MapSqlParameterSource()
+                .addValue("fagsystem", fagsystem)
+                .addValue("behandlingIder", behandlingIder)
+                .addValue("status", status)
+        return namedParameterJdbcTemplate.query(query, values) { resultSet, _ ->
+            UtbetalingsoppdragForKonsistensavstemming(
+                    resultSet.getString("fagsak_id"),
+                resultSet.getString("behandling_id"),
+                objectMapper.readValue(resultSet.getString("utbetalingsoppdrag"))
+            )
+        }
+    }
 }
 
 class OppdragLagerRowMapper : RowMapper<OppdragLager> {
 
     override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragLager? {
+        val kvittering = resultSet.getString(10)
         return OppdragLager(
+                UUID.fromString(resultSet.getString (12) ?: UUID.randomUUID().toString()),
                 resultSet.getString(7),
                 resultSet.getString(4),
                 resultSet.getString(5),
                 resultSet.getString(6),
-                resultSet.getString(9),
+                objectMapper.readValue(resultSet.getString(9)),
                 resultSet.getString(1),
                 OppdragStatus.valueOf(resultSet.getString(2)),
                 resultSet.getTimestamp(8).toLocalDateTime(),
                 resultSet.getTimestamp(3).toLocalDateTime(),
-                resultSet.getString(10),
+                if (kvittering == null) null else  objectMapper.readValue(kvittering),
                 resultSet.getInt(11))
     }
 }

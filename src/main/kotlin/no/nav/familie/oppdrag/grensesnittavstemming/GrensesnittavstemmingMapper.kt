@@ -79,14 +79,14 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
         return oppdragsliste.mapNotNull { oppdrag ->
             val detaljType = opprettDetaljType(oppdrag)
             if (detaljType != null) {
-                val utbetalingsoppdrag = fraInputDataTilUtbetalingsoppdrag(oppdrag.utbetalingsoppdrag)
+                val utbetalingsoppdrag = oppdrag.utbetalingsoppdrag
                 Detaljdata().apply {
                     this.detaljType = detaljType
                     this.offnr = utbetalingsoppdrag.aktoer
                     this.avleverendeTransaksjonNokkel = fagområde
                     this.tidspunkt = oppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
                     if (detaljType in listOf(DetaljType.AVVI, DetaljType.VARS) && oppdrag.kvitteringsmelding != null) {
-                        val kvitteringsmelding = fraKvitteringTilKvitteringsmelding(oppdrag.kvitteringsmelding)
+                        val kvitteringsmelding = oppdrag.kvitteringsmelding
                         this.meldingKode = kvitteringsmelding.kodeMelding
                         this.alvorlighetsgrad = kvitteringsmelding.alvorlighetsgrad
                         this.tekstMelding = kvitteringsmelding.beskrMelding
@@ -107,12 +107,6 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
                 OppdragStatus.KVITTERT_OK -> null
                 OppdragStatus.KVITTERT_UKJENT -> null
             }
-
-    private fun fraInputDataTilUtbetalingsoppdrag(inputData : String) : Utbetalingsoppdrag =
-        objectMapper.readValue(inputData)
-
-    private fun fraKvitteringTilKvitteringsmelding(kvittering : String) : Mmel =
-            objectMapper.readValue(kvittering)
 
     private fun opprettTotalData() : Totaldata {
         val totalBeløp = oppdragsliste.map { getSatsBeløp(it) }.sum()
@@ -178,7 +172,7 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
     }
 
     private fun getSatsBeløp(oppdrag: OppdragLager) : Long =
-            fraInputDataTilUtbetalingsoppdrag(oppdrag.utbetalingsoppdrag).utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
+            oppdrag.utbetalingsoppdrag.utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
 
     private fun getFortegn(satsbeløp: Long): Fortegn {
         return if (satsbeløp >= 0) Fortegn.T else Fortegn.F

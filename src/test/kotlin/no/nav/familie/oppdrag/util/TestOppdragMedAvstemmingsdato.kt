@@ -6,53 +6,47 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import kotlin.random.Random
 
 object TestOppdragMedAvstemmingsdato {
 
     private val FAGSAKID = "123456789"
     private val AKTOER = "12345678911"
-    private val SATS = BigDecimal.valueOf(1054)
 
-    fun lagTestUtbetalingsoppdrag(avstemmingstidspunkt : LocalDateTime, fagområde: String) = Utbetalingsoppdrag(
-            Utbetalingsoppdrag.KodeEndring.NY,
-            fagområde,
-            FAGSAKID,
-            AKTOER,
-            "Z999999",
-            avstemmingstidspunkt,
-            listOf(Utbetalingsperiode(false,
-                    null,
-                    1,
-                    null,
-                    LocalDate.now(),
-                    if (fagområde.equals("BA")) "BATR" else "EF",
-                    LocalDate.now().withDayOfMonth(1),
-                    LocalDate.now().plusYears(6),
-                    SATS,
-                    Utbetalingsperiode.SatsType.MND,
+    fun lagTestUtbetalingsoppdrag(
+            avstemmingstidspunkt: LocalDateTime, fagområde: String,
+            fagsak: String = FAGSAKID,
+            vararg utbetalingsperiode: Utbetalingsperiode = arrayOf(lagUtbetalingsperiode(fagområde)),
+    ) =
+            Utbetalingsoppdrag(
+                    Utbetalingsoppdrag.KodeEndring.NY,
+                    fagområde,
+                    fagsak,
                     AKTOER,
-                    Random.nextLong()))
-    )
+                    "Z999999",
+                    avstemmingstidspunkt,
+                    utbetalingsperiode.toList()
+            )
 
-    fun lagTestUtbetalingsoppdragMedPeriode(avstemmingstidspunkt : LocalDateTime, fagområde: String, fom: LocalDate, tom: LocalDate) = Utbetalingsoppdrag(
-            Utbetalingsoppdrag.KodeEndring.NY,
-            fagområde,
-            FAGSAKID,
-            AKTOER,
-            "Z999999",
-            avstemmingstidspunkt,
-            listOf(Utbetalingsperiode(false,
-                    null,
-                    1,
-                    null,
-                    LocalDate.now(),
-                    if (fagområde.equals("BA")) "BATR" else "EF",
-                    fom,
-                    tom,
-                    SATS,
-                    Utbetalingsperiode.SatsType.MND,
-                    AKTOER,
-                    Random.nextLong()))
-    )
+    fun lagUtbetalingsperiode(
+            fagområde: String = "BA",
+            periodeId: Long = 1,
+            beløp: Int = 100,
+            fom: LocalDate = LocalDate.now().withDayOfMonth(1),
+            tom: LocalDate = LocalDate.now().plusYears(6),
+    ) =
+            Utbetalingsperiode(false,
+                               null,
+                               periodeId,
+                               null,
+                               LocalDate.now(),
+                               if (fagområde.equals("BA")) "BATR" else "EF",
+                               fom,
+                               tom,
+                               beløp.toBigDecimal(),
+                               Utbetalingsperiode.SatsType.MND,
+                               AKTOER,
+                               Random.nextLong())
+
 }

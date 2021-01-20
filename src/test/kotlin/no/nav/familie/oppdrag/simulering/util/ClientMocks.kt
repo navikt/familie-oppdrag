@@ -1,10 +1,7 @@
 package no.nav.familie.oppdrag.simulering.util
 
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.system.os.eksponering.simulerfpservicewsbinding.SimulerFpService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
