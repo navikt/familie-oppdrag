@@ -17,7 +17,7 @@ no.nav.security.jwt:
     proxyurl: http://webproxy-nais.nav.no:8088
     cookie_name: azure_token
 
-ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}
+ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}, ${EF_IVERKSETT_CLIENT_ID}
 
 spring:
   datasource:
