@@ -44,6 +44,10 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
 
     private fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest,
                                              utbetalingsoppdrag: Utbetalingsoppdrag): SimulerBeregningResponse {
+
+        secureLogger.info("request: ${simulerBeregningRequest}")
+        secureLogger.info("utbetalingsoppdrag: ${utbetalingsoppdrag}")
+
         try {
             val response = simuleringSender.hentSimulerBeregningResponse(simulerBeregningRequest)
             secureLogger.info("Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
