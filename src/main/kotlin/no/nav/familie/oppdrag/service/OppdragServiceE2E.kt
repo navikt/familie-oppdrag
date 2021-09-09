@@ -27,8 +27,8 @@ class OppdragServiceE2E(
         oppdragLagerRepository.oppdaterStatus(oppdrag.id, OppdragStatus.KVITTERT_OK)
     }
 
-    override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragStatus {
-        return oppdragLagerRepository.hentOppdrag(oppdragId).status
+    override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager {
+        return oppdragLagerRepository.hentOppdrag(oppdragId)
     }
 
     companion object {

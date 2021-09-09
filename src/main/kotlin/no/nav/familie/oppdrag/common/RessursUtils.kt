@@ -25,7 +25,7 @@ object RessursUtils {
     fun <T> illegalState(errorMessage: String, throwable: Throwable): ResponseEntity<Ressurs<T>> =
             errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
 
-    fun <T> ok(data: T): ResponseEntity<Ressurs<T>> = ResponseEntity.ok(Ressurs.success(data))
+    fun <T> ok(data: T, melding: String? = null): ResponseEntity<Ressurs<T>> = ResponseEntity.ok(Ressurs.success(data, melding))
 
     fun <T> noContent(): ResponseEntity<Ressurs<T>> = ResponseEntity.noContent().build()
 

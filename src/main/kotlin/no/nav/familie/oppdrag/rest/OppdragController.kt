@@ -66,7 +66,7 @@ class OppdragController(@Autowired val oppdragService: OppdragService,
                             notFound("Fant ikke oppdrag med id $oppdragId")
                         },
                         onSuccess = {
-                            ok(it)
+                            ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "Savner kvitteringsmelding")
                         }
                 )
     }
