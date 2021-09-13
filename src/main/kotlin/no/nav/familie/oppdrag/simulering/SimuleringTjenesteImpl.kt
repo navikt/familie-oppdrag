@@ -10,11 +10,9 @@ import no.nav.familie.oppdrag.repository.SimuleringLagerTjeneste
 import no.nav.system.os.eksponering.simulerfpservicewsbinding.SimulerBeregningFeilUnderBehandling
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
-import org.springframework.remoting.soap.SoapFaultException
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 import javax.xml.ws.soap.SOAPFaultException
@@ -51,14 +49,13 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
             return response
         } catch (ex: SimulerBeregningFeilUnderBehandling) {
             val feilmelding = genererFeilmelding(ex)
-
-            LOG.info(feilmelding)
+            secureLogger.warn(feilmelding)
             throw Exception(feilmelding, ex)
         } catch (ex: SOAPFaultException) {
-            LOG.info(ex.fault.faultCode)
-            LOG.info(ex.fault.faultString)
+            secureLogger.warn(ex.fault.faultCode)
+            secureLogger.warn(ex.fault.faultString)
             throw Exception(ex.message, ex)
-        }catch (ex: Throwable) {
+        } catch (ex: Throwable) {
             throw Exception(ex.message, ex)
         }
     }
@@ -94,6 +91,5 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
     companion object {
 
         val secureLogger = LoggerFactory.getLogger("secureLogger")
-        val LOG: Logger = LoggerFactory.getLogger(SimuleringTjenesteImpl::class.java)
     }
 }
