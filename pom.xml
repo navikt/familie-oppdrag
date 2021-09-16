@@ -211,6 +211,11 @@
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
         <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>tilbakekreving-v1-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>cxf</artifactId>
             <version>${common-java-modules.version}</version>
@@ -296,6 +301,11 @@
             <version>${cxf.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-ri</artifactId>
             <version>3.0.2</version>
@@ -366,7 +376,7 @@
             <plugins>
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
-                        <artifactId>sonar-maven-plugin</artifactId>
+                    <artifactId>sonar-maven-plugin</artifactId>
                     <version>3.9.0.2155</version>
                 </plugin>
                 <plugin>
@@ -439,6 +449,47 @@
                                     <xsd>${basedir}/src/main/resources/xsd/avstemmingskjema-v1.xsd</xsd>
                                 </xsdOption>
                             </xsdOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Plugin required to build java classes from XSD using XJC -->
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <configuration>
+                    <markGenerated>true</markGenerated>
+                    <enableIntrospection>true</enableIntrospection>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics</artifactId>
+                            <version>1.11.1-PUBLISHED-BY-MISTAKE</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics-annotate</artifactId>
+                            <version>1.1.0</version>
+                        </plugin>
+                    </plugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>kravgrunnlag</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>${basedir}/src/main/resources/xsd/</schemaDirectory>
+                            <schemaIncludes>
+                                <include>krav_og_vedtakstatus.xsd</include>
+                                <include>kravgrunnlag_annuller.xsd</include>
+                                <include>kravgrunnlag_detalj.xsd</include>
+                                <include>kravgrunnlag_liste.xsd</include>
+                                <include>tilbakekrevingsvedtak.xsd</include>
+                            </schemaIncludes>
+                            <generateDirectory>${project.build.directory}/generated-sources/kravgrunnlag</generateDirectory>
                         </configuration>
                     </execution>
                 </executions>
