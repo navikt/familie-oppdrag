@@ -1,8 +1,8 @@
 version: 2
 registries:
-  maven-repository-maven-pkg-github-com-navikt-fp-felles:
+  familie-felles:
     type: maven-repository
-    url: https://maven.pkg.github.com/navikt/fp-felles/
+    url: https://maven.pkg.github.com/navikt/familie-felles
     username: x-access-token
     password: "${{secrets.NAV_READ_PACKAGES}}"
 
@@ -14,41 +14,8 @@ updates:
     day: "sunday"
     time: "04:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: no.nav.familie.felles:sikkerhet
-    versions:
-    - 1.20210416135502_5bf9eff
-  - dependency-name: no.nav.familie.felles:http-client
-    versions:
-    - 1.20210416135502_5bf9eff
-  - dependency-name: no.nav.familie.felles:log
-    versions:
-    - 1.20210416135502_5bf9eff
-  - dependency-name: org.flywaydb:flyway-core
-    versions:
-    - 7.7.0
-    - 7.7.2
-  - dependency-name: org.apache.cxf:cxf-xjc-plugin
-    versions:
-    - 3.3.1
-  - dependency-name: no.nav.common:cxf
-    versions:
-    - 2.2021.03.03_08.24-3686938439d9
-  - dependency-name: no.nav.familie.kontrakter:felles
-    versions:
-    - 2.0_20210305131536_dd4cd5d
-    - 2.0_20210308102146_90cb778
-  - dependency-name: org.testcontainers:junit-jupiter
-    versions:
-    - 1.15.2
-  - dependency-name: org.testcontainers:postgresql
-    versions:
-    - 1.15.2
-  - dependency-name: org.testcontainers:testcontainers
-    versions:
-    - 1.15.2
   registries:
-  - maven-repository-maven-pkg-github-com-navikt-fp-felles
+  - familie-felles
 - package-ecosystem: github-actions
   directory: "/"
   schedule:

@@ -41,6 +41,26 @@ spec:
     - https://familie-oppdrag.dev.intern.nav.no
   secureLogs:
     enabled: true
+  azure:
+    application:
+      enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ks-sak
+        - application: familie-ba-sak
+        - application: familie-tilbake
+          cluster: dev-gcp
+        - application: familie-tilbake-lokal
+          cluster: dev-gcp
+        - application: familie-ef-sak
+          cluster: dev-gcp
+        - application: familie-ef-sak-lokal
+          cluster: dev-gcp
+        - application: familie-ef-iverksett
+          cluster: dev-gcp
+        - application: familie-ef-iverksett-lokal
+          cluster: dev-gcp
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod

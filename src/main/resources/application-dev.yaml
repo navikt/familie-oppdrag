@@ -12,8 +12,8 @@ oppdrag.mq:
 
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
-    accepted_audience: ${CLIENT_ID}
+    discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+    accepted_audience: ${AZURE_APP_CLIENT_ID}
     cookie_name: azure_token
 
 ACCEPTED_CLIENTS: ${BA_SAK_CLIENT_ID}, ${EF_SAK_CLIENT_ID}, ${EF_IVERKSETT_CLIENT_ID}, ${FAMILIE_TILBAKE_CLIENT_ID}
@@ -28,3 +28,4 @@ CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
 SERVICEUSER_USERNAME: not-a-real-srvuser
 SERVICEUSER_PASSWORD: not-a-real-pw
+AZURE_APP_WELL_KNOWN_URL: "https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration"
