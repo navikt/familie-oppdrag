@@ -20,8 +20,10 @@
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>17</jvmTarget>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
+        <common-java-modules.version>2.2021.11.10_07.34-c6f02734d4ab</common-java-modules.version>        
         <kotlin.version>1.6.10</kotlin.version>
-        <common-java-modules.version>2.2021.09.13_10.34-f267beb49e1e</common-java-modules.version>        <felles.version>1.20211217154554_3bb883e</felles.version>
+        <common-java-modules.version>2.2021.09.13_10.34-f267beb49e1e</common-java-modules.version>        
+        <felles.version>1.20211217154554_3bb883e</felles.version>
         <felles.version>1.20210419103325_d044927</felles.version>
         <kontrakter.version>2.0_20211220104445_a348ae3</kontrakter.version>
         <token-validation-spring.version>1.3.9</token-validation-spring.version>
