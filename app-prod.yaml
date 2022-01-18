@@ -49,6 +49,8 @@ spec:
       rules:
         - application: familie-ks-sak
         - application: familie-ba-sak
+          cluster: prod-gcp
+        - application: familie-ba-sak
         - application: familie-tilbake
           cluster: prod-gcp
         - application: familie-ef-sak
