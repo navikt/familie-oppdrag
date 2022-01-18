@@ -52,10 +52,11 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
                               mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response))
             return response
         } catch (ex: SimulerBeregningFeilUnderBehandling) {
-            if (ex.message?.contains("Personen finnes ikke i TPS") == true) {
+            val feilmelding = genererFeilmelding(ex)
+            if (feilmelding.contains("Personen finnes ikke i TPS")) {
                 throw FinnesIkkeITps(Integrasjonssystem.SIMULERING)
             }
-            throw IntegrasjonException(Integrasjonssystem.SIMULERING, genererFeilmelding(ex), ex)
+            throw IntegrasjonException(Integrasjonssystem.SIMULERING, feilmelding, ex)
         } catch (ex: Exception) {
             logSoapFaultException(ex)
             throw IntegrasjonException(Integrasjonssystem.SIMULERING, "Ukjent feil mot simulering", ex)
