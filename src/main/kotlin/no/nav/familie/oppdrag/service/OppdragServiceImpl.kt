@@ -1,7 +1,6 @@
 package no.nav.familie.oppdrag.service
 
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
-import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
@@ -17,16 +16,17 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Profile("!e2e")
 class OppdragServiceImpl(
-        @Autowired private val oppdragSender: OppdragSender,
-        @Autowired private val oppdragLagerRepository: OppdragLagerRepository): OppdragService {
+    @Autowired private val oppdragSender: OppdragSender,
+    @Autowired private val oppdragLagerRepository: OppdragLagerRepository
+) : OppdragService {
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdrag(utbetalingsoppdrag : Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
-        LOG.debug("Legger oppdrag på kø "+oppdrag.id)
-        oppdragSender.sendOppdrag(oppdrag)
-
-        LOG.debug("Lagrer oppdrag i databasen "+oppdrag.id)
+    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
+        LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)
+
+        LOG.debug("Legger oppdrag på kø " + oppdrag.id)
+        oppdragSender.sendOppdrag(oppdrag)
     }
 
     override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager {
@@ -36,5 +36,4 @@ class OppdragServiceImpl(
     companion object {
         val LOG = LoggerFactory.getLogger(OppdragServiceImpl::class.java)
     }
-
 }
