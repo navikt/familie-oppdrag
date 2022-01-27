@@ -5,6 +5,7 @@ import no.nav.familie.kontrakter.felles.oppdrag.RestSimulerResultat
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.oppdrag.common.logSoapFaultException
+import no.nav.familie.oppdrag.config.FinnesIkkeITps
 import no.nav.familie.oppdrag.config.IntegrasjonException
 import no.nav.familie.oppdrag.config.Integrasjonssystem
 import no.nav.familie.oppdrag.iverksetting.Jaxb
@@ -51,7 +52,11 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
                               mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response))
             return response
         } catch (ex: SimulerBeregningFeilUnderBehandling) {
-            throw IntegrasjonException(Integrasjonssystem.SIMULERING, genererFeilmelding(ex), ex)
+            val feilmelding = genererFeilmelding(ex)
+            if (feilmelding.contains("Personen finnes ikke i TPS")) {
+                throw FinnesIkkeITps(Integrasjonssystem.SIMULERING)
+            }
+            throw IntegrasjonException(Integrasjonssystem.SIMULERING, feilmelding, ex)
         } catch (ex: Exception) {
             logSoapFaultException(ex)
             throw IntegrasjonException(Integrasjonssystem.SIMULERING, "Ukjent feil mot simulering", ex)

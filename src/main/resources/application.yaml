@@ -26,14 +26,23 @@ spring:
       data-source-properties.stringtype: unspecified # Nødvendig for å kunde sende en String til et json-felt i PostgresSql
 
 management:
-  endpoint.health.show-details: always
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readyness:
+          include: db
+        liveness:
+          include: db
   endpoints.web:
     exposure.include: info, health, metrics, prometheus
     base-path: "/internal"
-    path-mapping:
-      info: "status/isAlive"
   metrics.export.prometheus.enabled: true
   health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
     db:
       enabled: true
 

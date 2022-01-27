@@ -37,4 +37,11 @@ class ApiExceptionHandler {
                 .body(Ressurs.failure(errorMessage = feil.message))
     }
 
+    @ExceptionHandler(FinnesIkkeITps::class)
+    fun handleThrowable(feil: FinnesIkkeITps): ResponseEntity<Ressurs<Nothing>> {
+        logger.warn("Personen finnes ikke i TPS system=${feil.system} ")
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Ressurs.failure(errorMessage = "Personen finnes ikke i TPS"))
+    }
+
 }
