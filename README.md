@@ -4,6 +4,9 @@ Generell proxy mot Oppdragsystemet (OS) for familie-ytelsene
 ## Bygging
 Bygging gjøres med `mvn clean install`. 
 
+## Swagger
+http://localhost:8087/swagger-ui.html
+
 ## Kjøring lokalt
 #### Sett environment variabel
 ```
