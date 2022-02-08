@@ -43,8 +43,6 @@
         <testcontainers.version>1.16.3</testcontainers.version>
         <tjenestespesifikasjoner.version>1.2021.02.22-10.45-4201aaea72fb</tjenestespesifikasjoner.version>
         <springdoc.version>1.6.5</springdoc.version>
-        <!-- Setter disse til token-support sine versjoner, versjoner(9.x) i spring er ikke kompatibel med oauth2-oidc-sdk -->
-        <nimbus-jose-jwt.version>8.20.2</nimbus-jose-jwt.version>
 
     </properties>
 
