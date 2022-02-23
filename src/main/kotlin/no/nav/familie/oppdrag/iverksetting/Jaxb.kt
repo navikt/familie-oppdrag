@@ -15,11 +15,10 @@ object Jaxb {
     val jaxbContext = JAXBContext.newInstance(Oppdrag::class.java,
                                               SimulerBeregningRequest::class.java,
                                               SimulerBeregningResponse::class.java)
-    val unmarshaller = jaxbContext.createUnmarshaller()
     val xmlInputFactory = XMLInputFactory.newInstance()
 
     fun tilOppdrag(oppdragXml: String): Oppdrag {
-        val oppdrag = unmarshaller.unmarshal(
+        val oppdrag = jaxbContext.createUnmarshaller().unmarshal(
                 xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(oppdragXml))),
                 Oppdrag::class.java
         )

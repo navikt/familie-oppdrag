@@ -8,11 +8,11 @@ import javax.xml.bind.Marshaller
 object JaxbKonsistensavstemming {
 
     val jaxbContext = JAXBContext.newInstance(SendAsynkronKonsistensavstemmingsdata::class.java)
-    val marshaller = jaxbContext.createMarshaller().apply {
-        setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-    }
 
     fun tilXml(konsistensavstemmingRequest: SendAsynkronKonsistensavstemmingsdata): String {
+        val marshaller = jaxbContext.createMarshaller().apply {
+            setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+        }
         val stringWriter = StringWriter()
         marshaller.marshal(konsistensavstemmingRequest, stringWriter)
         return stringWriter.toString()

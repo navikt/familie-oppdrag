@@ -8,13 +8,12 @@ import javax.xml.bind.Marshaller
 object JaxbGrensesnittAvstemmingsdata {
 
     val jaxbContext = JAXBContext.newInstance(Avstemmingsdata::class.java)
-    val marshaller = jaxbContext.createMarshaller().apply {
-        setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-    }
 
-    fun tilXml(avstemmingsmelding: Avstemmingsdata) : String {
+    fun tilXml(avstemmingsmelding: Avstemmingsdata): String {
         val stringWriter = StringWriter()
-        marshaller.marshal(avstemmingsmelding, stringWriter)
+        jaxbContext.createMarshaller().apply {
+            setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+        }.marshal(avstemmingsmelding, stringWriter)
         return stringWriter.toString()
     }
 
