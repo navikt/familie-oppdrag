@@ -23,7 +23,7 @@
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <common-java-modules.version>2.2022.02.18_14.38-8d8bb494bd41</common-java-modules.version>
         <felles.version>1.20211217154554_3bb883e</felles.version>
-        <kontrakter.version>2.0_20220203113632_d2ba32a</kontrakter.version>
+        <kontrakter.version>2.0_20220222213922_64795e8</kontrakter.version>
         <token-validation-spring.version>1.3.17</token-validation-spring.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-core.version>3.0.2</jaxb-core.version>
