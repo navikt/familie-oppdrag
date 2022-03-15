@@ -22,8 +22,6 @@ spring.datasource.password: test
 
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-CREDENTIAL_USERNAME: not-a-real-srvuser
-CREDENTIAL_PASSWORD: not-a-real-pw
 SERVICEUSER_USERNAME: not-a-real-srvuser
 SERVICEUSER_PASSWORD: not-a-real-pw
 AZURE_APP_WELL_KNOWN_URL: "https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration"

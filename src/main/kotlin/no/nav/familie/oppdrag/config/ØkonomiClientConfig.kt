@@ -19,10 +19,8 @@ import javax.xml.namespace.QName
 
 @Configuration
 class ØkonomiClientConfig(
-        @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
-        @Value("\${SERVICEUSER_USERNAME}") private val systemuserUsername: String,
-        @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
-        @Value("\${TILBAKEKREVING_V1_URL}") private val tilbakekrevingUrl: String) {
+        @Value("\${TILBAKEKREVING_V1_URL}") private val tilbakekrevingUrl: String
+) {
 
     private val WSDL = "wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl"
     private val NAMESPACE = "http://okonomi.nav.no/tilbakekrevingService/"
@@ -30,7 +28,7 @@ class ØkonomiClientConfig(
     private val PORT = QName(NAMESPACE, "TilbakekrevingServicePort")
 
     @Bean
-    fun økonomiService(): TilbakekrevingPortType {
+    fun økonomiService(stsConfig: StsConfig): TilbakekrevingPortType {
         val factoryBean = JaxWsProxyFactoryBean().apply {
             wsdlURL = WSDL
             serviceName = SERVICE
@@ -42,7 +40,7 @@ class ØkonomiClientConfig(
             outInterceptors.add(LoggingOutInterceptor())
             inInterceptors.add(LoggingInInterceptor())
         }
-        return wrapWithSts(factoryBean.create(TilbakekrevingPortType::class.java)).apply {
+        return wrapWithSts(factoryBean.create(TilbakekrevingPortType::class.java), stsConfig).apply {
             disableCnCheck()
         }
     }
@@ -62,12 +60,8 @@ class ØkonomiClientConfig(
         conduit.tlsClientParameters = tlsParams
     }
 
-    private fun wrapWithSts(port: TilbakekrevingPortType): TilbakekrevingPortType {
+    private fun wrapWithSts(port: TilbakekrevingPortType, stsConfig: StsConfig): TilbakekrevingPortType {
         val client = ClientProxy.getClient(port)
-        val stsConfig = StsConfig.builder()
-                .url(stsUrl)
-                .username(systemuserUsername)
-                .password(systemuserPwd).build()
         STSConfigurationUtil.configureStsForSystemUserInFSS(client, stsConfig)
         return port
     }

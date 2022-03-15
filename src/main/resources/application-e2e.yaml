@@ -30,8 +30,6 @@ logging:
   config: "classpath:logback-e2e.xml"
 
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-CREDENTIAL_USERNAME: not-a-real-srvuser
-CREDENTIAL_PASSWORD: not-a-real-pw
 SERVICEUSER_USERNAME: not-a-real-srvuser
 SERVICEUSER_PASSWORD: not-a-real-pw
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt
