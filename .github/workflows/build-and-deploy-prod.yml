@@ -4,11 +4,11 @@ on:
     branches:
       - 'master'
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-oppdrag:${{ github.sha }}
-  IMAGE_LATEST: docker.pkg.github.com/${{ github.repository }}/familie-oppdrag:latest
+  IMAGE: ghcr.io/navikt/familie-oppdrag:${{ github.sha }}
+  IMAGE_LATEST: ghcr.io/navikt/familie-oppdrag:${{ github.sha }}:latest
 jobs:
-  deploy-to-prod:
-    name: Bygg app/image, push til github, deploy til prod-fss og dev-fss
+  build:
+    name: Bygg app/image, push til github
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,6 +37,11 @@ jobs:
         run: docker push ${IMAGE}
       - name: Push Docker image med 'latest' tag
         run: docker push ${IMAGE_LATEST}
+  deploy:
+    name: Deploy to FSS
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy til dev-fss team namespace
         uses: nais/deploy/actions/deploy@v1
         env:

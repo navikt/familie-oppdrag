@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-oppdrag:${{ github.sha }}
+  IMAGE: ghcr.io/navikt/familie-oppdrag:${{ github.sha }}
 jobs:
-  deploy-to-dev:
-    name: Bygg app/image, push til github, deploy til dev-fss
+  build:
+    name: Bygg app/image, push til github
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,6 +38,11 @@ jobs:
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
       - name: Push Docker image
         run: docker push $IMAGE
+  deploy:
+    name: Deploy to FSS
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy til dev-fss team namespace
         uses: nais/deploy/actions/deploy@v1
         env:
