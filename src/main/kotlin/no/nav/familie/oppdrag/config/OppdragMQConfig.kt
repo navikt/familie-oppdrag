@@ -7,6 +7,7 @@ import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET
 import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_ENCODING
 import com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT
 import org.apache.activemq.jms.pool.PooledConnectionFactory
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
 import org.springframework.context.annotation.Bean
@@ -31,6 +32,9 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
                       @Value("\${oppdrag.mq.port}") val port: Int,
                       @Value("\${oppdrag.mq.user}") val user: String,
                       @Value("\${oppdrag.mq.password}") val password: String) {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     @Bean
     @Throws(JMSException::class)
@@ -78,6 +82,14 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
         transactionManager.connectionFactory = connectionFactory
         factory.setTransactionManager(transactionManager)
         factory.setSessionTransacted(true)
+        factory.setErrorHandler {
+            logger.error("Feilet håndtering av melding, se secureLogs")
+            secureLogger.error("Feilet håndtering av melding", it)
+        }
+        factory.setExceptionListener {
+            logger.error("Feilet lytting av kø, se secureLogs")
+            secureLogger.error("Feilet lytting av kø", it)
+        }
         return factory
     }
 
