@@ -27,8 +27,9 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class KonsistensavstemmingServiceTest {
 
@@ -41,6 +42,8 @@ class KonsistensavstemmingServiceTest {
 
     private val saksnummer = "1"
     private val saksnummer2 = "2"
+
+    private val aktiveFødselsnummere = listOf("12345678910", "11111111111")
 
     private val utbetalingsoppdrag1_1 =
             lagUtbetalingsoppdrag(saksnummer,
@@ -65,8 +68,10 @@ class KonsistensavstemmingServiceTest {
         oppdragLagerRepository = mockk()
         avstemmingSender = mockk()
         mellomlagringKonsistensavstemmingRepository = mockk()
-        mellomlagringKonsistensavstemmingService = MellomlagringKonsistensavstemmingService(mellomlagringKonsistensavstemmingRepository)
-        konsistensavstemmingService = KonsistensavstemmingService(avstemmingSender, oppdragLagerRepository, mellomlagringKonsistensavstemmingService)
+        mellomlagringKonsistensavstemmingService =
+                MellomlagringKonsistensavstemmingService(mellomlagringKonsistensavstemmingRepository)
+        konsistensavstemmingService =
+                KonsistensavstemmingService(avstemmingSender, oppdragLagerRepository, mellomlagringKonsistensavstemmingService)
         every { avstemmingSender.sendKonsistensAvstemming(any()) } just Runs
 
         every { mellomlagringKonsistensavstemmingRepository.hentAggregertAntallOppdrag(any()) } returns 0
@@ -81,8 +86,8 @@ class KonsistensavstemmingServiceTest {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "2"))) } returns
                 listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag1_2)
 
-        val perioder = listOf(PerioderForBehandling("1", setOf(1)),
-                              PerioderForBehandling("2", setOf(3)))
+        val perioder = listOf(PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
+                              PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]))
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
         konsistensavstemmingService.utførKonsistensavstemming(request, true, true, null)
@@ -98,6 +103,12 @@ class KonsistensavstemmingServiceTest {
 
         assertThat(oppdrag.captured.oppdragsdataListe).hasSize(1)
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(2)
+        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[0])
+        assertTrue {
+            oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe
+                    .all { it.utbetalesTilId == aktiveFødselsnummere[0] }
+        }
+
 
         assertThat(totalData.captured.totaldata.totalBelop.toInt()).isEqualTo(322)
         assertThat(totalData.captured.totaldata.totalAntall.toInt()).isEqualTo(1)
@@ -108,8 +119,8 @@ class KonsistensavstemmingServiceTest {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "3"))) } returns
                 listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag2_1)
 
-        val perioder = listOf(PerioderForBehandling("1", setOf(1)),
-                              PerioderForBehandling("3", setOf(1, 2)))
+        val perioder = listOf(PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
+                              PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]))
 
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
@@ -128,9 +139,19 @@ class KonsistensavstemmingServiceTest {
 
         assertThat(oppdrag.captured.oppdragsdataListe).hasSize(1)
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(1)
+        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[0])
+        assertTrue {
+            oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe
+                    .any { it.utbetalesTilId == aktiveFødselsnummere[0] }
+        }
 
         assertThat(oppdrag2.captured.oppdragsdataListe).hasSize(1)
         assertThat(oppdrag2.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(2)
+        assertThat(oppdrag2.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[1])
+        assertTrue {
+            oppdrag2.captured.oppdragsdataListe[0].oppdragslinjeListe
+                    .any { it.utbetalesTilId == aktiveFødselsnummere[1] }
+        }
 
         assertThat(totalData.captured.totaldata.totalBelop.toInt()).isEqualTo(161)
         assertThat(totalData.captured.totaldata.totalAntall.toInt()).isEqualTo(2)
@@ -170,8 +191,8 @@ class KonsistensavstemmingServiceTest {
 
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(emptySet())) } returns
                 emptyList()
-        every { mellomlagringKonsistensavstemmingRepository.hentAggregertTotalBeløp(transaksjonsId)} returns 123L
-        every { mellomlagringKonsistensavstemmingRepository.hentAggregertAntallOppdrag(transaksjonsId)} returns 33
+        every { mellomlagringKonsistensavstemmingRepository.hentAggregertTotalBeløp(transaksjonsId) } returns 123L
+        every { mellomlagringKonsistensavstemmingRepository.hentAggregertAntallOppdrag(transaksjonsId) } returns 33
 
 
         val avstemmingstidspunkt = LocalDateTime.now()
@@ -206,8 +227,8 @@ class KonsistensavstemmingServiceTest {
         every { mellomlagringKonsistensavstemmingRepository.insert(any()) } returns mockk()
 
         val avstemmingstidspunkt = LocalDateTime.now()
-        val perioder = listOf(PerioderForBehandling("1", setOf(1)),
-                              PerioderForBehandling("3", setOf(1, 2)))
+        val perioder = listOf(PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
+                              PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]))
 
         val request = KonsistensavstemmingRequestV2("BA", perioder, avstemmingstidspunkt)
         val transaksjonsId = UUID.randomUUID()

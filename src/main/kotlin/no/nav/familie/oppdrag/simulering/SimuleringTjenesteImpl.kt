@@ -6,7 +6,7 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetaltPeriode
-import no.nav.familie.kontrakter.felles.simulering.HentFeilutbetalingerFraSimuleringRequest
+import no.nav.familie.kontrakter.felles.tilbakekreving.Ytelsestype
 import no.nav.familie.oppdrag.common.logSoapFaultException
 import no.nav.familie.oppdrag.config.FinnesIkkeITps
 import no.nav.familie.oppdrag.config.IntegrasjonException
@@ -90,10 +90,12 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
         return simuleringResultatTransformer.mapSimulering(beregning = beregning, utbetalingsoppdrag = utbetalingsoppdrag)
     }
 
-    override fun hentFeilutbetalinger(request: HentFeilutbetalingerFraSimuleringRequest): FeilutbetalingerFraSimulering {
-        val simuleringLager = simuleringLagerTjeneste.hentSisteSimuleringsresultat(request.ytelsestype.kode,
-                                                                                   request.eksternFagsakId,
-                                                                                   request.fagsystemsbehandlingId)
+    override fun hentFeilutbetalinger(ytelsestype: Ytelsestype,
+                                      eksternFagsakId: String,
+                                      eksternBehandlingId: String): FeilutbetalingerFraSimulering {
+        val simuleringLager = simuleringLagerTjeneste.hentSisteSimuleringsresultat(ytelsestype.kode,
+                                                                                   eksternFagsakId,
+                                                                                   eksternBehandlingId)
         val respons = Jaxb.tilSimuleringsrespons(simuleringLager.responseXml!!)
         val simulering = respons.response.simulering
 
@@ -103,7 +105,7 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
         val feilutbetaltPerioder = feilPosteringerMedPositivBeløp.map { feilPostering ->
             val periode = feilPostering.key
             val feilutbetaltBeløp = feilPostering.value.sumOf { it.belop }
-            val ytelPosteringerForPeriode = hentYtelPerioder(periode, alleYtelPosteringer )
+            val ytelPosteringerForPeriode = hentYtelPerioder(periode, alleYtelPosteringer)
             FeilutbetaltPeriode(
                     fom = LocalDate.parse(periode.periodeFom),
                     tom = LocalDate.parse(periode.periodeTom),
@@ -127,13 +129,13 @@ class SimuleringTjenesteImpl(@Autowired val simuleringSender: SimuleringSender,
     }
 
     private fun finnYtelPosteringer(simulering: Beregning): Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>> {
-        return simulering.beregningsPeriode.map { beregningsperiode ->
-            beregningsperiode to beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
+        return simulering.beregningsPeriode.associateWith { beregningsperiode ->
+            beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
                 stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
                     detalj.typeKlasse == TypeKlasse.YTEL.name
                 }
             }.flatten()
-        }.toMap()
+        }
     }
 
     private fun hentYtelPerioder(feilutbetaltePeriode: BeregningsPeriode,

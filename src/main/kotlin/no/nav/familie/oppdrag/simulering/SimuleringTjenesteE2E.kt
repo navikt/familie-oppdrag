@@ -4,7 +4,7 @@ import no.nav.familie.kontrakter.felles.oppdrag.RestSimulerResultat
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
-import no.nav.familie.kontrakter.felles.simulering.HentFeilutbetalingerFraSimuleringRequest
+import no.nav.familie.kontrakter.felles.tilbakekreving.Ytelsestype
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -13,7 +13,7 @@ import org.springframework.web.context.annotation.ApplicationScope
 @Service
 @ApplicationScope
 @Profile("e2e")
-class SimuleringTjenesteE2E() : SimuleringTjeneste {
+class SimuleringTjenesteE2E : SimuleringTjeneste {
 
     override fun utførSimulering(utbetalingsoppdrag: Utbetalingsoppdrag): RestSimulerResultat = RestSimulerResultat(0)
     override fun utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag: Utbetalingsoppdrag)
@@ -22,6 +22,6 @@ class SimuleringTjenesteE2E() : SimuleringTjeneste {
     override fun hentSimulerBeregningResponse(utbetalingsoppdrag: Utbetalingsoppdrag)
             : SimulerBeregningResponse = SimulerBeregningResponse()
 
-    override fun hentFeilutbetalinger(request: HentFeilutbetalingerFraSimuleringRequest)
+    override fun hentFeilutbetalinger(ytelsestype: Ytelsestype, eksternFagsakId: String, eksternBehandlingId: String)
             : FeilutbetalingerFraSimulering = FeilutbetalingerFraSimulering(feilutbetaltePerioder = emptyList())
 }

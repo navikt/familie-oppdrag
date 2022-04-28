@@ -1,6 +1,5 @@
 package no.nav.familie.oppdrag.simulering
 
-import no.nav.familie.kontrakter.felles.simulering.HentFeilutbetalingerFraSimuleringRequest
 import no.nav.familie.kontrakter.felles.tilbakekreving.Ytelsestype
 import no.nav.familie.oppdrag.repository.SimuleringLager
 import no.nav.familie.oppdrag.repository.SimuleringLagerTjeneste
@@ -26,7 +25,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ActiveProfiles("dev")
-@ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))
+@ContextConfiguration(initializers = [Containers.PostgresSQLInitializer::class])
 @SpringBootTest(classes = [SimuleringTjenesteImplTest.TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
@@ -49,7 +48,7 @@ internal class SimuleringTjenesteImplTest {
     }
 
     @Test
-    fun skal_lagre_request_og_respons() {
+    fun `utførSimuleringOghentDetaljertSimuleringResultat skal lagre request og respons`() {
         val utbetalingsoppdrag = lagTestUtbetalingsoppdragForFGBMedEttBarn()
 
         val simuleringResultat = simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag)
@@ -80,10 +79,8 @@ internal class SimuleringTjenesteImplTest {
                 responseXml = responsXml
         ))
 
-        val feilutbetalingerFraSimulering = simuleringTjeneste
-                .hentFeilutbetalinger(HentFeilutbetalingerFraSimuleringRequest(ytelsestype = Ytelsestype.OVERGANGSSTØNAD,
-                                                                               eksternFagsakId = eksternFagsakId,
-                                                                               fagsystemsbehandlingId = fagsystemsbehandlingId))
+        val feilutbetalingerFraSimulering =
+                simuleringTjeneste.hentFeilutbetalinger(Ytelsestype.OVERGANGSSTØNAD, eksternFagsakId, fagsystemsbehandlingId)
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
             feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 1
@@ -114,10 +111,8 @@ internal class SimuleringTjenesteImplTest {
                 responseXml = responsXml
         ))
 
-        val feilutbetalingerFraSimulering = simuleringTjeneste
-                .hentFeilutbetalinger(HentFeilutbetalingerFraSimuleringRequest(ytelsestype = Ytelsestype.BARNETRYGD,
-                                                                               eksternFagsakId = eksternFagsakId,
-                                                                               fagsystemsbehandlingId = fagsystemsbehandlingId))
+        val feilutbetalingerFraSimulering =
+                simuleringTjeneste.hentFeilutbetalinger(Ytelsestype.BARNETRYGD, eksternFagsakId, fagsystemsbehandlingId)
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
             feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 3
@@ -162,10 +157,8 @@ internal class SimuleringTjenesteImplTest {
                 responseXml = responsXml
         ))
 
-        val feilutbetalingerFraSimulering = simuleringTjeneste
-                .hentFeilutbetalinger(HentFeilutbetalingerFraSimuleringRequest(ytelsestype = Ytelsestype.BARNETILSYN,
-                                                                               eksternFagsakId = eksternFagsakId,
-                                                                               fagsystemsbehandlingId = fagsystemsbehandlingId))
+        val feilutbetalingerFraSimulering =
+                simuleringTjeneste.hentFeilutbetalinger(Ytelsestype.BARNETILSYN, eksternFagsakId, fagsystemsbehandlingId)
         assertTrue { feilutbetalingerFraSimulering.feilutbetaltePerioder.isEmpty() }
     }
 

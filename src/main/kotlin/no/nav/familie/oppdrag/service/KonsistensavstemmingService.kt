@@ -83,12 +83,15 @@ class KonsistensavstemmingService(
         val perioderPåBehandling = request.perioderForBehandlinger.associate { it.behandlingId to it.perioder }
         verifyUnikeBehandlinger(perioderPåBehandling, request)
 
+        val fødselsnummerPåBehandling = request.perioderForBehandlinger.map { it.behandlingId to it.aktivFødselsnummer }.toMap()
+
         val utbetalingsoppdragForKonsistensavstemming =
                 oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)
 
         val utbetalingsoppdrag = leggAktuellePerioderISisteUtbetalingsoppdraget(
                 utbetalingsoppdragForKonsistensavstemming,
-                perioderPåBehandling
+                perioderPåBehandling,
+                fødselsnummerPåBehandling
         )
 
         utførKonsistensavstemming(KonsistensavstemmingMetaInfo(
@@ -133,6 +136,7 @@ class KonsistensavstemmingService(
     private fun leggAktuellePerioderISisteUtbetalingsoppdraget(
             utbetalingsoppdrag: List<UtbetalingsoppdragForKonsistensavstemming>,
             perioderPåBehandling: Map<String, Set<Long>>,
+            fødselsnummerPåBehandling: Map<String, String>
     ): List<Utbetalingsoppdrag> {
         val utbetalingsoppdragPåFagsak = utbetalingsoppdrag.groupBy { it.fagsakId }
 
@@ -146,12 +150,22 @@ class KonsistensavstemmingService(
             val aktuellePeriodeIderForFagsak =
                     perioderPåBehandling.filter { behandlingsIderForFagsak.contains(it.key) }.values.flatten().toSet()
 
+            var aktivtFødselsnummer: String? = null
             val perioderTilKonsistensavstemming = utbetalingsoppdragListe.flatMap {
+                aktivtFødselsnummer = hentFødselsnummerForBehandling(fødselsnummerPåBehandling, it.behandlingId)
                 it.utbetalingsoppdrag.utbetalingsperiode
                         .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
+                        // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
+                        .map { utbetalingsperiode ->
+                            utbetalingsperiode.copy(utbetalesTil = aktivtFødselsnummer ?: utbetalingsperiode.utbetalesTil)
+                        }
             }
 
-            senesteUtbetalingsoppdrag.copy(utbetalingsperiode = perioderTilKonsistensavstemming)
+            senesteUtbetalingsoppdrag.let {
+                it.copy(utbetalingsperiode = perioderTilKonsistensavstemming,
+                        // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
+                        aktoer = aktivtFødselsnummer ?: it.aktoer)
+            }
         }
     }
 
@@ -161,6 +175,11 @@ class KonsistensavstemmingService(
                     request.perioderForBehandlinger.map { it.behandlingId }.groupingBy { it }.eachCount().filter { it.value > 1 }
             error("Behandling finnes flere ganger i requesten: ${duplikateBehandlinger.keys}")
         }
+    }
+
+    private fun hentFødselsnummerForBehandling(fødselsnummerPåBehandling: Map<String, String>, behandlingId: String): String {
+        return fødselsnummerPåBehandling[behandlingId]
+               ?: error("Finnes ikke et aktivt fødselsnummer for behandlingId $behandlingId")
     }
 
     companion object {
