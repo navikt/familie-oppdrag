@@ -68,7 +68,7 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
             @RequestBody request: KonsistensavstemmingUtbetalingsoppdrag,
             @RequestParam(name = "sendStartmelding") sendStartmelding: Boolean = true,
             @RequestParam(name = "sendAvsluttmelding") sendAvsluttmelding: Boolean = true,
-            @RequestParam(name = "transaksjonsId") transaksjonsId: UUID? = null
+            @RequestParam(name = "transaksjonId") transaksjonId: UUID? = null
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Konsistensavstemming: Kjører for ${request.fagsystem}-oppdrag for ${request.avstemmingstidspunkt} " +
                  "med ${request.utbetalingsoppdrag.size} antall oppdrag")
@@ -77,7 +77,7 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
             konsistensavstemmingService.utførKonsistensavstemming(request,
                                                                   sendStartmelding = sendStartmelding,
                                                                   sendAvsluttmelding = sendAvsluttmelding,
-                                                                  transaksjonsId = transaksjonsId)
+                                                                  transaksjonsId = transaksjonId)
         }.fold(onFailure = { illegalState("Konsistensavstemming feilet", it) },
                onSuccess = { ok("Konsistensavstemming sendt ok") })
     }
