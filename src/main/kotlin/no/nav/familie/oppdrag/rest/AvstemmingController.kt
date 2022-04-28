@@ -58,18 +58,26 @@ class AvstemmingController(@Autowired val grensesnittavstemmingService: Grensesn
                  "med ${request.perioderForBehandlinger.sumOf { it.perioder.size }} antall periodeIder")
 
         return Result.runCatching {
-            konsistensavstemmingService.utførKonsistensavstemming(request, sendStartmelding, sendAvsluttmelding, transaksjonsId )
+            konsistensavstemmingService.utførKonsistensavstemming(request, sendStartmelding, sendAvsluttmelding, transaksjonsId)
         }.fold(onFailure = { illegalState("Konsistensavstemming feilet", it) },
                onSuccess = { ok("Konsistensavstemming sendt ok") })
     }
 
     @PostMapping(path = ["/konsistensavstemming"], consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun konsistensavstemming(@RequestBody request: KonsistensavstemmingUtbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
+    fun konsistensavstemming(
+            @RequestBody request: KonsistensavstemmingUtbetalingsoppdrag,
+            @RequestParam(name = "sendStartmelding") sendStartmelding: Boolean = true,
+            @RequestParam(name = "sendAvsluttmelding") sendAvsluttmelding: Boolean = true,
+            @RequestParam(name = "transaksjonsId") transaksjonsId: UUID? = null
+    ): ResponseEntity<Ressurs<String>> {
         LOG.info("Konsistensavstemming: Kjører for ${request.fagsystem}-oppdrag for ${request.avstemmingstidspunkt} " +
-                         "med ${request.utbetalingsoppdrag.size} antall oppdrag")
+                 "med ${request.utbetalingsoppdrag.size} antall oppdrag")
 
         return Result.runCatching {
-            konsistensavstemmingService.utførKonsistensavstemming(request)
+            konsistensavstemmingService.utførKonsistensavstemming(request,
+                                                                  sendStartmelding = sendStartmelding,
+                                                                  sendAvsluttmelding = sendAvsluttmelding,
+                                                                  transaksjonsId = transaksjonsId)
         }.fold(onFailure = { illegalState("Konsistensavstemming feilet", it) },
                onSuccess = { ok("Konsistensavstemming sendt ok") })
     }
