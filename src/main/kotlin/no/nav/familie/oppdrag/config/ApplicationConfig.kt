@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.config
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.log.filter.LogFilter
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.SpringBootConfiguration
@@ -33,6 +34,9 @@ class ApplicationConfig {
         filterRegistration.order = 1
         return filterRegistration
     }
+
+    @Bean
+    fun kotlinModule(): KotlinModule = KotlinModule.Builder().build()
 
     companion object {
         const val pakkenavn = "no.nav.familie.oppdrag"
