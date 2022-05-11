@@ -2,9 +2,14 @@ package no.nav.familie.oppdrag.simulering
 
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
-import no.nav.familie.oppdrag.iverksetting.*
+import no.nav.familie.oppdrag.iverksetting.EndringsKode
+import no.nav.familie.oppdrag.iverksetting.GradTypeKode
+import no.nav.familie.oppdrag.iverksetting.OppdragSkjemaConstants
+import no.nav.familie.oppdrag.iverksetting.SatsTypeKode
+import no.nav.familie.oppdrag.iverksetting.UtbetalingsfrekvensKode
 import no.nav.system.os.entiteter.typer.simpletypes.FradragTillegg
 import no.nav.system.os.entiteter.typer.simpletypes.KodeStatusLinje
+import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.Oppdrag
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.Oppdragslinje
 import org.springframework.stereotype.Component
@@ -19,11 +24,11 @@ class SimulerBeregningRequestMapper {
 
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
-    fun tilSimulerBeregningRequest(utbetalingsoppdrag: Utbetalingsoppdrag): no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest =
+    fun tilSimulerBeregningRequest(utbetalingsoppdrag: Utbetalingsoppdrag): SimulerBeregningRequest =
             fpServiceGrensesnittFactory.createSimulerBeregningRequest()
                     .apply { request = tilSimulerBeregningTypesRequest(utbetalingsoppdrag) }
 
-    private fun tilSimulerBeregningTypesRequest(utbetalingsoppdrag: Utbetalingsoppdrag): no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningRequest =
+    private fun tilSimulerBeregningTypesRequest(utbetalingsoppdrag: Utbetalingsoppdrag) =
             fpServiceTypesFactory.createSimulerBeregningRequest().apply { oppdrag = tilOppdrag(utbetalingsoppdrag) }
 
     private fun tilOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdrag {
@@ -83,7 +88,7 @@ class SimulerBeregningRequestMapper {
             sats = utbetalingsperiode.sats
             fradragTillegg = FradragTillegg.T
             typeSats = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
-            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN
+            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
             saksbehId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
             henvisning = utbetalingsperiode.behandlingId.toString()

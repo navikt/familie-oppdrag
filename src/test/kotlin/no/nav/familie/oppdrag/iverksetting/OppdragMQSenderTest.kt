@@ -32,12 +32,12 @@ private const val TEST_FAGSAKID = "123456789"
 
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
-@ContextConfiguration(initializers = arrayOf(Containers.MQInitializer::class))
+@ContextConfiguration(initializers = [Containers.MQInitializer::class])
 @EnableJms
 class OppdragMQSenderTest {
 
     companion object {
-        @Container var ibmMQContainer = Containers.ibmMQContainer
+        @Container var ibmMQContainer: Containers.MyGeneralContainer = Containers.ibmMQContainer
     }
 
     private val mqConn = MQConnectionFactory().apply {
@@ -89,7 +89,7 @@ class OppdragMQSenderTest {
             sats = SATS_BARNETRYGD.toBigDecimal()
             fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG
             typeSats = SatsTypeKode.MÅNEDLIG.kode
-            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN
+            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
             saksbehId = "Z999999"
             utbetalesTilId = "12345678911"
             henvisning = "987654321"

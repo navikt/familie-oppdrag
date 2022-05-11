@@ -17,11 +17,12 @@ import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsd
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.Oppdragslinje
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.Periode
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.Totaldata
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 
 class KonsistensavstemmingMapper(
     private val fagsystem: String,
@@ -31,7 +32,7 @@ class KonsistensavstemmingMapper(
     private var aggregertAntallOppdrag: Int,
     private val sendStartmelding: Boolean,
     private val sendAvsluttmelding: Boolean,
-    private val transaksjonsId: UUID? = UUID.randomUUID()
+    transaksjonsId: UUID? = UUID.randomUUID()
 ) {
 
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
@@ -43,7 +44,8 @@ class KonsistensavstemmingMapper(
 
     fun lagAvstemmingsmeldinger(): List<Konsistensavstemmingsdata> =
         when {
-            sendStartmelding && sendAvsluttmelding -> (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagTotaldata(), lagSluttmelding()))
+            sendStartmelding && sendAvsluttmelding -> (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagTotaldata(),
+                                                                                                               lagSluttmelding()))
             sendStartmelding -> (listOf(lagStartmelding()) + lagDatameldinger())
             sendAvsluttmelding -> (lagDatameldinger() + listOf(lagTotaldata(), lagSluttmelding()))
             else -> lagDatameldinger()
@@ -110,7 +112,7 @@ class KonsistensavstemmingMapper(
             }
             sats = utbetalingsperiode.sats
             satstypeKode = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
-            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN
+            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
             fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG.value()
             saksbehandlerId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
@@ -133,7 +135,8 @@ class KonsistensavstemmingMapper(
         val vedtakdatoTom = utbetalingsperiode.vedtakdatoTom
         val aktiv = !vedtakdatoTom.isBefore(avstemmingsdato)
         if (!aktiv) {
-            LOG.error("fagsystem=${fagsystem} vedtakdatoTom=$vedtakdatoTom (periodens tom-dato) er etter avstemmingsdato=$avstemmingsdato for" +
+            LOG.error("fagsystem=${fagsystem} vedtakdatoTom=$vedtakdatoTom (periodens tom-dato) " +
+                      "er etter avstemmingsdato=$avstemmingsdato for" +
                   " periodeId=${utbetalingsperiode.periodeId} behandlingId=${utbetalingsperiode.behandlingId}")
         }
         return aktiv
@@ -166,7 +169,8 @@ class KonsistensavstemmingMapper(
     }
 
     private fun getFortegn(satsbeløp: Long): String {
-        return if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO) KonsistensavstemmingConstants.FORTEGN_T else KonsistensavstemmingConstants.FORTEGN_F
+        return if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO)
+            KonsistensavstemmingConstants.FORTEGN_T else KonsistensavstemmingConstants.FORTEGN_F
     }
 
     private fun lagAksjonsmelding(aksjontype: String): Konsistensavstemmingsdata =
@@ -190,6 +194,6 @@ class KonsistensavstemmingMapper(
 
     companion object {
 
-        val LOG = LoggerFactory.getLogger(KonsistensavstemmingMapper::class.java)
+        val LOG: Logger = LoggerFactory.getLogger(KonsistensavstemmingMapper::class.java)
     }
 }

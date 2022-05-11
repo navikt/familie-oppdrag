@@ -11,8 +11,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import java.util.Objects.isNull
+import java.util.UUID
 
 @Service
 class KonsistensavstemmingService(
@@ -52,9 +52,8 @@ class KonsistensavstemmingService(
             return
         }
 
-        LOG.info(
-                "Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId} antall meldinger er ${meldinger.size}"
-        )
+        LOG.info("Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId} " +
+                 "antall meldinger er ${meldinger.size}")
         meldinger.forEach {
             avstemmingSender.sendKonsistensAvstemming(it)
         }
@@ -62,8 +61,7 @@ class KonsistensavstemmingService(
         if (metaInfo.erSplittetBatchMenIkkeSisteBatch()) {
             mellomlagringKonsistensavstemmingService.opprettInnslagIMellomlagring(metaInfo,
                                                                                   konsistensavstemmingMapper.antallOppdrag,
-                                                                                  konsistensavstemmingMapper.totalBeløp
-            )
+                                                                                  konsistensavstemmingMapper.totalBeløp)
         }
         LOG.info("Fullført konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}")
     }
@@ -83,7 +81,7 @@ class KonsistensavstemmingService(
         val perioderPåBehandling = request.perioderForBehandlinger.associate { it.behandlingId to it.perioder }
         verifyUnikeBehandlinger(perioderPåBehandling, request)
 
-        val fødselsnummerPåBehandling = request.perioderForBehandlinger.map { it.behandlingId to it.aktivFødselsnummer }.toMap()
+        val fødselsnummerPåBehandling = request.perioderForBehandlinger.associate { it.behandlingId to it.aktivFødselsnummer }
 
         val utbetalingsoppdragForKonsistensavstemming =
                 oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)

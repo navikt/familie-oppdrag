@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 class OppdragMapper {
 
     private val objectFactory = ObjectFactory()
-    val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
+    val tidspunktFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     fun tilOppdrag110(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdrag110 {
 
@@ -46,14 +46,16 @@ class OppdragMapper {
         return oppdrag110
     }
 
-    private fun tilOppdragsLinje150(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag): OppdragsLinje150 {
+    private fun tilOppdragsLinje150(utbetalingsperiode: Utbetalingsperiode,
+                                    utbetalingsoppdrag: Utbetalingsoppdrag): OppdragsLinje150 {
 
         val attestant = objectFactory.createAttestant180().apply {
             attestantId = utbetalingsoppdrag.saksbehandlerId
         }
 
         return objectFactory.createOppdragsLinje150().apply {
-            kodeEndringLinje = if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
+            kodeEndringLinje =
+                    if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
             utbetalingsperiode.opphør?.let {
                 kodeStatusLinje = TkodeStatusLinje.OPPH
                 datoStatusFom = it.opphørDatoFom.toXMLDate()
@@ -72,7 +74,8 @@ class OppdragMapper {
             sats = utbetalingsperiode.sats
             fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG
             typeSats = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
-            brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN
+            brukKjoreplan = if (utbetalingsoppdrag.gOmregning)
+                OppdragSkjemaConstants.BRUK_KJØREPLAN_G_OMBEREGNING else OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
             saksbehId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
             henvisning = utbetalingsperiode.behandlingId.toString()
