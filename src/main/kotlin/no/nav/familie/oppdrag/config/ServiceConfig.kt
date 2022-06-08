@@ -9,10 +9,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
-                    @Value("\${SERVICEUSER_USERNAME}") private val systemuserUsername: String,
-                    @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
-                    @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String) {
+class ServiceConfig(
+    @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
+    @Value("\${SERVICEUSER_USERNAME}") private val systemuserUsername: String,
+    @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
+    @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String
+) {
 
     init {
         System.setProperty("no.nav.modig.security.sts.url", stsUrl)
@@ -23,18 +25,18 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: S
     @Bean
     fun stsConfig(): StsConfig {
         return StsConfig.builder()
-                .url(stsUrl)
-                .username(systemuserUsername)
-                .password(systemuserPwd)
-                .build()
+            .url(stsUrl)
+            .username(systemuserUsername)
+            .password(systemuserPwd)
+            .build()
     }
 
     @Bean
     fun SimulerFpServicePort(): SimulerFpService =
-            CXFClient(SimulerFpService::class.java)
-                    .address(simulerFpServiceUrl)
-                    .timeout(20000, 20000)
-                    .configureStsForSystemUser(stsConfig())
-                    .withOutInterceptor(LoggingOutInterceptor())
-                    .build()
+        CXFClient(SimulerFpService::class.java)
+            .address(simulerFpServiceUrl)
+            .timeout(20000, 20000)
+            .configureStsForSystemUser(stsConfig())
+            .withOutInterceptor(LoggingOutInterceptor())
+            .build()
 }

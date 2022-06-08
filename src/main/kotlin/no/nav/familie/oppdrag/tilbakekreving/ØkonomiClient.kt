@@ -21,44 +21,54 @@ class ØkonomiClient(private val økonomiService: TilbakekrevingPortType) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-    fun iverksettVedtak(behandlingId: UUID,
-                        tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest): TilbakekrevingsvedtakResponse {
+    fun iverksettVedtak(
+        behandlingId: UUID,
+        tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest
+    ): TilbakekrevingsvedtakResponse {
         logger.info("Iverksetter vedtak for tilbakekrevingsbehandling $behandlingId")
         try {
             return økonomiService.tilbakekrevingsvedtak(tilbakekrevingsvedtakRequest)
         } catch (exception: Exception) {
             logSoapFaultException(exception)
-            throw IntegrasjonException(system = Integrasjonssystem.TILBAKEKREVING,
-                                       msg = "Noe gikk galt ved iverksetting av tilbakekrevingsbehandling=$behandlingId",
-                                       throwable = exception)
+            throw IntegrasjonException(
+                system = Integrasjonssystem.TILBAKEKREVING,
+                msg = "Noe gikk galt ved iverksetting av tilbakekrevingsbehandling=$behandlingId",
+                throwable = exception
+            )
         }
     }
 
-    fun hentKravgrunnlag(kravgrunnlagId: BigInteger,
-                         hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest)
-            : KravgrunnlagHentDetaljResponse {
+    fun hentKravgrunnlag(
+        kravgrunnlagId: BigInteger,
+        hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest
+    ): KravgrunnlagHentDetaljResponse {
         logger.info("Henter kravgrunnlag for kravgrunnlagId $kravgrunnlagId")
         try {
             return økonomiService.kravgrunnlagHentDetalj(hentKravgrunnlagRequest)
         } catch (exception: Exception) {
             logSoapFaultException(exception)
-            throw IntegrasjonException(system = Integrasjonssystem.TILBAKEKREVING,
-                                       msg = "Noe gikk galt ved henting av kravgrunnlag for kravgrunnlagId=$kravgrunnlagId",
-                                       throwable = exception)
+            throw IntegrasjonException(
+                system = Integrasjonssystem.TILBAKEKREVING,
+                msg = "Noe gikk galt ved henting av kravgrunnlag for kravgrunnlagId=$kravgrunnlagId",
+                throwable = exception
+            )
         }
     }
 
-    fun annulerKravgrunnlag(kravgrunnlagId: BigInteger,
-                            kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest): KravgrunnlagAnnulerResponse {
+    fun annulerKravgrunnlag(
+        kravgrunnlagId: BigInteger,
+        kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest
+    ): KravgrunnlagAnnulerResponse {
         logger.info("Annulerer kravgrunnlag for kravgrunnlagId $kravgrunnlagId")
         try {
             return økonomiService.kravgrunnlagAnnuler(kravgrunnlagAnnulerRequest)
         } catch (exception: Exception) {
             logSoapFaultException(exception)
-            throw IntegrasjonException(system = Integrasjonssystem.TILBAKEKREVING,
-                                       msg = "Noe gikk galt ved annulering av kravgrunnlag for kravgrunnlagId=$kravgrunnlagId",
-                                       throwable = exception)
+            throw IntegrasjonException(
+                system = Integrasjonssystem.TILBAKEKREVING,
+                msg = "Noe gikk galt ved annulering av kravgrunnlag for kravgrunnlagId=$kravgrunnlagId",
+                throwable = exception
+            )
         }
     }
-
 }

@@ -11,11 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertTrue
 
-
 @ActiveProfiles("dev")
-@SpringBootTest(classes = [SimuleringController::class, SimuleringSenderMock::class, SimuleringTjenesteImpl::class, SimulerBeregningRequestMapper::class, SimuleringLagerTjenesteE2E::class],
-                properties = ["spring.cloud.vault.enabled=false"])
-internal class SimuleringControllerIntegrasjonTest {
+@SpringBootTest(
+    classes = [SimuleringController::class, SimuleringSenderMock::class, SimuleringTjenesteImpl::class, SimulerBeregningRequestMapper::class, SimuleringLagerTjenesteE2E::class],
+    properties = ["spring.cloud.vault.enabled=false"]
+)
+internal class SimuleringControllerIntegrationTest {
 
     @Autowired lateinit var simuleringController: SimuleringController
 

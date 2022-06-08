@@ -1,7 +1,7 @@
 package no.nav.familie.oppdrag.iverksetting
 
-import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
+import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.oppdrag.domene.id
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.repository.oppdragStatus
@@ -17,8 +17,8 @@ import javax.jms.TextMessage
 @Service
 @Profile("!e2e")
 class OppdragMottaker(
-        val oppdragLagerRepository: OppdragLagerRepository,
-        val env: Environment
+    val oppdragLagerRepository: OppdragLagerRepository,
+    val env: Environment
 ) {
 
     internal var LOG = LoggerFactory.getLogger(OppdragMottaker::class.java)
@@ -43,13 +43,15 @@ class OppdragMottaker(
 
         val kvittering = lesKvittering(svarFraOppdrag)
         val oppdragId = kvittering.id
-        LOG.info("Mottatt melding på kvitteringskø for fagsak ${oppdragId}: Status ${kvittering.status}, " +
-                 "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}")
+        LOG.info(
+            "Mottatt melding på kvitteringskø for fagsak $oppdragId: Status ${kvittering.status}, " +
+                "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}"
+        )
 
         LOG.debug("Henter oppdrag $oppdragId fra databasen")
 
         val førsteOppdragUtenKvittering = oppdragLagerRepository.hentAlleVersjonerAvOppdrag(oppdragId)
-                .find { oppdrag -> oppdrag.status == OppdragStatus.LAGT_PÅ_KØ }
+            .find { oppdrag -> oppdrag.status == OppdragStatus.LAGT_PÅ_KØ }
         if (førsteOppdragUtenKvittering == null) {
             LOG.warn("Oppdraget tilknyttet mottatt kvittering har uventet status i databasen. Oppdraget er: $oppdragId")
             return

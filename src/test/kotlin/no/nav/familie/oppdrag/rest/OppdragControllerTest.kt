@@ -1,6 +1,10 @@
 package no.nav.familie.oppdrag.rest
 
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Opphør
@@ -83,7 +87,7 @@ internal class OppdragControllerTest {
         val oppdragSender = mockk<OppdragSender>(relaxed = true)
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
-        if(alleredeOpprettet) {
+        if (alleredeOpprettet) {
             every { oppdragLagerRepository.opprettOppdrag(any()) } throws org.springframework.dao.DuplicateKeyException("Duplicate key exception")
         } else {
             every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs

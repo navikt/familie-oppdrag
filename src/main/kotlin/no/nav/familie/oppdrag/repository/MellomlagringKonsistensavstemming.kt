@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Table("mellomlagring_konsistensavstemming")
 data class MellomlagringKonsistensavstemming(
@@ -16,4 +16,3 @@ data class MellomlagringKonsistensavstemming(
     @Column("total_belop") val totalBeløp: Long,
     val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
-

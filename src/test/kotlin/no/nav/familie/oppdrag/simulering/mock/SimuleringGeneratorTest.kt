@@ -32,7 +32,7 @@ internal class SimuleringGeneratorTest {
             .isEqualTo(6)
             .withFailMessage("Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
         val detaljer: List<BeregningStoppnivaaDetaljer> =
-                response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
+            response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
         detaljer.sortedBy { beregningStoppnivaaDetaljer -> beregningStoppnivaaDetaljer.behandlingskode }
         assertThat(detaljer.size)
             .isEqualTo(1)
@@ -44,8 +44,8 @@ internal class SimuleringGeneratorTest {
         val oppdragGjelderId = "12345678902"
         val kodeEndring = "ENDR"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId,"2020-07-01", "2020-11-30", "2020-07-01"))
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje("NY", null, 1200, oppdragGjelderId,"2020-07-01", "2020-11-30", null))
+        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-11-30", "2020-07-01"))
+        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje("NY", null, 1200, oppdragGjelderId, "2020-07-01", "2020-11-30", null))
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
@@ -57,7 +57,7 @@ internal class SimuleringGeneratorTest {
             .withFailMessage("Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
-                response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
+            response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
         assertThat(detaljer.size)
             .isEqualTo(3)
             .withFailMessage("En respons med senket ytelse skal ha 3 beregningsStoppnivåDetaljer, Ytelse, Feilutbetaling og Negativ ytelse")
@@ -87,7 +87,7 @@ internal class SimuleringGeneratorTest {
         val oppdragGjelderId = "12345678903"
         val kodeEndring = "ENDR"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId,"2020-07-01", "2020-10-31", "2020-07-01"))
+        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-10-31", "2020-07-01"))
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
@@ -99,7 +99,7 @@ internal class SimuleringGeneratorTest {
             .withFailMessage("Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
-                response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
+            response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
         assertThat(detaljer.size)
             .isEqualTo(3)
             .withFailMessage("En respons med senket ytelse skal ha 3 beregningsStoppnivåDetaljer, Ytelse, Feilutbetaling og Negativ ytelse")
@@ -127,7 +127,7 @@ internal class SimuleringGeneratorTest {
     private fun opprettSimulerBeregningRequest(oppdragGjelderId: String, kodeEndring: String): SimulerBeregningRequest {
         val request = SimulerBeregningRequest()
         request.request =
-                no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningRequest()
+            no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningRequest()
         request.request.oppdrag = Oppdrag()
         request.request.oppdrag.kodeEndring = kodeEndring
         request.request.oppdrag.kodeFagomraade = "BA"

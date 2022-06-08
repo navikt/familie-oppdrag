@@ -69,7 +69,7 @@ class AvstemmingMQSenderTest {
 
         avstemmingSender.sendKonsistensAvstemming(lagTestKonsistensavstemming()[0])
 
-        verify (exactly = 1) { jmsTemplate.convertAndSend(any<String>(), any<String>()) }
+        verify(exactly = 1) { jmsTemplate.convertAndSend(any<String>(), any<String>()) }
     }
 
     @Test
@@ -78,7 +78,7 @@ class AvstemmingMQSenderTest {
 
         avstemmingSender.sendGrensesnittAvstemming(lagTestGrensesnittavstemming()[0])
 
-        verify (exactly = 1) { jmsTemplate.convertAndSend(any<String>(), any<String>()) }
+        verify(exactly = 1) { jmsTemplate.convertAndSend(any<String>(), any<String>()) }
     }
 
     private fun lagTestKonsistensavstemming(): List<Konsistensavstemmingsdata> {

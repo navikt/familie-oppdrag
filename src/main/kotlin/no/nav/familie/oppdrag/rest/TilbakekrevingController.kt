@@ -25,24 +25,26 @@ import javax.validation.Valid
 class TilbakekrevingController(private val økonomiClient: ØkonomiClient) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/iverksett/{behandlingId}"])
-    fun iverksettVedtak(@PathVariable("behandlingId") behandlingId: UUID,
-                        @Valid @RequestBody tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest)
-            : Ressurs<TilbakekrevingsvedtakResponse> {
+    fun iverksettVedtak(
+        @PathVariable("behandlingId") behandlingId: UUID,
+        @Valid @RequestBody tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest
+    ): Ressurs<TilbakekrevingsvedtakResponse> {
         return Ressurs.success(økonomiClient.iverksettVedtak(behandlingId, tilbakekrevingsvedtakRequest))
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/kravgrunnlag/{kravgrunnlagId}"])
-    fun hentKravgrunnlag(@PathVariable("kravgrunnlagId") kravgrunnlagId: BigInteger,
-                         @Valid @RequestBody hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest)
-            : Ressurs<KravgrunnlagHentDetaljResponse> {
+    fun hentKravgrunnlag(
+        @PathVariable("kravgrunnlagId") kravgrunnlagId: BigInteger,
+        @Valid @RequestBody hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest
+    ): Ressurs<KravgrunnlagHentDetaljResponse> {
         return Ressurs.success(økonomiClient.hentKravgrunnlag(kravgrunnlagId, hentKravgrunnlagRequest))
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/annuler/kravgrunnlag/{kravgrunnlagId}"])
-    fun annulerKravgrunnlag(@PathVariable("kravgrunnlagId") kravgrunnlagId: BigInteger,
-                            @Valid @RequestBody kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest)
-            : Ressurs<KravgrunnlagAnnulerResponse> {
+    fun annulerKravgrunnlag(
+        @PathVariable("kravgrunnlagId") kravgrunnlagId: BigInteger,
+        @Valid @RequestBody kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest
+    ): Ressurs<KravgrunnlagAnnulerResponse> {
         return Ressurs.success(økonomiClient.annulerKravgrunnlag(kravgrunnlagId, kravgrunnlagAnnulerRequest))
     }
-
 }

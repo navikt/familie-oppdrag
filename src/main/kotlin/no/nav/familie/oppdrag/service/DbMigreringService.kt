@@ -22,10 +22,7 @@ class DbMigreringService(private val oppdragRepository: OppdragRepository) {
             return
         }
 
-
         iterable.forEach { oppdragRepository.updateUuid(it.behandlingId, it.personIdent, it.fagsystem, it.versjon) }
         logger.info("Migrert  ${iterable.count()} oppdraglager for uuid.")
-
     }
-
 }

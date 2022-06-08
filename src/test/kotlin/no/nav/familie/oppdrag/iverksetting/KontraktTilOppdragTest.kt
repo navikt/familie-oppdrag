@@ -17,43 +17,43 @@ class KontraktTilOppdragTest {
     fun mappeVedtaketTilMariBerg() {
 
         val utbetalingsperiode1 = Utbetalingsperiode(
-                erEndringPåEksisterendePeriode = false,
-                opphør = null,
-                periodeId = 1,
-                forrigePeriodeId = null,
-                datoForVedtak = iDag,
-                klassifisering = "BATR",
-                vedtakdatoFom = iDag,
-                vedtakdatoTom = iDag.plusYears(6),
-                sats = BigDecimal.valueOf(1354L),
-                satsType = Utbetalingsperiode.SatsType.MND,
-                utbetalesTil = "12345678911",
-                behandlingId = 987654321L
+            erEndringPåEksisterendePeriode = false,
+            opphør = null,
+            periodeId = 1,
+            forrigePeriodeId = null,
+            datoForVedtak = iDag,
+            klassifisering = "BATR",
+            vedtakdatoFom = iDag,
+            vedtakdatoTom = iDag.plusYears(6),
+            sats = BigDecimal.valueOf(1354L),
+            satsType = Utbetalingsperiode.SatsType.MND,
+            utbetalesTil = "12345678911",
+            behandlingId = 987654321L
         )
 
         val utbetalingsperiode2 = Utbetalingsperiode(
-                erEndringPåEksisterendePeriode = false,
-                opphør = null,
-                periodeId = 2,
-                forrigePeriodeId = 1,
-                datoForVedtak = iDag,
-                klassifisering = "BATR",
-                vedtakdatoFom = iDag.plusYears(6).plusMonths(1),
-                vedtakdatoTom = iDag.plusYears(12).plusMonths(1),
-                sats = BigDecimal.valueOf(1054L),
-                satsType = Utbetalingsperiode.SatsType.MND,
-                utbetalesTil = "12345678911",
-                behandlingId = 987654321L,
-                utbetalingsgrad = 60
+            erEndringPåEksisterendePeriode = false,
+            opphør = null,
+            periodeId = 2,
+            forrigePeriodeId = 1,
+            datoForVedtak = iDag,
+            klassifisering = "BATR",
+            vedtakdatoFom = iDag.plusYears(6).plusMonths(1),
+            vedtakdatoTom = iDag.plusYears(12).plusMonths(1),
+            sats = BigDecimal.valueOf(1054L),
+            satsType = Utbetalingsperiode.SatsType.MND,
+            utbetalesTil = "12345678911",
+            behandlingId = 987654321L,
+            utbetalingsgrad = 60
         )
 
         val utbetalingsoppdrag = Utbetalingsoppdrag(
-                kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-                fagSystem = "BA",
-                saksnummer = "12345678",
-                aktoer = "12345678911",
-                saksbehandlerId = "Z992991",
-                utbetalingsperiode = listOf(utbetalingsperiode1, utbetalingsperiode2)
+            kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
+            fagSystem = "BA",
+            saksnummer = "12345678",
+            aktoer = "12345678911",
+            saksbehandlerId = "Z992991",
+            utbetalingsperiode = listOf(utbetalingsperiode1, utbetalingsperiode2)
         )
 
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
@@ -67,26 +67,26 @@ class KontraktTilOppdragTest {
     fun mappeOpphørPåVedtaketTilMariBerg() {
 
         val utbetalingsperiode1 = Utbetalingsperiode(
-                erEndringPåEksisterendePeriode = true,
-                opphør = Opphør(iDag.plusMonths(1)),
-                periodeId = 3,
-                forrigePeriodeId = 2,
-                datoForVedtak = iDag,
-                klassifisering = "BATR",
-                vedtakdatoFom = iDag,
-                vedtakdatoTom = iDag.plusYears(2),
-                sats = BigDecimal.valueOf(1354L),
-                satsType = Utbetalingsperiode.SatsType.MND,
-                utbetalesTil = "12345678911",
-                behandlingId = 987654321L
+            erEndringPåEksisterendePeriode = true,
+            opphør = Opphør(iDag.plusMonths(1)),
+            periodeId = 3,
+            forrigePeriodeId = 2,
+            datoForVedtak = iDag,
+            klassifisering = "BATR",
+            vedtakdatoFom = iDag,
+            vedtakdatoTom = iDag.plusYears(2),
+            sats = BigDecimal.valueOf(1354L),
+            satsType = Utbetalingsperiode.SatsType.MND,
+            utbetalesTil = "12345678911",
+            behandlingId = 987654321L
         )
         val utbetalingsoppdrag = Utbetalingsoppdrag(
-                kodeEndring = Utbetalingsoppdrag.KodeEndring.ENDR,
-                fagSystem = "BA",
-                saksnummer = "12345678",
-                aktoer = "12345678911",
-                saksbehandlerId = "Z992991",
-                utbetalingsperiode = listOf(utbetalingsperiode1)
+            kodeEndring = Utbetalingsoppdrag.KodeEndring.ENDR,
+            fagSystem = "BA",
+            saksnummer = "12345678",
+            aktoer = "12345678911",
+            saksbehandlerId = "Z992991",
+            utbetalingsperiode = listOf(utbetalingsperiode1)
         )
 
         val oppdrag110 = OppdragMapper().tilOppdrag110(utbetalingsoppdrag)
@@ -105,25 +105,35 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate(), oppdrag110.datoOppdragGjelderFom)
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdrag110.saksbehId)
         Assertions.assertEquals(utbetalingsoppdrag.fagSystem, oppdrag110.avstemming115.kodeKomponent)
-        Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter),
-                                oppdrag110.avstemming115.nokkelAvstemming)
-        Assertions.assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter),
-                                oppdrag110.avstemming115.tidspktMelding)
+        Assertions.assertEquals(
+            utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter),
+            oppdrag110.avstemming115.nokkelAvstemming
+        )
+        Assertions.assertEquals(
+            utbetalingsoppdrag.avstemmingTidspunkt.format(OppdragMapper().tidspunktFormatter),
+            oppdrag110.avstemming115.tidspktMelding
+        )
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET_TYPE, oppdrag110.oppdragsEnhet120[0].typeEnhet)
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET, oppdrag110.oppdragsEnhet120[0].enhet)
         Assertions.assertEquals(OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate(), oppdrag110.oppdragsEnhet120[0].datoEnhetFom)
     }
 
-    private fun assertOppdragslinje150(utbetalingsperiode: Utbetalingsperiode,
-                                       utbetalingsoppdrag: Utbetalingsoppdrag,
-                                       oppdragsLinje150: OppdragsLinje150) {
-        Assertions.assertEquals(if (utbetalingsperiode.erEndringPåEksisterendePeriode)
-                                    EndringsKode.ENDRING.kode else EndringsKode.NY.kode,
-                                oppdragsLinje150.kodeEndringLinje)
+    private fun assertOppdragslinje150(
+        utbetalingsperiode: Utbetalingsperiode,
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        oppdragsLinje150: OppdragsLinje150
+    ) {
+        Assertions.assertEquals(
+            if (utbetalingsperiode.erEndringPåEksisterendePeriode)
+                EndringsKode.ENDRING.kode else EndringsKode.NY.kode,
+            oppdragsLinje150.kodeEndringLinje
+        )
         assertOpphør(utbetalingsperiode, oppdragsLinje150)
         Assertions.assertEquals(utbetalingsperiode.datoForVedtak.toString(), oppdragsLinje150.vedtakId)
-        Assertions.assertEquals(utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId.toString(),
-                                oppdragsLinje150.delytelseId)
+        Assertions.assertEquals(
+            utbetalingsoppdrag.saksnummer + utbetalingsperiode.periodeId.toString(),
+            oppdragsLinje150.delytelseId
+        )
         Assertions.assertEquals(utbetalingsperiode.klassifisering, oppdragsLinje150.kodeKlassifik)
         Assertions.assertEquals(utbetalingsperiode.vedtakdatoFom.toXMLDate(), oppdragsLinje150.datoVedtakFom)
         Assertions.assertEquals(utbetalingsperiode.vedtakdatoTom.toXMLDate(), oppdragsLinje150.datoVedtakTom)
@@ -138,8 +148,10 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsperiode.utbetalingsgrad, oppdragsLinje150.grad170.firstOrNull()?.grad?.toInt())
 
         if (utbetalingsperiode.forrigePeriodeId !== null && !utbetalingsperiode.erEndringPåEksisterendePeriode)
-            Assertions.assertEquals(utbetalingsoppdrag.saksnummer + utbetalingsperiode.forrigePeriodeId.toString(),
-                                    oppdragsLinje150.refDelytelseId)
+            Assertions.assertEquals(
+                utbetalingsoppdrag.saksnummer + utbetalingsperiode.forrigePeriodeId.toString(),
+                oppdragsLinje150.refDelytelseId
+            )
     }
 
     private fun assertOpphør(utbetalingsperiode: Utbetalingsperiode, oppdragsLinje150: OppdragsLinje150) {

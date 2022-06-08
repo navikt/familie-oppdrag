@@ -20,8 +20,5 @@ enum class Status(val kode: String) {
     }
 }
 
-val Oppdrag.status : Status
+val Oppdrag.status: Status
     get() = Status.fraKode(this.mmel?.alvorlighetsgrad ?: "Ukjent")
-
-
-

@@ -12,39 +12,41 @@ object TestOppdragMedAvstemmingsdato {
     private val AKTOER = "12345678911"
 
     fun lagTestUtbetalingsoppdrag(
-            avstemmingstidspunkt: LocalDateTime, fagområde: String,
-            fagsak: String = FAGSAKID,
-            vararg utbetalingsperiode: Utbetalingsperiode = arrayOf(lagUtbetalingsperiode(fagområde)),
+        avstemmingstidspunkt: LocalDateTime,
+        fagområde: String,
+        fagsak: String = FAGSAKID,
+        vararg utbetalingsperiode: Utbetalingsperiode = arrayOf(lagUtbetalingsperiode(fagområde)),
     ) =
-            Utbetalingsoppdrag(
-                    kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-                    fagSystem = fagområde,
-                    saksnummer = fagsak,
-                    aktoer = AKTOER,
-                    saksbehandlerId = "Z999999",
-                    avstemmingTidspunkt = avstemmingstidspunkt,
-                    utbetalingsperiode = utbetalingsperiode.toList()
-            )
+        Utbetalingsoppdrag(
+            kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
+            fagSystem = fagområde,
+            saksnummer = fagsak,
+            aktoer = AKTOER,
+            saksbehandlerId = "Z999999",
+            avstemmingTidspunkt = avstemmingstidspunkt,
+            utbetalingsperiode = utbetalingsperiode.toList()
+        )
 
     fun lagUtbetalingsperiode(
-            fagområde: String = "BA",
-            periodeId: Long = 1,
-            beløp: Int = 100,
-            fom: LocalDate = LocalDate.now().withDayOfMonth(1),
-            tom: LocalDate = LocalDate.now().plusYears(6),
+        fagområde: String = "BA",
+        periodeId: Long = 1,
+        beløp: Int = 100,
+        fom: LocalDate = LocalDate.now().withDayOfMonth(1),
+        tom: LocalDate = LocalDate.now().plusYears(6),
     ) =
-            Utbetalingsperiode(erEndringPåEksisterendePeriode = false,
-                               opphør = null,
-                               periodeId = periodeId,
-                               forrigePeriodeId = null,
-                               datoForVedtak = LocalDate.now(),
-                               klassifisering = if (fagområde.equals("BA")) "BATR" else "EF",
-                               vedtakdatoFom = fom,
-                               vedtakdatoTom = tom,
-                               sats = beløp.toBigDecimal(),
-                               satsType = Utbetalingsperiode.SatsType.MND,
-                               utbetalesTil = AKTOER,
-                               behandlingId = Random.nextLong(),
-                               utbetalingsgrad = 50)
-
+        Utbetalingsperiode(
+            erEndringPåEksisterendePeriode = false,
+            opphør = null,
+            periodeId = periodeId,
+            forrigePeriodeId = null,
+            datoForVedtak = LocalDate.now(),
+            klassifisering = if (fagområde.equals("BA")) "BATR" else "EF",
+            vedtakdatoFom = fom,
+            vedtakdatoTom = tom,
+            sats = beløp.toBigDecimal(),
+            satsType = Utbetalingsperiode.SatsType.MND,
+            utbetalesTil = AKTOER,
+            behandlingId = Random.nextLong(),
+            utbetalingsgrad = 50
+        )
 }

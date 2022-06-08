@@ -71,22 +71,28 @@ internal class SimuleringTjenesteImplTest {
         val requestXml = lesFil("/simulering/testdata/requestXML_fagsak_10001_EFOG.xml")
         val responsXml = lesFil("/simulering/testdata/responsXML_fagsak_10001_EFOG.xml")
 
-        simuleringLagerTjeneste.lagreINyTransaksjon(SimuleringLager(
+        simuleringLagerTjeneste.lagreINyTransaksjon(
+            SimuleringLager(
                 fagsystem = "EFOG",
                 fagsakId = eksternFagsakId,
                 behandlingId = fagsystemsbehandlingId,
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 requestXml = requestXml,
                 responseXml = responsXml
-        ))
+            )
+        )
 
         val feilutbetalingerFraSimulering = simuleringTjeneste
-                .hentFeilutbetalinger(HentFeilutbetalingerFraSimuleringRequest(ytelsestype = Ytelsestype.OVERGANGSSTØNAD,
-                                                                               eksternFagsakId = eksternFagsakId,
-                                                                               fagsystemsbehandlingId = fagsystemsbehandlingId))
+            .hentFeilutbetalinger(
+                HentFeilutbetalingerFraSimuleringRequest(
+                    ytelsestype = Ytelsestype.OVERGANGSSTØNAD,
+                    eksternFagsakId = eksternFagsakId,
+                    fagsystemsbehandlingId = fagsystemsbehandlingId
+                )
+            )
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
-            feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 1
+                feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 1
         }
 
         val feilutbetaltPeriode = feilutbetalingerFraSimulering.feilutbetaltePerioder[0]
@@ -105,22 +111,28 @@ internal class SimuleringTjenesteImplTest {
         val requestXml = lesFil("/simulering/testdata/requestXML_fagsak_10002_BA.xml")
         val responsXml = lesFil("/simulering/testdata/responsXML_fagsak_10002_BA.xml")
 
-        simuleringLagerTjeneste.lagreINyTransaksjon(SimuleringLager(
+        simuleringLagerTjeneste.lagreINyTransaksjon(
+            SimuleringLager(
                 fagsystem = "BA",
                 fagsakId = eksternFagsakId,
                 behandlingId = fagsystemsbehandlingId,
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 requestXml = requestXml,
                 responseXml = responsXml
-        ))
+            )
+        )
 
         val feilutbetalingerFraSimulering = simuleringTjeneste
-                .hentFeilutbetalinger(HentFeilutbetalingerFraSimuleringRequest(ytelsestype = Ytelsestype.BARNETRYGD,
-                                                                               eksternFagsakId = eksternFagsakId,
-                                                                               fagsystemsbehandlingId = fagsystemsbehandlingId))
+            .hentFeilutbetalinger(
+                HentFeilutbetalingerFraSimuleringRequest(
+                    ytelsestype = Ytelsestype.BARNETRYGD,
+                    eksternFagsakId = eksternFagsakId,
+                    fagsystemsbehandlingId = fagsystemsbehandlingId
+                )
+            )
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
-            feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 3
+                feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 3
         }
 
         val feilutbetaltPeriode1 = feilutbetalingerFraSimulering.feilutbetaltePerioder[0]
@@ -153,19 +165,25 @@ internal class SimuleringTjenesteImplTest {
         val requestXml = lesFil("/simulering/testdata/requestXML_fagsak_10003_EFBT.xml")
         val responsXml = lesFil("/simulering/testdata/responsXML_fagsak_10003_EFBT.xml")
 
-        simuleringLagerTjeneste.lagreINyTransaksjon(SimuleringLager(
+        simuleringLagerTjeneste.lagreINyTransaksjon(
+            SimuleringLager(
                 fagsystem = "EFBT",
                 fagsakId = eksternFagsakId,
                 behandlingId = fagsystemsbehandlingId,
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 requestXml = requestXml,
                 responseXml = responsXml
-        ))
+            )
+        )
 
         val feilutbetalingerFraSimulering = simuleringTjeneste
-                .hentFeilutbetalinger(HentFeilutbetalingerFraSimuleringRequest(ytelsestype = Ytelsestype.BARNETILSYN,
-                                                                               eksternFagsakId = eksternFagsakId,
-                                                                               fagsystemsbehandlingId = fagsystemsbehandlingId))
+            .hentFeilutbetalinger(
+                HentFeilutbetalingerFraSimuleringRequest(
+                    ytelsestype = Ytelsestype.BARNETILSYN,
+                    eksternFagsakId = eksternFagsakId,
+                    fagsystemsbehandlingId = fagsystemsbehandlingId
+                )
+            )
         assertTrue { feilutbetalingerFraSimulering.feilutbetaltePerioder.isEmpty() }
     }
 
@@ -174,9 +192,10 @@ internal class SimuleringTjenesteImplTest {
         return url.readText()
     }
 
-
     @Configuration
-    @ComponentScan(basePackages = ["no.nav.familie.oppdrag"],
-                   excludeFilters = [ComponentScan.Filter(type = FilterType.REGEX, pattern = [".*[MQ].*"])])
+    @ComponentScan(
+        basePackages = ["no.nav.familie.oppdrag"],
+        excludeFilters = [ComponentScan.Filter(type = FilterType.REGEX, pattern = [".*[MQ].*"])]
+    )
     class TestConfig
 }

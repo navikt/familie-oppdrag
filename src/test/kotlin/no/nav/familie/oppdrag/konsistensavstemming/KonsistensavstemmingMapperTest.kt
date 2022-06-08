@@ -84,14 +84,18 @@ class KonsistensavstemmingMapperTest {
 
     @Test
     fun `totaldata skal akkumulere totalbeløp på alle perioder og totalAntall på alle oppdrag`() {
-        val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(idag,
-                                                           fagområde,
-                                                           "1",
-                                                           lagUtbetalingsperiode(beløp = 100),
-                                                           lagUtbetalingsperiode(beløp = 200))
+        val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(
+            idag,
+            fagområde,
+            "1",
+            lagUtbetalingsperiode(beløp = 100),
+            lagUtbetalingsperiode(beløp = 200)
+        )
         val utbetalingsoppdrag2 = lagTestUtbetalingsoppdrag(idag, fagområde, "2", lagUtbetalingsperiode(beløp = 50))
-        val mapper = KonsistensavstemmingMapper(fagområde,
-                                                listOf(utbetalingsoppdrag, utbetalingsoppdrag2), idag, 0, 0, true, true)
+        val mapper = KonsistensavstemmingMapper(
+            fagområde,
+            listOf(utbetalingsoppdrag, utbetalingsoppdrag2), idag, 0, 0, true, true
+        )
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(5, meldinger.size)
         assertEquals(KonsistensavstemmingConstants.DATA, meldinger[3].aksjonsdata.aksjonsType)
@@ -101,11 +105,13 @@ class KonsistensavstemmingMapperTest {
 
     @Test
     fun `skal ikke lage melding hvis periode ikke er aktiv`() {
-        val utbetalingsperiode = lagUtbetalingsperiode(fagområde,
-                                                       1,
-                                                       100,
-                                                       LocalDate.now().minusYears(1),
-                                                       LocalDate.now().minusYears(1))
+        val utbetalingsperiode = lagUtbetalingsperiode(
+            fagområde,
+            1,
+            100,
+            LocalDate.now().minusYears(1),
+            LocalDate.now().minusYears(1)
+        )
         val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(idag.plusYears(7), fagområde, "1", utbetalingsperiode)
         val mapper = KonsistensavstemmingMapper(fagområde, listOf(utbetalingsoppdrag), idag, 0, 0, true, true)
         val meldinger = mapper.lagAvstemmingsmeldinger()
@@ -120,11 +126,13 @@ class KonsistensavstemmingMapperTest {
     internal fun `skal kaste feil hvis det finnes 2 utbetalingsoppdrag med samme saksnummer`() {
         val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(idag.plusYears(7), fagområde, "1")
         val utbetalingsoppdrag2 = lagTestUtbetalingsoppdrag(idag.plusYears(7), fagområde, "1")
-        val mapper = KonsistensavstemmingMapper(fagområde,
-                                                listOf(utbetalingsoppdrag, utbetalingsoppdrag2), idag, 0, 0, true, true)
+        val mapper = KonsistensavstemmingMapper(
+            fagområde,
+            listOf(utbetalingsoppdrag, utbetalingsoppdrag2), idag, 0, 0, true, true
+        )
 
         assertThat(catchThrowable { mapper.lagAvstemmingsmeldinger() })
-                .hasMessage("Har allerede lagt til 1 i listen over avstemminger")
+            .hasMessage("Har allerede lagt til 1 i listen over avstemminger")
     }
 
     private fun assertAksjon(expected: String, actual: Aksjonsdata) {
@@ -152,9 +160,11 @@ class KonsistensavstemmingMapperTest {
         assertEquals(OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.format(datoFormatter), actual.oppdragGjelderFom)
         assertEquals(utbetalingsoppdrag.saksbehandlerId, actual.saksbehandlerId)
         assertEnhet(actual.oppdragsenhetListe.first())
-        assertOppdragsLinjeListe(utbetalingsoppdrag.utbetalingsperiode.first(),
-                                 utbetalingsoppdrag.saksbehandlerId,
-                                 actual.oppdragslinjeListe.first())
+        assertOppdragsLinjeListe(
+            utbetalingsoppdrag.utbetalingsperiode.first(),
+            utbetalingsoppdrag.saksbehandlerId,
+            actual.oppdragslinjeListe.first()
+        )
     }
 
     private fun assertOppdragsLinjeListe(utbetalingsperiode: Utbetalingsperiode, saksbehandler: String, actual: Oppdragslinje) {
@@ -181,12 +191,16 @@ class KonsistensavstemmingMapperTest {
         assertEquals(OppdragSkjemaConstants.ENHET_DATO_FOM.format(datoFormatter), enhet.enhetFom)
     }
 
-    private fun lagMeldinger(inkluderStartmelding: Boolean,
-                             inkluderAvsluttmelding: Boolean): Pair<Utbetalingsoppdrag, List<Konsistensavstemmingsdata>> {
+    private fun lagMeldinger(
+        inkluderStartmelding: Boolean,
+        inkluderAvsluttmelding: Boolean
+    ): Pair<Utbetalingsoppdrag, List<Konsistensavstemmingsdata>> {
         val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(idag, fagområde)
         val mapper =
-                KonsistensavstemmingMapper(fagområde,
-                                           listOf(utbetalingsoppdrag), idag, 0, 0, inkluderStartmelding, inkluderAvsluttmelding)
+            KonsistensavstemmingMapper(
+                fagområde,
+                listOf(utbetalingsoppdrag), idag, 0, 0, inkluderStartmelding, inkluderAvsluttmelding
+            )
         val meldinger = mapper.lagAvstemmingsmeldinger()
         return Pair(utbetalingsoppdrag, meldinger)
     }

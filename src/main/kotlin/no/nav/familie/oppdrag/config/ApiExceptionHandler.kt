@@ -34,14 +34,13 @@ class ApiExceptionHandler {
         secureLogger.error("Feil mot ${feil.system} har oppstått", feil)
         logger.error("Feil mot ${feil.system} har oppstått exception=${getMostSpecificCause(feil)::class}")
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Ressurs.failure(errorMessage = feil.message))
+            .body(Ressurs.failure(errorMessage = feil.message))
     }
 
     @ExceptionHandler(FinnesIkkeITps::class)
     fun handleThrowable(feil: FinnesIkkeITps): ResponseEntity<Ressurs<Nothing>> {
         logger.warn("Personen finnes ikke i TPS system=${feil.system} ")
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Ressurs.failure(errorMessage = "Personen finnes ikke i TPS"))
+            .body(Ressurs.failure(errorMessage = "Personen finnes ikke i TPS"))
     }
-
 }

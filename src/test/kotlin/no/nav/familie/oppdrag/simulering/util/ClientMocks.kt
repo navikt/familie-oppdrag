@@ -17,7 +17,7 @@ class ClientMocks {
     fun mockSimulerFpService(): SimulerFpService {
         val simulerFpService = mockk<SimulerFpService>()
 
-       every {
+        every {
             simulerFpService.simulerBeregning(any())
         } answers {
             lagTestSimuleringResponse()

@@ -1,13 +1,12 @@
 package no.nav.familie.oppdrag.repository
 
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 
 internal class OppdragStatusTest {
-
 
     @Test
     fun skal_konvertere_status() {
@@ -19,7 +18,7 @@ internal class OppdragStatusTest {
         assertEquals(OppdragStatus.KVITTERT_UKJENT, lagOppdrag("Ukjent").oppdragStatus)
     }
 
-    private fun lagOppdrag(alvorlighetsgrad: String) : Oppdrag {
+    private fun lagOppdrag(alvorlighetsgrad: String): Oppdrag {
         val oppdrag = Oppdrag()
         oppdrag.mmel = Mmel()
         oppdrag.mmel.alvorlighetsgrad = alvorlighetsgrad

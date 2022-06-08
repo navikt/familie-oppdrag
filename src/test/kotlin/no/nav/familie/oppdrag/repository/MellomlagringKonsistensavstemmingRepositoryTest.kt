@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertEquals
 
 @ActiveProfiles("dev")

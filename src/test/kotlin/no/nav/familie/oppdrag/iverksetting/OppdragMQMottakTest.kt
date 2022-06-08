@@ -1,11 +1,15 @@
 package no.nav.familie.oppdrag.iverksetting
 
-import io.mockk.*
-import no.nav.familie.oppdrag.repository.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.repository.somOppdragLagerMedVersjon
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,7 +17,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.core.env.Environment
 import javax.jms.TextMessage
 import kotlin.test.assertEquals
-
 
 class OppdragMQMottakTest {
 
@@ -25,7 +28,6 @@ class OppdragMQMottakTest {
             every { env.activeProfiles } returns arrayOf("dev")
             return env
         }
-
 
     @BeforeEach
     fun setUp() {
@@ -57,9 +59,9 @@ class OppdragMQMottakTest {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
         every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
-                listOf(oppdragLager)
+            listOf(oppdragLager)
 
-        every { oppdragLagerRepository.oppdaterStatus(any(),any()) } just Runs
+        every { oppdragLagerRepository.oppdaterStatus(any(), any()) } just Runs
         every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
@@ -67,7 +69,7 @@ class OppdragMQMottakTest {
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
         verify(exactly = 1) { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) }
-        verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(),any()) }
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(), any()) }
         verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) }
     }
 
@@ -79,7 +81,7 @@ class OppdragMQMottakTest {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
         every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
-                listOf(oppdragLager, oppdragLagerV1)
+            listOf(oppdragLager, oppdragLagerV1)
 
         every { oppdragLagerRepository.oppdaterStatus(any(), any(), any()) } just Runs
         every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any()) } just Runs
@@ -137,9 +139,9 @@ class OppdragMQMottakTest {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
         every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
-                listOf(oppdragLager.copy(status = OppdragStatus.KVITTERT_OK))
+            listOf(oppdragLager.copy(status = OppdragStatus.KVITTERT_OK))
 
-        every { oppdragLagerRepository.oppdaterStatus(any(),OppdragStatus.KVITTERT_OK) } just Runs
+        every { oppdragLagerRepository.oppdaterStatus(any(), OppdragStatus.KVITTERT_OK) } just Runs
         every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)

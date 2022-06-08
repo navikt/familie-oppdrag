@@ -8,14 +8,15 @@ import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Avstemmingsdata
 import no.nav.virksomhet.tjenester.avstemming.v1.SendAsynkronKonsistensavstemmingsdata
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.jms.JmsException
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class AvstemmingSenderMQ(val jmsTemplateAvstemming: JmsTemplate,
-                         @Value("\${oppdrag.mq.enabled}") val erEnabled: String) : AvstemmingSender {
+class AvstemmingSenderMQ(
+    val jmsTemplateAvstemming: JmsTemplate,
+    @Value("\${oppdrag.mq.enabled}") val erEnabled: String
+) : AvstemmingSender {
 
     override fun sendGrensesnittAvstemming(avstemmingsdata: Avstemmingsdata) {
 
@@ -33,7 +34,6 @@ class AvstemmingSenderMQ(val jmsTemplateAvstemming: JmsTemplate,
         leggPåKø(requestXml)
     }
 
-
     private fun leggPåKø(melding: String) {
         if (!erEnabled.toBoolean()) {
             LOG.info("MQ-integrasjon mot oppdrag er skrudd av. Kan ikke sende avstemming")
@@ -42,8 +42,8 @@ class AvstemmingSenderMQ(val jmsTemplateAvstemming: JmsTemplate,
 
         try {
             jmsTemplateAvstemming.convertAndSend(
-                    "queue:///${jmsTemplateAvstemming.defaultDestinationName}?targetClient=1",
-                    melding
+                "queue:///${jmsTemplateAvstemming.defaultDestinationName}?targetClient=1",
+                melding
             )
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende avstemming til OS. Feil: ", e)

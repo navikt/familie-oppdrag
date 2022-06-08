@@ -12,15 +12,17 @@ import javax.xml.transform.stream.StreamSource
 
 object Jaxb {
 
-    val jaxbContext = JAXBContext.newInstance(Oppdrag::class.java,
-                                              SimulerBeregningRequest::class.java,
-                                              SimulerBeregningResponse::class.java)
+    val jaxbContext = JAXBContext.newInstance(
+        Oppdrag::class.java,
+        SimulerBeregningRequest::class.java,
+        SimulerBeregningResponse::class.java
+    )
     val xmlInputFactory = XMLInputFactory.newInstance()
 
     fun tilOppdrag(oppdragXml: String): Oppdrag {
         val oppdrag = jaxbContext.createUnmarshaller().unmarshal(
-                xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(oppdragXml))),
-                Oppdrag::class.java
+            xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(oppdragXml))),
+            Oppdrag::class.java
         )
 
         return oppdrag.value
@@ -55,8 +57,8 @@ object Jaxb {
 
     fun tilSimuleringsrespons(responsXml: String): SimulerBeregningResponse {
         val simuleringBeregningResponse = jaxbContext.createUnmarshaller().unmarshal(
-                xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(responsXml))),
-                SimulerBeregningResponse::class.java
+            xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(responsXml))),
+            SimulerBeregningResponse::class.java
         )
 
         return simuleringBeregningResponse.value

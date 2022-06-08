@@ -7,7 +7,7 @@ object DevLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
         val app = SpringApplicationBuilder(ApplicationConfig::class.java)
-                .profiles("dev")
+            .profiles("dev")
         app.run(*args)
     }
 }

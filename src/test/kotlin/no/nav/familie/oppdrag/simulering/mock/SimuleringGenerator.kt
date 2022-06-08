@@ -1,14 +1,14 @@
 package no.nav.familie.oppdrag.simulering.mock
 
 import no.nav.system.os.entiteter.beregningskjema.Beregning
-import java.math.BigDecimal
-import no.nav.system.os.entiteter.beregningskjema.BeregningsPeriode
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaa
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaaDetaljer
+import no.nav.system.os.entiteter.beregningskjema.BeregningsPeriode
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.Oppdrag
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.Oppdragslinje
+import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
 import java.time.YearMonth
@@ -152,7 +152,7 @@ class SimuleringGenerator {
                         )
                     }
                 } else if (oppdragsperiode.periodeType == PeriodeType.REDUKSJON && YearMonth.from(periode.fom)
-                        .isBefore(nesteMåned)
+                    .isBefore(nesteMåned)
                 ) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
                         opprettBeregningStoppNivaaDetaljer(
@@ -170,7 +170,7 @@ class SimuleringGenerator {
                         )
                     }
                 } else if (oppdragsperiode.periodeType == PeriodeType.ØKNING && YearMonth.from(periode.fom)
-                        .isBefore(nesteMåned)
+                    .isBefore(nesteMåned)
                 ) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
                         opprettNegativBeregningStoppNivaaDetaljer(
@@ -210,7 +210,7 @@ class SimuleringGenerator {
         stoppnivaaDetaljer.faktiskTom = dateTimeFormatter.format(periode.tom)
         stoppnivaaDetaljer.kontoStreng = "1235432"
         stoppnivaaDetaljer.behandlingskode = "2"
-        if (periode.typeSats == "DAG"){
+        if (periode.typeSats == "DAG") {
             stoppnivaaDetaljer.belop = oppdragsperiode.sats!!.multiply(BigDecimal.valueOf(periode.antallVirkedager.toLong()))
         } else stoppnivaaDetaljer.belop = oppdragsperiode.sats
         stoppnivaaDetaljer.trekkVedtakId = 0L
@@ -244,10 +244,10 @@ class SimuleringGenerator {
     ): BeregningStoppnivaaDetaljer {
         val stoppnivaaDetaljer = BeregningStoppnivaaDetaljer()
 
-        //Sequence explanation:
-        //1.Ytelsen slik den stod original
-        //2.Feilutbetalt beløp
-        //3.Fjerning av ytelsen fra seqence 1
+        // Sequence explanation:
+        // 1.Ytelsen slik den stod original
+        // 2.Feilutbetalt beløp
+        // 3.Fjerning av ytelsen fra seqence 1
         stoppnivaaDetaljer.faktiskFom = dateTimeFormatter.format(periode.fom)
         stoppnivaaDetaljer.faktiskTom = dateTimeFormatter.format(periode.tom)
         stoppnivaaDetaljer.kontoStreng = "1235432"
@@ -312,12 +312,12 @@ class SimuleringGenerator {
         } else {
             if (sequence == 2) {
                 if (oppdragsperiode.typeSats == "DAG") {
-                belop.subtract(oppdragsperiode.oldSats!!.multiply(BigDecimal.valueOf(antallVirkedager.toLong()))).negate() }
-                else { belop.subtract(oppdragsperiode.oldSats).negate() }
+                    belop.subtract(oppdragsperiode.oldSats!!.multiply(BigDecimal.valueOf(antallVirkedager.toLong()))).negate()
+                } else { belop.subtract(oppdragsperiode.oldSats).negate() }
             } else if (sequence == 3) {
                 if (oppdragsperiode.typeSats == "DAG") {
-                oppdragsperiode.oldSats!!.multiply(BigDecimal.valueOf(antallVirkedager.toLong())).negate() }
-                else { oppdragsperiode.oldSats!!.negate() }
+                    oppdragsperiode.oldSats!!.multiply(BigDecimal.valueOf(antallVirkedager.toLong())).negate()
+                } else { oppdragsperiode.oldSats!!.negate() }
             } else belop
         }
     }

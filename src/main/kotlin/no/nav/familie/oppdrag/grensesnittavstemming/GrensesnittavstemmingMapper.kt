@@ -1,29 +1,37 @@
 package no.nav.familie.oppdrag.grensesnittavstemming
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
-import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.AvstemmingMapper
 import no.nav.familie.oppdrag.avstemming.AvstemmingMapper.fagområdeTilAvleverendeKomponentKode
 import no.nav.familie.oppdrag.avstemming.SystemKode
 import no.nav.familie.oppdrag.repository.OppdragLager
-import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
-import no.trygdeetaten.skjema.oppdrag.Mmel
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Aksjonsdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AvstemmingType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Avstemmingsdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.DetaljType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Detaljdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Fortegn
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.KildeType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Periodedata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Totaldata
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 
-class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
-                                  private val fagområde: String,
-                                  private val fom: LocalDateTime,
-                                  private val tom: LocalDateTime) {
+class GrensesnittavstemmingMapper(
+    private val oppdragsliste: List<OppdragLager>,
+    private val fagområde: String,
+    private val fom: LocalDateTime,
+    private val tom: LocalDateTime
+) {
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
 
-    fun lagAvstemmingsmeldinger() : List<Avstemmingsdata> {
+    fun lagAvstemmingsmeldinger(): List<Avstemmingsdata> {
         if (oppdragsliste.isEmpty())
             return emptyList()
         else
@@ -48,7 +56,7 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
     }
 
     private fun lagMelding(aksjonType: AksjonType): Avstemmingsdata =
-            Avstemmingsdata().apply {
+        Avstemmingsdata().apply {
             aksjon = opprettAksjonsdata(aksjonType)
         }
 
@@ -67,7 +75,7 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
         }
     }
 
-    private fun opprettAvstemmingsdataLister() : List<Avstemmingsdata> {
+    private fun opprettAvstemmingsdataLister(): List<Avstemmingsdata> {
         return opprettDetaljdata().chunked(ANTALL_DETALJER_PER_MELDING).map {
             lagMelding(AksjonType.DATA).apply {
                 this.detalj.addAll(it)
@@ -75,7 +83,7 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
         }
     }
 
-    private fun opprettDetaljdata() : List<Detaljdata> {
+    private fun opprettDetaljdata(): List<Detaljdata> {
         return oppdragsliste.mapNotNull { oppdrag ->
             val detaljType = opprettDetaljType(oppdrag)
             if (detaljType != null) {
@@ -98,17 +106,17 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
         }
     }
 
-    private fun opprettDetaljType(oppdrag : OppdragLager) : DetaljType? =
-            when (oppdrag.status) {
-                OppdragStatus.LAGT_PÅ_KØ -> DetaljType.MANG
-                OppdragStatus.KVITTERT_MED_MANGLER -> DetaljType.VARS
-                OppdragStatus.KVITTERT_FUNKSJONELL_FEIL -> DetaljType.AVVI
-                OppdragStatus.KVITTERT_TEKNISK_FEIL -> DetaljType.AVVI
-                OppdragStatus.KVITTERT_OK -> null
-                OppdragStatus.KVITTERT_UKJENT -> null
-            }
+    private fun opprettDetaljType(oppdrag: OppdragLager): DetaljType? =
+        when (oppdrag.status) {
+            OppdragStatus.LAGT_PÅ_KØ -> DetaljType.MANG
+            OppdragStatus.KVITTERT_MED_MANGLER -> DetaljType.VARS
+            OppdragStatus.KVITTERT_FUNKSJONELL_FEIL -> DetaljType.AVVI
+            OppdragStatus.KVITTERT_TEKNISK_FEIL -> DetaljType.AVVI
+            OppdragStatus.KVITTERT_OK -> null
+            OppdragStatus.KVITTERT_UKJENT -> null
+        }
 
-    private fun opprettTotalData() : Totaldata {
+    private fun opprettTotalData(): Totaldata {
         val totalBeløp = oppdragsliste.map { getSatsBeløp(it) }.sum()
         return Totaldata().apply {
             this.totalAntall = oppdragsliste.size
@@ -139,16 +147,20 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
             when (oppdrag.status) {
                 OppdragStatus.LAGT_PÅ_KØ -> {
                     manglerBelop += satsbeløp
-                    manglerAntall++ }
+                    manglerAntall++
+                }
                 OppdragStatus.KVITTERT_OK -> {
                     godkjentBelop += satsbeløp
-                    godkjentAntall++ }
+                    godkjentAntall++
+                }
                 OppdragStatus.KVITTERT_MED_MANGLER -> {
                     varselBelop += satsbeløp
-                    varselAntall++ }
+                    varselAntall++
+                }
                 else -> {
                     avvistBelop += satsbeløp
-                    avvistAntall++ }
+                    avvistAntall++
+                }
             }
         }
 
@@ -171,8 +183,8 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
         }
     }
 
-    private fun getSatsBeløp(oppdrag: OppdragLager) : Long =
-            oppdrag.utbetalingsoppdrag.utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
+    private fun getSatsBeløp(oppdrag: OppdragLager): Long =
+        oppdrag.utbetalingsoppdrag.utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
 
     private fun getFortegn(satsbeløp: Long): Fortegn {
         return if (satsbeløp >= 0) Fortegn.T else Fortegn.F
@@ -187,10 +199,9 @@ class GrensesnittavstemmingMapper(private val oppdragsliste: List<OppdragLager>,
     }
 
     private fun sortertAvstemmingstidspunkt() =
-            oppdragsliste.map(OppdragLager::avstemmingTidspunkt).sortedDescending()
+        oppdragsliste.map(OppdragLager::avstemmingTidspunkt).sortedDescending()
 
     private fun formaterTilPeriodedataFormat(stringTimestamp: String): String =
-            LocalDateTime.parse(stringTimestamp, tidspunktFormatter)
-                    .format(DateTimeFormatter.ofPattern("yyyyMMddHH"))
-
+        LocalDateTime.parse(stringTimestamp, tidspunktFormatter)
+            .format(DateTimeFormatter.ofPattern("yyyyMMddHH"))
 }

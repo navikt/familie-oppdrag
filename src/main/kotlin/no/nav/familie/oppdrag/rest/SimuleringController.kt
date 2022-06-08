@@ -29,32 +29,38 @@ class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste
     val logger: Logger = LoggerFactory.getLogger(SimuleringController::class.java)
 
     @PostMapping(path = ["/etterbetalingsbelop"])
-    fun hentEtterbetalingsbeløp(@Valid @RequestBody
-                                utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<RestSimulerResultat>> {
+    fun hentEtterbetalingsbeløp(
+        @Valid @RequestBody
+        utbetalingsoppdrag: Utbetalingsoppdrag
+    ): ResponseEntity<Ressurs<RestSimulerResultat>> {
         logger.info("Hente simulert etterbetaling for saksnr ${utbetalingsoppdrag.saksnummer}")
         return ok(simuleringTjeneste.utførSimulering(utbetalingsoppdrag))
     }
 
     @PostMapping(path = ["/v1"])
-    fun utførSimuleringOgHentResultat(@Valid @RequestBody
-                                      utbetalingsoppdrag: Utbetalingsoppdrag)
-            : ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
+    fun utførSimuleringOgHentResultat(
+        @Valid @RequestBody
+        utbetalingsoppdrag: Utbetalingsoppdrag
+    ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
         return ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
     }
 
-    //Temporær funksjon som skal brukes for å teste responser fra oppdrag.
-    //TODO: skal fjernes når den ikke mer er i bruk.
+    // Temporær funksjon som skal brukes for å teste responser fra oppdrag.
+    // TODO: skal fjernes når den ikke mer er i bruk.
     @PostMapping(path = ["/direktesimulering"])
-    fun direkteSimulering(@Valid @RequestBody
-                          utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<SimulerBeregningResponse>> =
-            ok(simuleringTjeneste.hentSimulerBeregningResponse(utbetalingsoppdrag))
+    fun direkteSimulering(
+        @Valid @RequestBody
+        utbetalingsoppdrag: Utbetalingsoppdrag
+    ): ResponseEntity<Ressurs<SimulerBeregningResponse>> =
+        ok(simuleringTjeneste.hentSimulerBeregningResponse(utbetalingsoppdrag))
 
     @PostMapping(path = ["/feilutbetalinger"])
-    fun hentFeilutbetalinger(@Valid @RequestBody request: HentFeilutbetalingerFraSimuleringRequest)
-            : ResponseEntity<Ressurs<FeilutbetalingerFraSimulering>> {
-        logger.info("Henter feilutbetalinger for ytelsestype=${request.ytelsestype}, " +
-                    "fagsak=${request.eksternFagsakId}," +
-                    " behandlingId=${request.eksternFagsakId}")
+    fun hentFeilutbetalinger(@Valid @RequestBody request: HentFeilutbetalingerFraSimuleringRequest): ResponseEntity<Ressurs<FeilutbetalingerFraSimulering>> {
+        logger.info(
+            "Henter feilutbetalinger for ytelsestype=${request.ytelsestype}, " +
+                "fagsak=${request.eksternFagsakId}," +
+                " behandlingId=${request.eksternFagsakId}"
+        )
         return ok(simuleringTjeneste.hentFeilutbetalinger(request))
     }
 }

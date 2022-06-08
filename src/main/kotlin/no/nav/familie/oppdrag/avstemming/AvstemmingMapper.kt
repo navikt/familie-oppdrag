@@ -1,7 +1,8 @@
 package no.nav.familie.oppdrag.avstemming
 
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
 object AvstemmingMapper {
 
@@ -13,7 +14,7 @@ object AvstemmingMapper {
     }
 
     fun fagområdeTilAvleverendeKomponentKode(fagområde: String): String {
-        return when(fagområde) {
+        return when (fagområde) {
             "EFOG" -> "EF"
             "EFBT" -> "EF"
             "EFSP" -> "EF"
@@ -23,6 +24,6 @@ object AvstemmingMapper {
     }
 }
 
-enum class SystemKode(val kode : String) {
+enum class SystemKode(val kode: String) {
     OPPDRAGSSYSTEMET("OS")
 }
