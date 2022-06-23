@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.iverksetting
 
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
+import no.rtv.namespacetss.TssSamhandlerData
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.io.StringReader
 import java.io.StringWriter
@@ -15,7 +16,8 @@ object Jaxb {
     val jaxbContext = JAXBContext.newInstance(
         Oppdrag::class.java,
         SimulerBeregningRequest::class.java,
-        SimulerBeregningResponse::class.java
+        SimulerBeregningResponse::class.java,
+        TssSamhandlerData::class.java
     )
     val xmlInputFactory = XMLInputFactory.newInstance()
 
@@ -62,5 +64,14 @@ object Jaxb {
         )
 
         return simuleringBeregningResponse.value
+    }
+
+    fun tilXml(request: TssSamhandlerData): String {
+        val stringWriter = StringWriter()
+        val marshaller = jaxbContext.createMarshaller().apply {
+            setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+        }
+        marshaller.marshal(request, stringWriter)
+        return stringWriter.toString()
     }
 }

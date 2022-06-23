@@ -509,6 +509,19 @@
                             <generateDirectory>${project.build.directory}/generated-sources/kravgrunnlag</generateDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>tss</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>${basedir}/src/main/resources/tss/</schemaDirectory>
+                            <schemaIncludes>
+                                <include>tss.xsd</include>
+                            </schemaIncludes>
+                            <generateDirectory>${project.build.directory}/generated-sources/tss</generateDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

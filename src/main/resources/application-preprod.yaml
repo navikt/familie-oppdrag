@@ -3,12 +3,15 @@ oppdrag.mq:
   send: QA.Q1_231.OB04_OPPDRAG_XML
   mottak: QA.Q1_FAMILIE_OPPDRAG.OPPDRAG_FAMILIE_XML_KVITT
   avstemming: QA.Q1_234.OB29_AVSTEMMING_XML
+  tss: QA.Q1_415.AS10_SAMHANDLER_SERVICE
   channel: Q1_FAMILIE_OPPDRAG
   hostname: b27apvl220.preprod.local
   port: 1413
   user: ${SERVICEUSER_USERNAME}
   password: ${SERVICEUSER_PASSWORD}
   enabled: true
+
+
 
 no.nav.security.jwt:
   issuer.azuread:

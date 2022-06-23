@@ -29,6 +29,7 @@ class OppdragMQConfig(
     @Value("\${oppdrag.mq.channel}") val channel: String,
     @Value("\${oppdrag.mq.send}") val sendQueue: String,
     @Value("\${oppdrag.mq.avstemming}") val avstemmingQueue: String,
+    @Value("\${oppdrag.mq.tss}") val tssQueue: String,
     @Value("\${oppdrag.mq.port}") val port: Int,
     @Value("\${oppdrag.mq.user}") val user: String,
     @Value("\${oppdrag.mq.password}") val password: String
@@ -68,6 +69,17 @@ class OppdragMQConfig(
     fun jmsTemplateUtgående(connectionFactory: ConnectionFactory): JmsTemplate {
         return JmsTemplate(connectionFactory).apply {
             defaultDestinationName = sendQueue
+            isSessionTransacted = true
+        }
+    }
+
+    @Bean
+    fun jmsTemplateTss(
+        connectionFactory: ConnectionFactory
+    ): JmsTemplate {
+
+        return JmsTemplate(connectionFactory).apply {
+            defaultDestinationName = tssQueue
             isSessionTransacted = true
         }
     }
