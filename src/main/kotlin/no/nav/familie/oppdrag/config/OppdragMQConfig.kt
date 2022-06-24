@@ -5,9 +5,12 @@ import com.ibm.mq.jms.MQQueueConnectionFactory
 import com.ibm.msg.client.jms.JmsConstants
 import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET
 import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_ENCODING
+import com.ibm.msg.client.jms.JmsFactoryFactory
+import com.ibm.msg.client.wmq.WMQConstants
 import com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT
 import org.apache.activemq.jms.pool.PooledConnectionFactory
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
 import org.springframework.context.annotation.Bean
@@ -66,33 +69,50 @@ class OppdragMQConfig(
     }
 
     @Bean
-    fun jmsTemplateUtgående(connectionFactory: ConnectionFactory): JmsTemplate {
-        return JmsTemplate(connectionFactory).apply {
+    fun jmsTemplateUtgående(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate {
+        return JmsTemplate(mqQueueConnectionFactory).apply {
             defaultDestinationName = sendQueue
             isSessionTransacted = true
         }
     }
 
     @Bean
+    fun tssConnectionFactory(): ConnectionFactory {
+        val ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER)
+        val cf = ff.createConnectionFactory()
+        // Set the properties
+        cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, hostname)
+        cf.setIntProperty(WMQConstants.WMQ_PORT, port)
+        cf.setStringProperty(WMQConstants.WMQ_CHANNEL, channel)
+        cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQ_CM_CLIENT)
+        cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, queuemanager)
+        cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "familie-oppdrag")
+        cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true)
+        cf.setStringProperty(WMQConstants.USERID, user)
+        cf.setStringProperty(WMQConstants.PASSWORD, password)
+        return cf
+    }
+
+    @Bean
     fun jmsTemplateTss(
-        connectionFactory: ConnectionFactory
+        @Qualifier("tssConnectionFactory") tssConnectionFactory: ConnectionFactory
     ): JmsTemplate {
 
-        return JmsTemplate(connectionFactory).apply {
+        return JmsTemplate(tssConnectionFactory).apply {
             defaultDestinationName = tssQueue
             isSessionTransacted = true
         }
     }
 
     @Bean fun jmsListenerContainerFactory(
-        connectionFactory: ConnectionFactory,
+        mqQueueConnectionFactory: ConnectionFactory,
         configurer: DefaultJmsListenerContainerFactoryConfigurer
     ): JmsListenerContainerFactory<*> {
         val factory = DefaultJmsListenerContainerFactory()
-        configurer.configure(factory, connectionFactory)
+        configurer.configure(factory, mqQueueConnectionFactory)
 
         val transactionManager = JmsTransactionManager()
-        transactionManager.connectionFactory = connectionFactory
+        transactionManager.connectionFactory = mqQueueConnectionFactory
         factory.setTransactionManager(transactionManager)
         factory.setSessionTransacted(true)
         factory.setErrorHandler {
@@ -107,7 +127,7 @@ class OppdragMQConfig(
     }
 
     @Bean
-    fun jmsTemplateAvstemming(connectionFactory: ConnectionFactory): JmsTemplate {
-        return JmsTemplate(connectionFactory).apply { defaultDestinationName = avstemmingQueue }
+    fun jmsTemplateAvstemming(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate {
+        return JmsTemplate(mqQueueConnectionFactory).apply { defaultDestinationName = avstemmingQueue }
     }
 }

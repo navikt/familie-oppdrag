@@ -13,13 +13,14 @@ import javax.jms.Message
 import javax.jms.Session
 
 @Service
-class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplate: JmsTemplate) {
+class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate) {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     fun kallTss(rawRequest: String): String {
-        logger.info("gjør kall mot tss ${jmsTemplate.defaultDestinationName}")
-        return try {
-            val response: Message? = jmsTemplate.sendAndReceive(
+        logger.info("gjør kall mot tss ${jmsTemplateTss.defaultDestinationName} ${jmsTemplateTss.connectionFactory}")
+
+        try {
+            val response: Message? = jmsTemplateTss.sendAndReceive(
                 MessageCreator { session: Session ->
                     val requestMessage = session.createTextMessage(rawRequest)
                     requestMessage.jmsCorrelationID = UUID.randomUUID().toString()
@@ -34,6 +35,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplate: JmsTempl
                 response.getBody(String::class.java)
             }
         } catch (exception: Exception) {
+            logger.info("Feil ved sending", exception)
             when (exception) {
                 is JmsException, is JMSException -> {
                     throw java.lang.RuntimeException("En feil oppsto i kallet til TSS. Response var null.", exception)
