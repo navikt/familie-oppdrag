@@ -20,6 +20,7 @@ import org.springframework.jms.config.JmsListenerContainerFactory
 import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
+import java.time.Duration
 import javax.jms.ConnectionFactory
 import javax.jms.JMSException
 
@@ -101,6 +102,7 @@ class OppdragMQConfig(
         return JmsTemplate(tssConnectionFactory).apply {
             defaultDestinationName = tssQueue
             isSessionTransacted = true
+            receiveTimeout = Duration.ofSeconds(30).toMillis()
         }
     }
 

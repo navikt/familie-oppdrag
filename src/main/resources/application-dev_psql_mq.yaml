@@ -3,6 +3,7 @@ oppdrag.mq:
   send: DEV.QUEUE.1
   mottak: DEV.QUEUE.1
   avstemming: DEV.QUEUE.2
+  tss: DEV.QUEUE.3
   channel: DEV.ADMIN.SVRCONN
   hostname: localhost
   port: ${OPPDRAG_MQ_PORT_OVERRIDE}

@@ -21,7 +21,6 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         val tidOFF1 = objectFactory.createTidOFF1()
         tidOFF1.idOff = orgNr
         tidOFF1.kodeIdType = "ORG"
-        tidOFF1.kodeSamhType = "INST"
         samhandlerIDataB910.ofFid = tidOFF1
 
         servicerutiner.samhandlerIDataB910 = samhandlerIDataB910
@@ -30,8 +29,9 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         tssInputData.tssServiceRutine = servicerutiner
         val tssSamhandlerData = objectFactory.createTssSamhandlerData()
         tssSamhandlerData.tssInputData = tssInputData
-
-        val response = tssMQClient.kallTss(Jaxb.tilXml(tssSamhandlerData))
+        val xml = Jaxb.tilXml(tssSamhandlerData)
+        secureLogger.info("Sender melding til tss: $xml")
+        val response = tssMQClient.kallTss(xml)
         secureLogger.info("B910 = Response=$response")
         return response
     }

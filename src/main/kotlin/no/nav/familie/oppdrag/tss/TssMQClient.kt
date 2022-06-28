@@ -22,8 +22,10 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         try {
             val response: Message? = jmsTemplateTss.sendAndReceive(
                 MessageCreator { session: Session ->
+                    val uuid = UUID.randomUUID().toString()
+                    logger.info("Sender jms med jmsCorrelationId=$uuid")
                     val requestMessage = session.createTextMessage(rawRequest)
-                    requestMessage.jmsCorrelationID = UUID.randomUUID().toString()
+                    requestMessage.jmsCorrelationID = uuid
                     requestMessage
                 }
             )
