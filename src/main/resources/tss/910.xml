@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<tssSamhandlerData xmlns="http://www.rtv.no/NamespaceTSS">
+    <tssInputData>
+        <tssServiceRutine>
+            <samhandlerIDataB910>
+                <OFFid>
+                    <idOff>BYTTUT</idOff>
+                    <kodeIdType>ORG</kodeIdType>
+                    <kodeSamhType/>
+                    <avdelingsNr/>
+                    <offNrAvd/>
+                </OFFid>
+                <aktuellDato/>
+                <historikk>N</historikk>
+                <brukerID>HMB2990</brukerID>
+            </samhandlerIDataB910>
+        </tssServiceRutine>
+    </tssInputData>
+</tssSamhandlerData>

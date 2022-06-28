@@ -3,16 +3,11 @@ package no.nav.familie.oppdrag.tss
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.rtv.namespacetss.ObjectFactory
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 
 @Service
 class TssOppslagService(private val tssMQClient: TssMQClient) {
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
-
-    @Value("classpath:tss/910.xml")
-    lateinit var b910: Resource
 
     fun hentInformasjonOmSamhandler(orgNr: String): String {
         val objectFactory = ObjectFactory()
@@ -66,9 +61,11 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun lesFil(fileName: String): String {
-        val res = b910
+//        val res = b910
+//
+//        val file = res.file
+//        return file.readText(Charsets.UTF_8)
 
-        val file = res.file
-        return file.readText(Charsets.UTF_8)
+        return TssOppslagService::class.java.getResource("/tss/910.xml").readText()
     }
 }
