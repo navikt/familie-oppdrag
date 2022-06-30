@@ -1,7 +1,7 @@
 package no.nav.familie.oppdrag.tss
 
-import no.nav.familie.oppdrag.iverksetting.Jaxb
-import no.rtv.namespacetss.ObjectFactory
+import no.rtv.namespacetss.SamhandlerIDataB985Type
+import no.rtv.namespacetss.TssSamhandlerData
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -9,63 +9,36 @@ import org.springframework.stereotype.Service
 class TssOppslagService(private val tssMQClient: TssMQClient) {
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    fun hentInformasjonOmSamhandler(orgNr: String): String {
-        val objectFactory = ObjectFactory()
-        val servicerutiner = objectFactory.createTServicerutiner()
-
-        val samhandlerIDataB910 = objectFactory.createSamhandlerIDataB910Type()
-
-        samhandlerIDataB910.brukerID = "HMB2990"
-        samhandlerIDataB910.historikk = "N"
-
-        val tidOFF1 = objectFactory.createTidOFF1()
-        tidOFF1.idOff = orgNr
-        tidOFF1.kodeIdType = "ORG"
-        tidOFF1.kodeSamhType = null
-        samhandlerIDataB910.ofFid = tidOFF1
-
-        servicerutiner.samhandlerIDataB910 = samhandlerIDataB910
-
-        val tssInputData = objectFactory.createTssSamhandlerDataTssInputData()
-        tssInputData.tssServiceRutine = servicerutiner
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData()
-        tssSamhandlerData.tssInputData = tssInputData
-        val xml = Jaxb.tilXml(tssSamhandlerData)
-
-        val xml2 = lesFil("/tss/910.xml").replace("BYTTUT", orgNr)
-
-        secureLogger.info("Sender melding til tss: $xml")
-        val response = tssMQClient.kallTss(xml2)
-        secureLogger.info("B910 = Response=$response")
-        return response
+    fun hentInformasjonOmSamhandler(orgNr: String): TssSamhandlerData {
+        val samhandlerData = tssMQClient.getOrgInfo(orgNr)
+        return samhandlerData
     }
 
-    fun hentInformasjonOmSamhandlerInst(navn: String): String {
-        val objectFactory = ObjectFactory()
-        val servicerutiner = objectFactory.createTServicerutiner()
-
-        val samhandlerIDataB940 = objectFactory.createSamhandlerIDataB940Type()
-
-        samhandlerIDataB940.brukerID = "HMB2990"
-        samhandlerIDataB940.navnSamh = navn
-
-        servicerutiner.samhandlerIDataB940 = samhandlerIDataB940
-
-        val tssInputData = objectFactory.createTssSamhandlerDataTssInputData()
-        tssInputData.tssServiceRutine = servicerutiner
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData()
-        tssSamhandlerData.tssInputData = tssInputData
-        val response = tssMQClient.kallTss(Jaxb.tilXml(tssSamhandlerData))
-        secureLogger.info("B940 = Response=$response")
-        return response
+    fun hentInformasjonOmSamhandlerInst(navn: String): TssSamhandlerData {
+        val samhandlerData = tssMQClient.søkOrgInfo(navn)
+        return samhandlerData
     }
 
-    private fun lesFil(fileName: String): String {
-//        val res = b910
-//
-//        val file = res.file
-//        return file.readText(Charsets.UTF_8)
-
-        return TssOppslagService::class.java.getResource("/tss/910.xml").readText()
+    fun hentInformasjonOmSamhandlerInstB85(request: SamhandlerIDataB985Type): TssSamhandlerData {
+        val samhandlerData = tssMQClient.søkOrgInfoB985(request)
+        return samhandlerData
     }
+    private fun validateB910Response(tssEksternId: String, tssResponse: TssSamhandlerData) {
+//        commonResponseValidation(tssResponse)
+        val svarStatus = tssResponse.tssOutputData.svarStatus
+        val status = svarStatus.alvorligGrad
+        val statusOk = "00"
+        if (statusOk != status) {
+            throw TssResponseException(svarStatus.alvorligGrad, svarStatus.kodeMelding, svarStatus.beskrMelding)
+        }
+//        if (tssResponse.tssOutputData.ingenReturData != null) {
+//            throw TssNoDataFoundException(tssEksternId, tssResponse.tssOutputData.ingenReturData.toString())
+//        }
+    }
+
+//    private fun commonResponseValidation(tssResponse: TssSamhandlerData?) {
+//        if (tssResponse == null || tssResponse.tssOutputData == null || tssResponse.tssOutputData.svarStatus == null || tssResponse.tssOutputData.svarStatus.alvorligGrad == null) {
+//            throw TssConnectionException(TSS_COMMON_RESPONSE_VALIDATION)
+//        }
+//    }
 }

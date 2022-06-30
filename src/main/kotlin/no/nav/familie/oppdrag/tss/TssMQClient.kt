@@ -1,11 +1,14 @@
 package no.nav.familie.oppdrag.tss
 
+import no.nav.familie.oppdrag.iverksetting.Jaxb
+import no.rtv.namespacetss.ObjectFactory
+import no.rtv.namespacetss.SamhandlerIDataB985Type
+import no.rtv.namespacetss.TssSamhandlerData
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.jms.JmsException
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.jms.core.MessageCreator
 import org.springframework.stereotype.Service
 import java.util.UUID
 import javax.jms.JMSException
@@ -16,29 +19,27 @@ import javax.jms.Session
 class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate) {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-    fun kallTss(rawRequest: String): String {
-        logger.info("gjør kall mot tss ${jmsTemplateTss.defaultDestinationName} ${jmsTemplateTss.connectionFactory}")
-
+    private fun kallTss(rawRequest: String): String {
+        "Sender melding til kø=${jmsTemplateTss.defaultDestinationName}".apply {
+            logger.info(this)
+            secureLogger.info("$this request=$rawRequest")
+        }
         try {
-            val response: Message? = jmsTemplateTss.sendAndReceive(
-                MessageCreator { session: Session ->
-                    val tempQ = session.createTemporaryQueue()
-
-                    logger.info("Oppretting av temp queue: ${tempQ.queueName}")
-                    val uuid = UUID.randomUUID().toString()
-                    val requestMessage = session.createTextMessage(rawRequest)
-                    requestMessage.setJMSReplyTo(tempQ)
-                    requestMessage.jmsCorrelationID = uuid
-                    logger.info("Sender jms med jmsCorrelationId=$uuid ${requestMessage.jmsReplyTo} ")
-                    requestMessage
-                }
-            )
+            val response: Message? = jmsTemplateTss.sendAndReceive { session: Session ->
+                val uuid = UUID.randomUUID().toString()
+                val requestMessage = session.createTextMessage(rawRequest)
+                requestMessage.jmsCorrelationID = uuid
+                logger.info("Sender jms med jmsCorrelationId=$uuid ${requestMessage.jmsReplyTo} ")
+                requestMessage
+            }
 
             return if (response == null) {
                 logger.error("En feil oppsto i kallet til TSS. Response var null (timeout?)")
                 error("En feil oppsto i kallet til TSS. Response var null (timeout?)")
             } else {
-                response.getBody(String::class.java)
+                val responseAsString = response.getBody(String::class.java)
+                secureLogger.info("Response fra tss=$responseAsString")
+                responseAsString
             }
         } catch (exception: Exception) {
             logger.info("Feil ved sending", exception)
@@ -49,5 +50,77 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
                 else -> throw exception
             }
         }
+    }
+
+    fun getOrgInfo(orgNr: String): TssSamhandlerData {
+        val objectFactory = ObjectFactory()
+
+        val offIdData = objectFactory.createTidOFF1().apply {
+            idOff = orgNr
+            kodeIdType = "ORG"
+        }
+        val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
+            brukerID = "HMB2990"
+            historikk = "N"
+            ofFid = offIdData
+        }
+        val servicerutiner = objectFactory.createTServicerutiner().apply {
+            samhandlerIDataB910 = samhandlerIDataB910Data
+        }
+        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
+            tssServiceRutine = servicerutiner
+        }
+        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
+            tssInputData = tssSamhandlerDataTssInputData
+        }
+        val xml = Jaxb.tilXml(tssSamhandlerData)
+        val rawResponse = kallTss(xml)
+//        return rawResponse
+        return Jaxb.tilTssSamhandlerData(rawResponse)
+    }
+
+    fun søkOrgInfo(navn: String): TssSamhandlerData {
+        val objectFactory = ObjectFactory()
+        val samhandlerIDataB940Data = objectFactory.createSamhandlerIDataB940Type().apply {
+            brukerID = "familie-oppdrag"
+            navnSamh = navn
+            kodeSamhType = "INST"
+        }
+
+        val servicerutiner = objectFactory.createTServicerutiner().apply {
+            samhandlerIDataB940 = samhandlerIDataB940Data
+        }
+
+        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
+            tssServiceRutine = servicerutiner
+        }
+        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
+            tssInputData = tssSamhandlerDataTssInputData
+        }
+
+        val rawResponse = kallTss(Jaxb.tilXml(tssSamhandlerData))
+        return Jaxb.tilTssSamhandlerData(rawResponse)
+    }
+
+    fun søkOrgInfoB985(samhandlerIDataB985Data: SamhandlerIDataB985Type): TssSamhandlerData {
+        val objectFactory = ObjectFactory()
+
+        val servicerutiner = objectFactory.createTServicerutiner().apply {
+            samhandlerIDataB985 = samhandlerIDataB985Data
+        }
+
+        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
+            tssServiceRutine = servicerutiner
+        }
+        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
+            tssInputData = tssSamhandlerDataTssInputData
+        }
+
+        val rawResponse = kallTss(Jaxb.tilXml(tssSamhandlerData))
+        return Jaxb.tilTssSamhandlerData(rawResponse)
+    }
+
+    companion object {
+        val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
     }
 }

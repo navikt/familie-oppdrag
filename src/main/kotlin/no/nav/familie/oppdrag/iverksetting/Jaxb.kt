@@ -67,11 +67,19 @@ object Jaxb {
     }
 
     fun tilXml(request: TssSamhandlerData): String {
+        val jaxbContext: JAXBContext = JAXBContext.newInstance(TssSamhandlerData::class.java)
+        val marshaller: Marshaller = jaxbContext.createMarshaller()
         val stringWriter = StringWriter()
-        val marshaller = jaxbContext.createMarshaller().apply {
-            setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-        }
         marshaller.marshal(request, stringWriter)
         return stringWriter.toString()
+    }
+
+    fun tilTssSamhandlerData(responsXml: String): TssSamhandlerData {
+        val tssSamhandlerData = jaxbContext.createUnmarshaller().unmarshal(
+            xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(responsXml))),
+            TssSamhandlerData::class.java
+        )
+
+        return tssSamhandlerData.value
     }
 }

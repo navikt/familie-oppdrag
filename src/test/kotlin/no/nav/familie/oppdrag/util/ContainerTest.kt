@@ -22,6 +22,7 @@ object Containers {
     var ibmMQContainer = MyGeneralContainer("ibmcom/mq")
         .withEnv("LICENSE", "accept")
         .withEnv("MQ_QMGR_NAME", "QM1")
+        .withEnv("persistance.enabled", "true")
         .withExposedPorts(1414)
 
     class MyPostgreSQLContainer(imageName: String) : PostgreSQLContainer<MyPostgreSQLContainer>(imageName)

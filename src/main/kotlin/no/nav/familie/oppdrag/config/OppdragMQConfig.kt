@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.config
 
 import com.ibm.mq.constants.CMQC.MQENC_NATIVE
+import com.ibm.mq.jms.MQQueue
 import com.ibm.mq.jms.MQQueueConnectionFactory
 import com.ibm.msg.client.jms.JmsConstants
 import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET
@@ -99,8 +100,11 @@ class OppdragMQConfig(
         @Qualifier("tssConnectionFactory") tssConnectionFactory: ConnectionFactory
     ): JmsTemplate {
 
+        val mq = MQQueue(tssQueue)
+        mq.targetClient = WMQConstants.WMQ_CLIENT_NONJMS_MQ
+
         return JmsTemplate(tssConnectionFactory).apply {
-            defaultDestinationName = tssQueue
+            defaultDestination = mq
             isSessionTransacted = true
             receiveTimeout = Duration.ofSeconds(30).toMillis()
         }
