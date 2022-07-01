@@ -1,6 +1,5 @@
 package no.nav.familie.oppdrag.repository
 
-import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.util.Containers
@@ -21,9 +20,8 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertFailsWith
-
 
 @ActiveProfiles("dev")
 @ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))
@@ -54,7 +52,7 @@ internal class OppdragLagerRepositoryJdbcTest {
     fun skal_lagre_status() {
 
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
-                .copy(status = OppdragStatus.LAGT_PÅ_KØ)
+            .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
 
@@ -65,13 +63,12 @@ internal class OppdragLagerRepositoryJdbcTest {
 
         val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(hentetOppdrag.id)
         assertEquals(OppdragStatus.KVITTERT_OK, hentetOppdatertOppdrag.status)
-
     }
 
     @Test
     fun skal_lagre_kvitteringsmelding() {
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
-                .copy(status = OppdragStatus.LAGT_PÅ_KØ)
+            .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
         val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
@@ -84,14 +81,16 @@ internal class OppdragLagerRepositoryJdbcTest {
     }
 
     private fun kvitteringsmelding(): Mmel {
-        val kvitteringsmelding = Jaxb.tilOppdrag(this::class.java.getResourceAsStream("/kvittering-avvist.xml")
-                .bufferedReader().use { it.readText() })
+        val kvitteringsmelding = Jaxb.tilOppdrag(
+            this::class.java.getResourceAsStream("/kvittering-avvist.xml")
+                .bufferedReader().use { it.readText() }
+        )
         return kvitteringsmelding.mmel
     }
 
     @Test
     fun skal_kun_hente_ut_ett_BA_oppdrag_for_grensesnittavstemming() {
-        val dag = LocalDateTime.now();
+        val dag = LocalDateTime.now()
         val startenPåDagen = dag.withHour(0).withMinute(0)
         val sluttenAvDagen = dag.withHour(23).withMinute(59)
 
@@ -109,8 +108,10 @@ internal class OppdragLagerRepositoryJdbcTest {
 
         assertEquals(1, oppdrageneTilGrensesnittavstemming.size)
         assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
-        assertEquals(avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")),
-                oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")))
+        assertEquals(
+            avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")),
+            oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss"))
+        )
     }
 
     @Test
@@ -139,20 +140,38 @@ internal class OppdragLagerRepositoryJdbcTest {
         val behandlingB = baOppdragLager.copy(behandlingId = UUID.randomUUID().toString())
         oppdragLagerRepository.opprettOppdrag(behandlingB)
 
-        oppdragLagerRepository.opprettOppdrag(baOppdragLager.copy(fagsakId = UUID.randomUUID().toString(),
-                                                                  behandlingId = UUID.randomUUID().toString()))
-        assertThat(oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(baOppdragLager.fagsystem,
-                                                                                        setOf("finnes ikke")))
-                .isEmpty()
+        oppdragLagerRepository.opprettOppdrag(
+            baOppdragLager.copy(
+                fagsakId = UUID.randomUUID().toString(),
+                behandlingId = UUID.randomUUID().toString()
+            )
+        )
+        assertThat(
+            oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
+                baOppdragLager.fagsystem,
+                setOf("finnes ikke")
+            )
+        )
+            .isEmpty()
 
-        assertThat(oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(baOppdragLager.fagsystem,
-                                                                                        setOf(baOppdragLager.behandlingId)))
-                .hasSize(1)
+        assertThat(
+            oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
+                baOppdragLager.fagsystem,
+                setOf(baOppdragLager.behandlingId)
+            )
+        )
+            .hasSize(1)
 
-        assertThat(oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(baOppdragLager.fagsystem,
-                                                                                        setOf(baOppdragLager.behandlingId,
-                                                                                              behandlingB.behandlingId)))
-                .hasSize(2)
+        assertThat(
+            oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
+                baOppdragLager.fagsystem,
+                setOf(
+                    baOppdragLager.behandlingId,
+                    behandlingB.behandlingId
+                )
+            )
+        )
+            .hasSize(2)
     }
 
     @Test

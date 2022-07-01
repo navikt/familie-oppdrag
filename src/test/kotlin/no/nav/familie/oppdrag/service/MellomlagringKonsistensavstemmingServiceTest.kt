@@ -6,7 +6,7 @@ import no.nav.familie.oppdrag.repository.MellomlagringKonsistensavstemmingReposi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertEquals
 
 class MellomlagringKonsistensavstemmingServiceTest {

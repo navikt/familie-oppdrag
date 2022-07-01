@@ -1,8 +1,14 @@
 package no.nav.familie.oppdrag.simulering
 
-import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
-import no.nav.familie.kontrakter.felles.simulering.*
 import no.nav.common.utils.StringUtils
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.simulering.BetalingType
+import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
+import no.nav.familie.kontrakter.felles.simulering.FagOmrådeKode
+import no.nav.familie.kontrakter.felles.simulering.MottakerType
+import no.nav.familie.kontrakter.felles.simulering.PosteringType
+import no.nav.familie.kontrakter.felles.simulering.SimuleringMottaker
+import no.nav.familie.kontrakter.felles.simulering.SimulertPostering
 import no.nav.system.os.entiteter.beregningskjema.Beregning
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaa
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaaDetaljer
@@ -29,25 +35,30 @@ class SimuleringResultatTransformer {
 
         val requestMottakerId = hentOrgNrEllerFnr(utbetalingsoppdrag.aktoer)
         val simuleringMottakerListe = mottakerMap.map { (utbetalesTilId, simulertPostering) ->
-            SimuleringMottaker(mottakerNummer = utbetalesTilId,
-                               simulertPostering = simulertPostering,
-                               mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId))
+            SimuleringMottaker(
+                mottakerNummer = utbetalesTilId,
+                simulertPostering = simulertPostering,
+                mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId)
+            )
         }
         return DetaljertSimuleringResultat(simuleringMottakerListe)
     }
 
-    private fun mapPostering(utenInntrekk: Boolean,
-                             stoppnivaa: BeregningStoppnivaa,
-                             detaljer: BeregningStoppnivaaDetaljer): SimulertPostering {
+    private fun mapPostering(
+        utenInntrekk: Boolean,
+        stoppnivaa: BeregningStoppnivaa,
+        detaljer: BeregningStoppnivaaDetaljer
+    ): SimulertPostering {
         return SimulertPostering(
-                betalingType = utledBetalingType(detaljer.belop),
-                beløp = detaljer.belop,
-                fagOmrådeKode = FagOmrådeKode.fraKode(stoppnivaa.kodeFagomraade.trim()), //Todo: fjerne.trim() når TØB har rettet trailing spaces-feilen (jira: TOB-1509)
-                fom = parseDato(detaljer.faktiskFom),
-                tom = parseDato(detaljer.faktiskTom),
-                forfallsdato = parseDato(stoppnivaa.forfall),
-                posteringType = PosteringType.fraKode(detaljer.typeKlasse),
-                utenInntrekk = utenInntrekk)
+            betalingType = utledBetalingType(detaljer.belop),
+            beløp = detaljer.belop,
+            fagOmrådeKode = FagOmrådeKode.fraKode(stoppnivaa.kodeFagomraade.trim()), // Todo: fjerne.trim() når TØB har rettet trailing spaces-feilen (jira: TOB-1509)
+            fom = parseDato(detaljer.faktiskFom),
+            tom = parseDato(detaljer.faktiskTom),
+            forfallsdato = parseDato(stoppnivaa.forfall),
+            posteringType = PosteringType.fraKode(detaljer.typeKlasse),
+            utenInntrekk = utenInntrekk
+        )
     }
 
     private fun hentOrgNrEllerFnr(orgNrEllerFnr: String): String {

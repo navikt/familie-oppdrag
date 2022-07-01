@@ -10,10 +10,11 @@ fun logSoapFaultException(e: Exception) {
         val details = e.fault.detail?.let { detail ->
             detail.detailEntries.asSequence().mapNotNull { it.textContent }.joinToString(",")
         }
-        secureLogger.error("SOAPFaultException -" +
-                           " faultCode=${e.fault.faultCode}" +
-                           " faultString=${e.fault.faultString}" +
-                           " details=$details"
+        secureLogger.error(
+            "SOAPFaultException -" +
+                " faultCode=${e.fault.faultCode}" +
+                " faultString=${e.fault.faultString}" +
+                " details=$details"
         )
     }
 }

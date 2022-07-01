@@ -20,18 +20,19 @@ import org.springframework.jms.core.JmsTemplate
 import javax.jms.ConnectionFactory
 import javax.jms.JMSException
 
-
 private const val UTF_8_WITH_PUA = 1208
 
 @Configuration
-class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
-                      @Value("\${oppdrag.mq.queuemanager}") val queuemanager: String,
-                      @Value("\${oppdrag.mq.channel}") val channel: String,
-                      @Value("\${oppdrag.mq.send}") val sendQueue: String,
-                      @Value("\${oppdrag.mq.avstemming}") val avstemmingQueue: String,
-                      @Value("\${oppdrag.mq.port}") val port: Int,
-                      @Value("\${oppdrag.mq.user}") val user: String,
-                      @Value("\${oppdrag.mq.password}") val password: String) {
+class OppdragMQConfig(
+    @Value("\${oppdrag.mq.hostname}") val hostname: String,
+    @Value("\${oppdrag.mq.queuemanager}") val queuemanager: String,
+    @Value("\${oppdrag.mq.channel}") val channel: String,
+    @Value("\${oppdrag.mq.send}") val sendQueue: String,
+    @Value("\${oppdrag.mq.avstemming}") val avstemmingQueue: String,
+    @Value("\${oppdrag.mq.port}") val port: Int,
+    @Value("\${oppdrag.mq.user}") val user: String,
+    @Value("\${oppdrag.mq.password}") val password: String
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
@@ -49,7 +50,6 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
         targetFactory.setIntProperty(JMS_IBM_ENCODING, MQENC_NATIVE)
         targetFactory.setBooleanProperty(JmsConstants.USER_AUTHENTICATION_MQCSP, true)
         targetFactory.setIntProperty(JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA)
-
 
         val cf = UserCredentialsConnectionFactoryAdapter()
         cf.setUsername(user)
@@ -73,8 +73,9 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
     }
 
     @Bean fun jmsListenerContainerFactory(
-            connectionFactory: ConnectionFactory,
-            configurer: DefaultJmsListenerContainerFactoryConfigurer): JmsListenerContainerFactory<*> {
+        connectionFactory: ConnectionFactory,
+        configurer: DefaultJmsListenerContainerFactoryConfigurer
+    ): JmsListenerContainerFactory<*> {
         val factory = DefaultJmsListenerContainerFactory()
         configurer.configure(factory, connectionFactory)
 
@@ -92,7 +93,6 @@ class OppdragMQConfig(@Value("\${oppdrag.mq.hostname}") val hostname: String,
         }
         return factory
     }
-
 
     @Bean
     fun jmsTemplateAvstemming(connectionFactory: ConnectionFactory): JmsTemplate {

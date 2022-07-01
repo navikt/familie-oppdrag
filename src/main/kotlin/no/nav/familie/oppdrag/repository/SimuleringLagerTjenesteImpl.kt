@@ -26,6 +26,4 @@ class SimuleringLagerTjenesteImpl : SimuleringLagerTjeneste {
     override fun hentSisteSimuleringsresultat(fagsystem: String, fagsakId: String, behandlingId: String): SimuleringLager {
         return simuleringLagerRepository.finnSisteSimuleringsresultat(fagsystem, fagsakId, behandlingId)
     }
-
-
 }

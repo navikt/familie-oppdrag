@@ -13,5 +13,4 @@ class SimuleringSenderMock : SimuleringSender {
     override fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse {
         return SimuleringGenerator().opprettSimuleringsResultat(simulerBeregningRequest!!)
     }
-
 }

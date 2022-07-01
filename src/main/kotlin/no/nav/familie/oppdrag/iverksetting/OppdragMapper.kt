@@ -3,7 +3,11 @@ package no.nav.familie.oppdrag.iverksetting
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.nav.familie.oppdrag.avstemming.AvstemmingMapper.fagområdeTilAvleverendeKomponentKode
-import no.trygdeetaten.skjema.oppdrag.*
+import no.trygdeetaten.skjema.oppdrag.ObjectFactory
+import no.trygdeetaten.skjema.oppdrag.Oppdrag
+import no.trygdeetaten.skjema.oppdrag.Oppdrag110
+import no.trygdeetaten.skjema.oppdrag.OppdragsLinje150
+import no.trygdeetaten.skjema.oppdrag.TkodeStatusLinje
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
 
@@ -46,8 +50,10 @@ class OppdragMapper {
         return oppdrag110
     }
 
-    private fun tilOppdragsLinje150(utbetalingsperiode: Utbetalingsperiode,
-                                    utbetalingsoppdrag: Utbetalingsoppdrag): OppdragsLinje150 {
+    private fun tilOppdragsLinje150(
+        utbetalingsperiode: Utbetalingsperiode,
+        utbetalingsoppdrag: Utbetalingsoppdrag
+    ): OppdragsLinje150 {
 
         val attestant = objectFactory.createAttestant180().apply {
             attestantId = utbetalingsoppdrag.saksbehandlerId
@@ -55,7 +61,7 @@ class OppdragMapper {
 
         return objectFactory.createOppdragsLinje150().apply {
             kodeEndringLinje =
-                    if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
+                if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
             utbetalingsperiode.opphør?.let {
                 kodeStatusLinje = TkodeStatusLinje.OPPH
                 datoStatusFom = it.opphørDatoFom.toXMLDate()
@@ -82,10 +88,12 @@ class OppdragMapper {
             attestant180.add(attestant)
 
             utbetalingsperiode.utbetalingsgrad?.let { utbetalingsgrad ->
-                grad170.add(objectFactory.createGrad170().apply {
-                    typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
-                    grad = utbetalingsgrad.toBigInteger()
-                })
+                grad170.add(
+                    objectFactory.createGrad170().apply {
+                        typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
+                        grad = utbetalingsgrad.toBigInteger()
+                    }
+                )
             }
         }
     }

@@ -4,7 +4,16 @@ import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.SystemKode
 import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
-import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.*
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Aksjonsdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AvstemmingType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.DetaljType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Detaljdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Fortegn
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.KildeType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Periodedata
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Totaldata
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -49,17 +58,24 @@ class GrensesnittavstemmingMapperTest {
         val andreAvstemmingstidspunkt = LocalDateTime.now().minusDays(1).withHour(15)
         val avstemmingFom = førsteAvstemmingstidspunkt.toLocalDate().atStartOfDay()
         val avstemmingTom = andreAvstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
-        val baOppdragLager1 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somOppdragLager
-        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somOppdragLager
-        val mapper = GrensesnittavstemmingMapper(listOf(baOppdragLager1, baOppdragLager2), fagområde, avstemmingFom, avstemmingTom)
+        val baOppdragLager1 =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somOppdragLager
+        val baOppdragLager2 =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somOppdragLager
+        val mapper =
+            GrensesnittavstemmingMapper(listOf(baOppdragLager1, baOppdragLager2), fagområde, avstemmingFom, avstemmingTom)
         val meldinger = mapper.lagAvstemmingsmeldinger()
         assertEquals(3, meldinger.size)
         assertEquals(avstemmingFom.format(tidspunktFormatter), meldinger.first().aksjon.nokkelFom)
         assertEquals(avstemmingTom.format(tidspunktFormatter), meldinger.first().aksjon.nokkelTom)
     }
 
-    fun assertAksjon(avstemmingFom: LocalDateTime, avstemmingTom: LocalDateTime,
-                     expected: AksjonType, actual: Aksjonsdata) {
+    fun assertAksjon(
+        avstemmingFom: LocalDateTime,
+        avstemmingTom: LocalDateTime,
+        expected: AksjonType,
+        actual: Aksjonsdata
+    ) {
         assertEquals(expected, actual.aksjonType)
         assertEquals(KildeType.AVLEV, actual.kildeType)
         assertEquals(AvstemmingType.GRSN, actual.avstemmingType)
@@ -88,10 +104,14 @@ class GrensesnittavstemmingMapperTest {
     }
 
     fun assertPeriodeData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Periodedata) {
-        assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
-                actual.datoAvstemtFom)
-        assertEquals(utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
-                actual.datoAvstemtTom)
+        assertEquals(
+            utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
+            actual.datoAvstemtFom
+        )
+        assertEquals(
+            utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
+            actual.datoAvstemtTom
+        )
     }
 
     fun assertGrunnlagsdata(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Grunnlagsdata) {
@@ -107,5 +127,4 @@ class GrensesnittavstemmingMapperTest {
         assertEquals(BigDecimal.ZERO, actual.avvistBelop)
         assertEquals(Fortegn.T, actual.avvistFortegn)
     }
-
 }

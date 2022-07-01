@@ -44,8 +44,12 @@ class KonsistensavstemmingMapper(
 
     fun lagAvstemmingsmeldinger(): List<Konsistensavstemmingsdata> =
         when {
-            sendStartmelding && sendAvsluttmelding -> (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagTotaldata(),
-                                                                                                               lagSluttmelding()))
+            sendStartmelding && sendAvsluttmelding -> (
+                listOf(lagStartmelding()) + lagDatameldinger() + listOf(
+                    lagTotaldata(),
+                    lagSluttmelding()
+                )
+                )
             sendStartmelding -> (listOf(lagStartmelding()) + lagDatameldinger())
             sendAvsluttmelding -> (lagDatameldinger() + listOf(lagTotaldata(), lagSluttmelding()))
             else -> lagDatameldinger()
@@ -135,9 +139,11 @@ class KonsistensavstemmingMapper(
         val vedtakdatoTom = utbetalingsperiode.vedtakdatoTom
         val aktiv = !vedtakdatoTom.isBefore(avstemmingsdato)
         if (!aktiv) {
-            LOG.error("fagsystem=${fagsystem} vedtakdatoTom=$vedtakdatoTom (periodens tom-dato) " +
-                      "er etter avstemmingsdato=$avstemmingsdato for" +
-                  " periodeId=${utbetalingsperiode.periodeId} behandlingId=${utbetalingsperiode.behandlingId}")
+            LOG.error(
+                "fagsystem=$fagsystem vedtakdatoTom=$vedtakdatoTom (periodens tom-dato) " +
+                    "er etter avstemmingsdato=$avstemmingsdato for" +
+                    " periodeId=${utbetalingsperiode.periodeId} behandlingId=${utbetalingsperiode.behandlingId}"
+            )
         }
         return aktiv
     }

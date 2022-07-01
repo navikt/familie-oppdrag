@@ -4,23 +4,23 @@ import no.nav.familie.oppdrag.config.ApplicationConfig
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.PostgreSQLContainer
-import java.util.*
+import java.util.Properties
 
 object DevPsqlMqLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
 
         val psql = KPostgreSQLContainer("postgres")
-                .withDatabaseName("familie-oppdrag")
-                .withUsername("postgres")
-                .withPassword("test")
+            .withDatabaseName("familie-oppdrag")
+            .withUsername("postgres")
+            .withPassword("test")
 
         psql.start()
 
         val mq = KGenericContainer("ibmcom/mq")
-                .withEnv("LICENSE", "accept")
-                .withEnv("MQ_QMGR_NAME", "QM1")
-                .withExposedPorts(1414, 9443)
+            .withEnv("LICENSE", "accept")
+            .withEnv("MQ_QMGR_NAME", "QM1")
+            .withExposedPorts(1414, 9443)
 
         mq.start()
 
@@ -32,9 +32,9 @@ object DevPsqlMqLauncher {
         properties.put("OPPDRAG_MQ_PORT_OVERRIDE", mq.getMappedPort(1414))
 
         SpringApplicationBuilder(ApplicationConfig::class.java)
-                .profiles("dev_psql_mq")
-                .properties(properties)
-                .run(*args)
+            .profiles("dev_psql_mq")
+            .properties(properties)
+            .run(*args)
     }
 }
 

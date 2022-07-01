@@ -14,15 +14,15 @@ import org.testcontainers.containers.PostgreSQLContainer
 object Containers {
 
     var postgreSQLContainer = MyPostgreSQLContainer("postgres:latest")
-            .withDatabaseName("familie-oppdrag")
-            .withUsername("postgres")
-            .withPassword("test")
-            .withExposedPorts(5432)
+        .withDatabaseName("familie-oppdrag")
+        .withUsername("postgres")
+        .withPassword("test")
+        .withExposedPorts(5432)
 
     var ibmMQContainer = MyGeneralContainer("ibmcom/mq")
-            .withEnv("LICENSE","accept")
-            .withEnv("MQ_QMGR_NAME","QM1")
-            .withExposedPorts(1414)
+        .withEnv("LICENSE", "accept")
+        .withEnv("MQ_QMGR_NAME", "QM1")
+        .withExposedPorts(1414)
 
     class MyPostgreSQLContainer(imageName: String) : PostgreSQLContainer<MyPostgreSQLContainer>(imageName)
     class MyGeneralContainer(imageName: String) : GenericContainer<MyGeneralContainer>(imageName)
@@ -31,9 +31,9 @@ object Containers {
 
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                    "spring.datasource.url=" + postgreSQLContainer.jdbcUrl,
-                    "spring.datasource.username=" + postgreSQLContainer.username,
-                    "spring.datasource.password=" + postgreSQLContainer.password
+                "spring.datasource.url=" + postgreSQLContainer.jdbcUrl,
+                "spring.datasource.username=" + postgreSQLContainer.username,
+                "spring.datasource.password=" + postgreSQLContainer.password
             ).applyTo(configurableApplicationContext.environment)
         }
     }
@@ -42,17 +42,16 @@ object Containers {
 
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                    "oppdrag.mq.port=" + ibmMQContainer.getMappedPort(1414),
-                    "oppdrag.mq.queuemanager=QM1",
-                    "oppdrag.mq.send=DEV.QUEUE.1",
-                    "oppdrag.mq.mottak=DEV.QUEUE.1",
-                    "oppdrag.mq.channel=DEV.ADMIN.SVRCONN",
-                    "oppdrag.mq.hostname=localhost",
-                    "oppdrag.mq.user=admin",
-                    "oppdrag.mq.password: passw0rd",
-                    "oppdrag.mq.enabled: true"
+                "oppdrag.mq.port=" + ibmMQContainer.getMappedPort(1414),
+                "oppdrag.mq.queuemanager=QM1",
+                "oppdrag.mq.send=DEV.QUEUE.1",
+                "oppdrag.mq.mottak=DEV.QUEUE.1",
+                "oppdrag.mq.channel=DEV.ADMIN.SVRCONN",
+                "oppdrag.mq.hostname=localhost",
+                "oppdrag.mq.user=admin",
+                "oppdrag.mq.password: passw0rd",
+                "oppdrag.mq.enabled: true"
             ).applyTo(configurableApplicationContext.environment)
         }
     }
-
 }

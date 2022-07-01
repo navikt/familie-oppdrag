@@ -3,19 +3,20 @@ package no.nav.familie.oppdrag.iverksetting
 import com.ibm.mq.jms.MQQueue
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
-import org.springframework.jms.core.JmsTemplate
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.jms.JmsException
+import org.springframework.jms.core.JmsTemplate
+import org.springframework.stereotype.Service
 import java.lang.UnsupportedOperationException
-
 
 @Service
 @Profile("!e2e")
-class OppdragSenderMQ(val jmsTemplateUtgående: JmsTemplate,
-                      @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
-                      @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String) : OppdragSender {
+class OppdragSenderMQ(
+    val jmsTemplateUtgående: JmsTemplate,
+    @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
+    @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String
+) : OppdragSender {
 
     override fun sendOppdrag(oppdrag: Oppdrag): String {
         if (!erEnabled.toBoolean()) {
@@ -25,8 +26,10 @@ class OppdragSenderMQ(val jmsTemplateUtgående: JmsTemplate,
 
         val oppdragId = oppdrag.oppdrag110?.oppdragsLinje150?.lastOrNull()?.henvisning
         val oppdragXml = Jaxb.tilXml(oppdrag)
-        LOG.info("Sender oppdrag for fagsystem=${oppdrag.oppdrag110.kodeFagomraade} og " +
-                 "fagsak=${oppdrag.oppdrag110.fagsystemId} behandling=${oppdragId} til Oppdragsystemet")
+        LOG.info(
+            "Sender oppdrag for fagsystem=${oppdrag.oppdrag110.kodeFagomraade} og " +
+                "fagsak=${oppdrag.oppdrag110.fagsystemId} behandling=$oppdragId til Oppdragsystemet"
+        )
         try {
             jmsTemplateUtgående.send { session ->
                 val msg = session.createTextMessage(oppdragXml)

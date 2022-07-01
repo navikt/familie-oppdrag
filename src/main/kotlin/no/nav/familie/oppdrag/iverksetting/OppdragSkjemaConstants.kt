@@ -4,10 +4,9 @@ import no.trygdeetaten.skjema.oppdrag.TfradragTillegg
 import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.*
+import java.util.GregorianCalendar
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
-
 
 class OppdragSkjemaConstants {
 
@@ -33,7 +32,7 @@ enum class EndringsKode(val kode: String) {
     companion object {
         fun fromKode(kode: String): EndringsKode {
             for (s in values()) {
-                if (s.kode == kode ) return s
+                if (s.kode == kode) return s
             }
             throw IllegalArgumentException("Ingen Endringskode med kode=$kode")
         }
@@ -61,7 +60,7 @@ enum class SatsTypeKode(val kode: String) {
     companion object {
         fun fromKode(kode: String): SatsTypeKode {
             for (s in values()) {
-                if (s.kode == kode ) return s
+                if (s.kode == kode) return s
             }
             throw IllegalArgumentException("Ingen SatsTypeKode med kode=$kode")
         }
@@ -73,10 +72,9 @@ enum class GradTypeKode(val kode: String) {
     UTBETALINGSGRAD("UBGR"),
     UTTAKSGRAD_ALDERSPENSJON("UTAP"),
     UTTAKSGRAD_AFP("AFPG")
-
 }
 
 fun LocalDate.toXMLDate(): XMLGregorianCalendar {
     return DatatypeFactory.newInstance()
-            .newXMLGregorianCalendar(GregorianCalendar.from(atStartOfDay(ZoneId.systemDefault())))
+        .newXMLGregorianCalendar(GregorianCalendar.from(atStartOfDay(ZoneId.systemDefault())))
 }

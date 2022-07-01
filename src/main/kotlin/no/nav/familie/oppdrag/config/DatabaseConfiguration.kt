@@ -12,12 +12,10 @@ import org.springframework.data.convert.ReadingConverter
 import org.springframework.data.convert.WritingConverter
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
-
 
 @Configuration
 class DatabaseConfiguration : AbstractJdbcConfiguration() {
@@ -34,10 +32,14 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
 
     @Bean
     override fun jdbcCustomConversions(): JdbcCustomConversions {
-        return JdbcCustomConversions(listOf(PGobjectTilUtbetalingsoppdragConverter(),
-                                            UtbetalingsoppdragTilPGobjectConverter(),
-                                            PGobjectTilMmelConverter(),
-                                            MmelTilPGobjectConverter()))
+        return JdbcCustomConversions(
+            listOf(
+                PGobjectTilUtbetalingsoppdragConverter(),
+                UtbetalingsoppdragTilPGobjectConverter(),
+                PGobjectTilMmelConverter(),
+                MmelTilPGobjectConverter()
+            )
+        )
     }
 
     @ReadingConverter
@@ -52,10 +54,10 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
     class UtbetalingsoppdragTilPGobjectConverter : Converter<Utbetalingsoppdrag, PGobject> {
 
         override fun convert(utbetalingsoppdrag: Utbetalingsoppdrag): PGobject =
-                PGobject().apply {
-                    type = "json"
-                    value = objectMapper.writeValueAsString(utbetalingsoppdrag)
-                }
+            PGobject().apply {
+                type = "json"
+                value = objectMapper.writeValueAsString(utbetalingsoppdrag)
+            }
     }
 
     @ReadingConverter
@@ -70,10 +72,9 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
     class MmelTilPGobjectConverter : Converter<Mmel, PGobject> {
 
         override fun convert(utbetalingsoppdrag: Mmel): PGobject =
-                PGobject().apply {
-                    type = "json"
-                    value = objectMapper.writeValueAsString(utbetalingsoppdrag)
-                }
+            PGobject().apply {
+                type = "json"
+                value = objectMapper.writeValueAsString(utbetalingsoppdrag)
+            }
     }
-
 }

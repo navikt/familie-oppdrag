@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 interface OppdragLagerRepository {
 
-    fun hentOppdrag(oppdragId : OppdragId, versjon: Int = 0): OppdragLager
+    fun hentOppdrag(oppdragId: OppdragId, versjon: Int = 0): OppdragLager
     fun hentUtbetalingsoppdrag(oppdragId: OppdragId, versjon: Int = 0): Utbetalingsoppdrag
     fun hentAlleVersjonerAvOppdrag(oppdragId: OppdragId): List<OppdragLager>
     fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int = 0)
@@ -16,6 +16,8 @@ interface OppdragLagerRepository {
     fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel, versjon: Int = 0)
     fun hentIverksettingerForGrensesnittavstemming(fomTidspunkt: LocalDateTime, tomTidspunkt: LocalDateTime, fagOmråde: String): List<OppdragLager>
 
-    fun hentUtbetalingsoppdragForKonsistensavstemming(fagsystem: String,
-                                                      behandlingIder: Set<String>): List<UtbetalingsoppdragForKonsistensavstemming>
+    fun hentUtbetalingsoppdragForKonsistensavstemming(
+        fagsystem: String,
+        behandlingIder: Set<String>
+    ): List<UtbetalingsoppdragForKonsistensavstemming>
 }

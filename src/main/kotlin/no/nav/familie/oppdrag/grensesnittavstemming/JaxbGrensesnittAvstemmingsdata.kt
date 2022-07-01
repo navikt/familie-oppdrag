@@ -16,5 +16,4 @@ object JaxbGrensesnittAvstemmingsdata {
         }.marshal(avstemmingsmelding, stringWriter)
         return stringWriter.toString()
     }
-
 }

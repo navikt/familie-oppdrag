@@ -21,14 +21,13 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.test.assertEquals
 
-
 @ActiveProfiles("dev")
 @ContextConfiguration(initializers = [Containers.PostgresSQLInitializer::class, Containers.MQInitializer::class])
 @SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
 @EnableJms
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
-internal class OppdragControllerIntegrasjonTest {
+internal class OppdragControllerIntegrationTest {
 
     @Autowired lateinit var oppdragService: OppdragService
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
@@ -55,7 +54,7 @@ internal class OppdragControllerIntegrasjonTest {
             oppdragStatus = oppdrag.status
         } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
 
-        assertEquals( OppdragStatus.KVITTERT_OK,oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_OK, oppdragStatus)
     }
 
     @Test
@@ -83,6 +82,6 @@ internal class OppdragControllerIntegrasjonTest {
             oppdragStatus = oppdrag.status
         } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
 
-        assertEquals( OppdragStatus.KVITTERT_OK,oppdragStatus)
+        assertEquals(OppdragStatus.KVITTERT_OK, oppdragStatus)
     }
 }

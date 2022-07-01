@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 class ApplicationConfig {
 
-
     @Bean
     fun servletWebServerFactory(): ServletWebServerFactory {
         val serverFactory = JettyServletWebServerFactory()

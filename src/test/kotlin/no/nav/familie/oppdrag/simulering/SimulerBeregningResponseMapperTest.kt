@@ -1,13 +1,16 @@
 package no.nav.familie.oppdrag.simulering
 
-import no.nav.familie.oppdrag.simulering.util.*
+import no.nav.familie.oppdrag.simulering.util.lagBeregningStoppniva
+import no.nav.familie.oppdrag.simulering.util.lagBeregningStoppnivaFeilUtbetaling
+import no.nav.familie.oppdrag.simulering.util.lagBeregningStoppnivaRevurdering
+import no.nav.familie.oppdrag.simulering.util.lagBeregningsPeriode
+import no.nav.familie.oppdrag.simulering.util.lagSimulerBeregningResponse
 import no.nav.system.os.entiteter.beregningskjema.BeregningsPeriode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import java.time.Month
-
 
 @ActiveProfiles("dev")
 class SimulerBeregningResponseMapperTest() {
@@ -19,10 +22,12 @@ class SimulerBeregningResponseMapperTest() {
         val enTideligereMåned = dagensDato.minusMonths(1)
 
         val periodeNåværendeMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(dagensDato, 2)), dagensDato)
+            listOf(lagBeregningStoppniva(dagensDato, 2)), dagensDato
+        )
 
         val periodeTidligereMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(enTideligereMåned)), enTideligereMåned)
+            listOf(lagBeregningStoppniva(enTideligereMåned)), enTideligereMåned
+        )
 
         val response = lagSimulerBeregningResponse(listOf(periodeNåværendeMåned, periodeTidligereMåned))
         val dto = response.toRestSimulerResult(dagensDato)
@@ -36,16 +41,23 @@ class SimulerBeregningResponseMapperTest() {
         val enSenereMåned = dagensDato.plusMonths(1)
 
         val periodeNesteMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(enSenereMåned)), enSenereMåned)
+            listOf(lagBeregningStoppniva(enSenereMåned)), enSenereMåned
+        )
 
         val periodeNåværendeMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(dagensDato)), dagensDato)
+            listOf(lagBeregningStoppniva(dagensDato)), dagensDato
+        )
 
         val periodeTidligereMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(enTideligereMåned)), enTideligereMåned)
+            listOf(lagBeregningStoppniva(enTideligereMåned)), enTideligereMåned
+        )
 
-        val response = lagSimulerBeregningResponse(listOf(periodeNesteMåned,
-                                                          periodeNåværendeMåned, periodeTidligereMåned))
+        val response = lagSimulerBeregningResponse(
+            listOf(
+                periodeNesteMåned,
+                periodeNåværendeMåned, periodeTidligereMåned
+            )
+        )
         val dto = response.toRestSimulerResult(dagensDato)
 
         assertEquals(2000, dto.etterbetaling)
@@ -56,10 +68,12 @@ class SimulerBeregningResponseMapperTest() {
         val enTideligereMåned = dagensDato.minusMonths(1)
 
         val periodeNåværendeMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(dagensDato, 2)), dagensDato)
+            listOf(lagBeregningStoppniva(dagensDato, 2)), dagensDato
+        )
 
         val periodeTidligereMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppnivaRevurdering(enTideligereMåned)), enTideligereMåned)
+            listOf(lagBeregningStoppnivaRevurdering(enTideligereMåned)), enTideligereMåned
+        )
 
         val response = lagSimulerBeregningResponse(listOf(periodeNåværendeMåned, periodeTidligereMåned))
         val dto = response.toRestSimulerResult(dagensDato)
@@ -72,10 +86,12 @@ class SimulerBeregningResponseMapperTest() {
         val enTideligereMåned = dagensDato.minusMonths(1)
 
         val periodeNåværendeMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppniva(dagensDato, 2)), dagensDato)
+            listOf(lagBeregningStoppniva(dagensDato, 2)), dagensDato
+        )
 
         val periodeTidligereMåned = lagBeregningsPeriode(
-                listOf(lagBeregningStoppnivaFeilUtbetaling(enTideligereMåned)), enTideligereMåned)
+            listOf(lagBeregningStoppnivaFeilUtbetaling(enTideligereMåned)), enTideligereMåned
+        )
 
         val response = lagSimulerBeregningResponse(listOf(periodeNåværendeMåned, periodeTidligereMåned))
         val dto = response.toRestSimulerResult(dagensDato)

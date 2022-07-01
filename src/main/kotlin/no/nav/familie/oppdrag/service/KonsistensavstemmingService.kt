@@ -16,28 +16,32 @@ import java.util.UUID
 
 @Service
 class KonsistensavstemmingService(
-        private val avstemmingSender: AvstemmingSender,
-        private val oppdragLagerRepository: OppdragLagerRepository,
-        private val mellomlagringKonsistensavstemmingService: MellomlagringKonsistensavstemmingService,
+    private val avstemmingSender: AvstemmingSender,
+    private val oppdragLagerRepository: OppdragLagerRepository,
+    private val mellomlagringKonsistensavstemmingService: MellomlagringKonsistensavstemmingService,
 ) {
 
     @Transactional
-    fun utførKonsistensavstemming(request: KonsistensavstemmingUtbetalingsoppdrag,
-                                  sendStartmelding: Boolean,
-                                  sendAvsluttmelding: Boolean,
-                                  transaksjonsId: UUID?) {
-        utførKonsistensavstemming(KonsistensavstemmingMetaInfo(
+    fun utførKonsistensavstemming(
+        request: KonsistensavstemmingUtbetalingsoppdrag,
+        sendStartmelding: Boolean,
+        sendAvsluttmelding: Boolean,
+        transaksjonsId: UUID?
+    ) {
+        utførKonsistensavstemming(
+            KonsistensavstemmingMetaInfo(
                 fagsystem = Fagsystem.valueOf(request.fagsystem),
                 transaksjonsId = transaksjonsId,
                 avstemmingstidspunkt = request.avstemmingstidspunkt,
                 sendStartmelding = sendStartmelding,
                 sendAvsluttmelding = sendAvsluttmelding,
                 utbetalingsoppdrag = request.utbetalingsoppdrag
-        ))
+            )
+        )
     }
 
     private fun utførKonsistensavstemming(
-            metaInfo: KonsistensavstemmingMetaInfo
+        metaInfo: KonsistensavstemmingMetaInfo
     ) {
         if (metaInfo.erFørsteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingService.sjekkAtDetteErFørsteMelding(metaInfo.transaksjonsId!!)
@@ -52,26 +56,30 @@ class KonsistensavstemmingService(
             return
         }
 
-        LOG.info("Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId} " +
-                 "antall meldinger er ${meldinger.size}")
+        LOG.info(
+            "Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId} " +
+                "antall meldinger er ${meldinger.size}"
+        )
         meldinger.forEach {
             avstemmingSender.sendKonsistensAvstemming(it)
         }
 
         if (metaInfo.erSplittetBatchMenIkkeSisteBatch()) {
-            mellomlagringKonsistensavstemmingService.opprettInnslagIMellomlagring(metaInfo,
-                                                                                  konsistensavstemmingMapper.antallOppdrag,
-                                                                                  konsistensavstemmingMapper.totalBeløp)
+            mellomlagringKonsistensavstemmingService.opprettInnslagIMellomlagring(
+                metaInfo,
+                konsistensavstemmingMapper.antallOppdrag,
+                konsistensavstemmingMapper.totalBeløp
+            )
         }
         LOG.info("Fullført konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}")
     }
 
     @Transactional
     fun utførKonsistensavstemming(
-            request: KonsistensavstemmingRequestV2,
-            sendStartMelding: Boolean,
-            sendAvsluttmelding: Boolean,
-            transaksjonsId: UUID?
+        request: KonsistensavstemmingRequestV2,
+        sendStartMelding: Boolean,
+        sendAvsluttmelding: Boolean,
+        transaksjonsId: UUID?
     ) {
         sjekkAtTransaktionsIdErSattHvisSplittetBatch(sendStartMelding, sendAvsluttmelding, transaksjonsId)
 
@@ -84,47 +92,51 @@ class KonsistensavstemmingService(
         val fødselsnummerPåBehandling = request.perioderForBehandlinger.associate { it.behandlingId to it.aktivFødselsnummer }
 
         val utbetalingsoppdragForKonsistensavstemming =
-                oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)
+            oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)
 
         val utbetalingsoppdrag = leggAktuellePerioderISisteUtbetalingsoppdraget(
-                utbetalingsoppdragForKonsistensavstemming,
-                perioderPåBehandling,
-                fødselsnummerPåBehandling
+            utbetalingsoppdragForKonsistensavstemming,
+            perioderPåBehandling,
+            fødselsnummerPåBehandling
         )
 
-        utførKonsistensavstemming(KonsistensavstemmingMetaInfo(
+        utførKonsistensavstemming(
+            KonsistensavstemmingMetaInfo(
                 fagsystem = Fagsystem.valueOf(fagsystem),
                 transaksjonsId = transaksjonsId,
                 avstemmingstidspunkt = avstemmingstidspunkt,
                 sendStartmelding = sendStartMelding,
                 sendAvsluttmelding = sendAvsluttmelding,
                 utbetalingsoppdrag = utbetalingsoppdrag
-        ))
+            )
+        )
     }
 
-    private fun sjekkAtTransaktionsIdErSattHvisSplittetBatch(sendStartMelding: Boolean,
-                                                             sendAvsluttmelding: Boolean,
-                                                             transaksjonsId: UUID?) {
+    private fun sjekkAtTransaktionsIdErSattHvisSplittetBatch(
+        sendStartMelding: Boolean,
+        sendAvsluttmelding: Boolean,
+        transaksjonsId: UUID?
+    ) {
         if (!(sendStartMelding && sendAvsluttmelding) && isNull(transaksjonsId)) {
             throw Exception("Er sendStartmelding eller sendAvsluttmelding satt til false må transaksjonsId være definert.")
         }
     }
 
     private fun opprettKonsistensavstemmingMapper(
-            metaInfo: KonsistensavstemmingMetaInfo,
+        metaInfo: KonsistensavstemmingMetaInfo,
     ): KonsistensavstemmingMapper {
         val aggregertAntallOppdrag = mellomlagringKonsistensavstemmingService.hentAggregertAntallOppdrag(metaInfo)
         val aggregertTotalBeløp = mellomlagringKonsistensavstemmingService.hentAggregertBeløp(metaInfo)
 
         return KonsistensavstemmingMapper(
-                fagsystem = metaInfo.fagsystem.name,
-                utbetalingsoppdrag = metaInfo.utbetalingsoppdrag,
-                avstemmingsDato = metaInfo.avstemmingstidspunkt,
-                sendStartmelding = metaInfo.sendStartmelding,
-                sendAvsluttmelding = metaInfo.sendAvsluttmelding,
-                aggregertAntallOppdrag = aggregertAntallOppdrag,
-                aggregertTotalBeløp = aggregertTotalBeløp,
-                transaksjonsId = metaInfo.transaksjonsId,
+            fagsystem = metaInfo.fagsystem.name,
+            utbetalingsoppdrag = metaInfo.utbetalingsoppdrag,
+            avstemmingsDato = metaInfo.avstemmingstidspunkt,
+            sendStartmelding = metaInfo.sendStartmelding,
+            sendAvsluttmelding = metaInfo.sendAvsluttmelding,
+            aggregertAntallOppdrag = aggregertAntallOppdrag,
+            aggregertTotalBeløp = aggregertTotalBeløp,
+            transaksjonsId = metaInfo.transaksjonsId,
         )
     }
 
@@ -132,9 +144,9 @@ class KonsistensavstemmingService(
      * Legger inn alle (filtrerte) perioder for en gitt fagsak i det siste utbetalingsoppdraget
      */
     private fun leggAktuellePerioderISisteUtbetalingsoppdraget(
-            utbetalingsoppdrag: List<UtbetalingsoppdragForKonsistensavstemming>,
-            perioderPåBehandling: Map<String, Set<Long>>,
-            fødselsnummerPåBehandling: Map<String, String>
+        utbetalingsoppdrag: List<UtbetalingsoppdragForKonsistensavstemming>,
+        perioderPåBehandling: Map<String, Set<Long>>,
+        fødselsnummerPåBehandling: Map<String, String>
     ): List<Utbetalingsoppdrag> {
         val utbetalingsoppdragPåFagsak = utbetalingsoppdrag.groupBy { it.fagsakId }
 
@@ -146,23 +158,25 @@ class KonsistensavstemmingService(
             val behandlingsIderForFagsak = utbetalingsoppdragListe.map { it.behandlingId }.toSet()
 
             val aktuellePeriodeIderForFagsak =
-                    perioderPåBehandling.filter { behandlingsIderForFagsak.contains(it.key) }.values.flatten().toSet()
+                perioderPåBehandling.filter { behandlingsIderForFagsak.contains(it.key) }.values.flatten().toSet()
 
             var aktivtFødselsnummer: String? = null
             val perioderTilKonsistensavstemming = utbetalingsoppdragListe.flatMap {
                 aktivtFødselsnummer = hentFødselsnummerForBehandling(fødselsnummerPåBehandling, it.behandlingId)
                 it.utbetalingsoppdrag.utbetalingsperiode
-                        .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
-                        // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
-                        .map { utbetalingsperiode ->
-                            utbetalingsperiode.copy(utbetalesTil = aktivtFødselsnummer ?: utbetalingsperiode.utbetalesTil)
-                        }
+                    .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
+                    // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
+                    .map { utbetalingsperiode ->
+                        utbetalingsperiode.copy(utbetalesTil = aktivtFødselsnummer ?: utbetalingsperiode.utbetalesTil)
+                    }
             }
 
             senesteUtbetalingsoppdrag.let {
-                it.copy(utbetalingsperiode = perioderTilKonsistensavstemming,
-                        // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
-                        aktoer = aktivtFødselsnummer ?: it.aktoer)
+                it.copy(
+                    utbetalingsperiode = perioderTilKonsistensavstemming,
+                    // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
+                    aktoer = aktivtFødselsnummer ?: it.aktoer
+                )
             }
         }
     }
@@ -170,14 +184,14 @@ class KonsistensavstemmingService(
     private fun verifyUnikeBehandlinger(periodeIderPåBehandling: Map<String, Set<Long>>, request: KonsistensavstemmingRequestV2) {
         if (periodeIderPåBehandling.size != request.perioderForBehandlinger.size) {
             val duplikateBehandlinger =
-                    request.perioderForBehandlinger.map { it.behandlingId }.groupingBy { it }.eachCount().filter { it.value > 1 }
+                request.perioderForBehandlinger.map { it.behandlingId }.groupingBy { it }.eachCount().filter { it.value > 1 }
             error("Behandling finnes flere ganger i requesten: ${duplikateBehandlinger.keys}")
         }
     }
 
     private fun hentFødselsnummerForBehandling(fødselsnummerPåBehandling: Map<String, String>, behandlingId: String): String {
         return fødselsnummerPåBehandling[behandlingId]
-               ?: error("Finnes ikke et aktivt fødselsnummer for behandlingId $behandlingId")
+            ?: error("Finnes ikke et aktivt fødselsnummer for behandlingId $behandlingId")
     }
 
     companion object {

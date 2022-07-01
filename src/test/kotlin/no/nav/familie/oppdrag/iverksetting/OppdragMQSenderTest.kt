@@ -93,9 +93,11 @@ class OppdragMQSenderTest {
             saksbehId = "Z999999"
             utbetalesTilId = "12345678911"
             henvisning = "987654321"
-            attestant180.add(objectFactory.createAttestant180().apply {
-                attestantId = "Z999999"
-            })
+            attestant180.add(
+                objectFactory.createAttestant180().apply {
+                    attestantId = "Z999999"
+                }
+            )
         }
 
         val testOppdrag110 = Oppdrag110().apply {
@@ -107,11 +109,13 @@ class OppdragMQSenderTest {
             oppdragGjelderId = "12345678911"
             datoOppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate()
             saksbehId = "Z999999"
-            oppdragsEnhet120.add(objectFactory.createOppdragsEnhet120().apply {
-                enhet = OppdragSkjemaConstants.ENHET
-                typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
-                datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate()
-            })
+            oppdragsEnhet120.add(
+                objectFactory.createOppdragsEnhet120().apply {
+                    enhet = OppdragSkjemaConstants.ENHET
+                    typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
+                    datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate()
+                }
+            )
             avstemming115 = objectFactory.createAvstemming115().apply {
                 nokkelAvstemming = avstemmingsTidspunkt
                 kodeKomponent = FAGOMRÅDE_BARNETRYGD

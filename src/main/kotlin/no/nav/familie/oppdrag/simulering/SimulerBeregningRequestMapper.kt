@@ -18,18 +18,18 @@ import java.time.format.DateTimeFormatter
 @Component
 class SimulerBeregningRequestMapper {
     private val fpServiceGrensesnittFactory =
-            no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.ObjectFactory()
+        no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.ObjectFactory()
     private val fpServiceTypesFactory = no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.ObjectFactory()
     private val oppdragSkjemaFactory = no.nav.system.os.entiteter.oppdragskjema.ObjectFactory()
 
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     fun tilSimulerBeregningRequest(utbetalingsoppdrag: Utbetalingsoppdrag): SimulerBeregningRequest =
-            fpServiceGrensesnittFactory.createSimulerBeregningRequest()
-                    .apply { request = tilSimulerBeregningTypesRequest(utbetalingsoppdrag) }
+        fpServiceGrensesnittFactory.createSimulerBeregningRequest()
+            .apply { request = tilSimulerBeregningTypesRequest(utbetalingsoppdrag) }
 
     private fun tilSimulerBeregningTypesRequest(utbetalingsoppdrag: Utbetalingsoppdrag) =
-            fpServiceTypesFactory.createSimulerBeregningRequest().apply { oppdrag = tilOppdrag(utbetalingsoppdrag) }
+        fpServiceTypesFactory.createSimulerBeregningRequest().apply { oppdrag = tilOppdrag(utbetalingsoppdrag) }
 
     private fun tilOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdrag {
         oppdragSkjemaFactory.createAvstemmingsnokkel().apply {
@@ -69,7 +69,7 @@ class SimulerBeregningRequestMapper {
 
         return fpServiceTypesFactory.createOppdragslinje().apply {
             kodeEndringLinje =
-                    if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
+                if (utbetalingsperiode.erEndringPåEksisterendePeriode) EndringsKode.ENDRING.kode else EndringsKode.NY.kode
             utbetalingsperiode.opphør?.let {
                 kodeStatusLinje = KodeStatusLinje.OPPH
                 datoStatusFom = it.opphørDatoFom.toString()
@@ -95,10 +95,12 @@ class SimulerBeregningRequestMapper {
             attestant.add(attest)
 
             utbetalingsperiode.utbetalingsgrad?.let { utbetalingsgrad ->
-                grad.add(oppdragSkjemaFactory.createGrad().apply {
-                    typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
-                    grad = utbetalingsgrad.toBigInteger()
-                })
+                grad.add(
+                    oppdragSkjemaFactory.createGrad().apply {
+                        typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
+                        grad = utbetalingsgrad.toBigInteger()
+                    }
+                )
             }
         }
     }
