@@ -20,16 +20,15 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     private fun kallTss(rawRequest: String): String {
-        "Sender melding til kø=${jmsTemplateTss.defaultDestinationName}".apply {
+        val uuid = UUID.randomUUID().toString()
+        "Kaller TSS med jmsCorrelationId=$uuid".apply {
             logger.info(this)
             secureLogger.info("$this request=$rawRequest")
         }
         try {
             val response: Message? = jmsTemplateTss.sendAndReceive { session: Session ->
-                val uuid = UUID.randomUUID().toString()
                 val requestMessage = session.createTextMessage(rawRequest)
                 requestMessage.jmsCorrelationID = uuid
-                logger.info("Sender jms med jmsCorrelationId=$uuid ${requestMessage.jmsReplyTo} ")
                 requestMessage
             }
 
@@ -45,7 +44,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
             logger.info("Feil ved sending", exception)
             when (exception) {
                 is JmsException, is JMSException -> {
-                    throw java.lang.RuntimeException("En feil oppsto i kallet til TSS. Response var null.", exception)
+                    throw RuntimeException("En feil oppsto i kallet til TSS", exception)
                 }
                 else -> throw exception
             }
@@ -60,7 +59,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
             kodeIdType = "ORG"
         }
         val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
-            brukerID = "HMB2990"
+            brukerID = "familie-oppdrag"
             historikk = "N"
             ofFid = offIdData
         }
@@ -75,7 +74,6 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         }
         val xml = Jaxb.tilXml(tssSamhandlerData)
         val rawResponse = kallTss(xml)
-//        return rawResponse
         return Jaxb.tilTssSamhandlerData(rawResponse)
     }
 

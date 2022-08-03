@@ -29,7 +29,7 @@ internal class TssOppslagServiceTest {
     fun b910() {
 
         every { mockedMessage.getBody(String::class.java) } returns lesFil("1")
-        service.hentInformasjonOmSamhandler("8003424215")
+        service.hentSamhandlerDataForOrganisasjon("8003424215")
     }
 
     private fun lesFil(fileName: String): String {

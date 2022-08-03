@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 class TssOppslagService(private val tssMQClient: TssMQClient) {
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    fun hentInformasjonOmSamhandler(orgNr: String): TssSamhandlerData {
+    fun hentSamhandlerDataForOrganisasjon(orgNr: String): TssSamhandlerData {
         val samhandlerData = tssMQClient.getOrgInfo(orgNr)
         return samhandlerData
     }
@@ -19,7 +19,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         return samhandlerData
     }
 
-    fun hentInformasjonOmSamhandlerInstB85(request: SamhandlerIDataB985Type): TssSamhandlerData {
+    fun hentInformasjonOmSamhandlerB85(request: SamhandlerIDataB985Type): TssSamhandlerData {
         val samhandlerData = tssMQClient.søkOrgInfoB985(request)
         return samhandlerData
     }
