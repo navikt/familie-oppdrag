@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.tss
 
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.rtv.namespacetss.ObjectFactory
+import no.rtv.namespacetss.SamhandlerIDataB910Type
 import no.rtv.namespacetss.SamhandlerIDataB985Type
 import no.rtv.namespacetss.TssSamhandlerData
 import org.slf4j.Logger
@@ -34,7 +35,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
 
             return if (response == null) {
                 logger.error("En feil oppsto i kallet til TSS. Response var null (timeout?)")
-                error("En feil oppsto i kallet til TSS. Response var null (timeout?)")
+                throw TssConnectionException("En feil oppsto i kallet til TSS. Response var null (timeout?)")
             } else {
                 val responseAsString = response.getBody(String::class.java)
                 secureLogger.info("Response fra tss=$responseAsString")
@@ -77,6 +78,32 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         return Jaxb.tilTssSamhandlerData(rawResponse)
     }
 
+    fun getKomplettSamhandlerInfo(orgNr: String): TssSamhandlerData {
+        val objectFactory = ObjectFactory()
+
+        val offIdData = objectFactory.createTidOFF1().apply {
+            idOff = orgNr
+            kodeIdType = "ORG"
+        }
+        val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
+            brukerID = "familie-oppdrag"
+            historikk = "N"
+            ofFid = offIdData
+        }
+        val servicerutiner = objectFactory.createTServicerutiner().apply {
+            samhandlerIDataB960 = samhandlerIDataB910Data
+        }
+        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
+            tssServiceRutine = servicerutiner
+        }
+        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
+            tssInputData = tssSamhandlerDataTssInputData
+        }
+        val xml = Jaxb.tilXml(tssSamhandlerData)
+        val rawResponse = kallTss(xml)
+        return Jaxb.tilTssSamhandlerData(rawResponse)
+    }
+
     fun søkOrgInfo(navn: String): TssSamhandlerData {
         val objectFactory = ObjectFactory()
         val samhandlerIDataB940Data = objectFactory.createSamhandlerIDataB940Type().apply {
@@ -87,6 +114,24 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
 
         val servicerutiner = objectFactory.createTServicerutiner().apply {
             samhandlerIDataB940 = samhandlerIDataB940Data
+        }
+
+        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
+            tssServiceRutine = servicerutiner
+        }
+        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
+            tssInputData = tssSamhandlerDataTssInputData
+        }
+
+        val rawResponse = kallTss(Jaxb.tilXml(tssSamhandlerData))
+        return Jaxb.tilTssSamhandlerData(rawResponse)
+    }
+
+    fun b960(samhandlerIDataB910Type: SamhandlerIDataB910Type): TssSamhandlerData {
+        val objectFactory = ObjectFactory()
+
+        val servicerutiner = objectFactory.createTServicerutiner().apply {
+            samhandlerIDataB960 = samhandlerIDataB910Type
         }
 
         val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {

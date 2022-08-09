@@ -25,7 +25,10 @@ object RessursUtils {
     fun <T> conflict(errorMessage: String): ResponseEntity<Ressurs<T>> =
         errorResponse(HttpStatus.CONFLICT, errorMessage, null, true)
 
-    fun <T> illegalState(errorMessage: String, throwable: Throwable): ResponseEntity<Ressurs<T>> =
+    fun <T> illegalState(errorMessage: String, throwable: Throwable? = null): ResponseEntity<Ressurs<T>> =
+        errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
+
+    fun <T> serviceUnavailable(errorMessage: String, throwable: Throwable? = null): ResponseEntity<Ressurs<T>> =
         errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
 
     fun <T> ok(data: T, melding: String? = null): ResponseEntity<Ressurs<T>> = ResponseEntity.ok(Ressurs.success(data, melding))

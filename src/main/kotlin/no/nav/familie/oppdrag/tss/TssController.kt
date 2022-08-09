@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/tssproxy")
+@RequestMapping("/api/tss")
 @ProtectedWithClaims(issuer = "azuread")
 class TssController(private val tssOppslagService: TssOppslagService) {
 
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR ved bruk av TSS-tjensten B910")
-    @PostMapping(path = ["/b910/{orgnr}"])
+    @PostMapping(path = ["/proxy/b910/{orgnr}"])
     @Unprotected
     fun hentSamhandlerDataForOrganisasjon(
         @PathVariable("orgnr") orgnr: String
@@ -28,7 +28,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     }
 
     @Operation(summary = "Henter informasjon om samhandlere av type INST ved søk på navn.  Bruker TSS-tjensten B940")
-    @PostMapping(path = ["/b940/{navn}"])
+    @PostMapping(path = ["/proxy/b940/{navn}"])
     @Unprotected
     fun b940(
         @PathVariable("navn") navn: String
@@ -36,8 +36,17 @@ class TssController(private val tssOppslagService: TssOppslagService) {
         return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInst(navn).tssOutputData)
     }
 
+    @Operation(summary = "Henter komplett informasjon om samhandlere ved søk på navn. Bruker TSS-tjenesten B960")
+    @PostMapping(path = ["/proxy/b960/{orgnr}"])
+    @Unprotected
+    fun b960(
+        @PathVariable("orgnr") orgnr: String
+    ): Ressurs<TOutputElementer> {
+        return Ressurs.success(tssOppslagService.hentKomplettSamhandlerInfo(orgnr).tssOutputData)
+    }
+
     @Operation(summary = "Henter informasjon om samhandlere ved søk på navn. Bruker TSS-tjenesten B985")
-    @PostMapping(path = ["/b985"])
+    @PostMapping(path = ["/proxy/b985"])
     @Unprotected
     fun b985(
         @RequestBody request: SamhandlerIDataB985Type

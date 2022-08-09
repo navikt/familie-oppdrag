@@ -106,7 +106,7 @@ class OppdragMQConfig(
         return JmsTemplate(tssConnectionFactory).apply {
             defaultDestination = mq
             isSessionTransacted = true
-            receiveTimeout = Duration.ofSeconds(30).toMillis()
+            receiveTimeout = Duration.ofSeconds(10).toMillis()
         }
     }
 
