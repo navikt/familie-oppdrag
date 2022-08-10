@@ -1,9 +1,6 @@
 package no.nav.familie.oppdrag.tss
 
-import no.rtv.namespacetss.SamhandlerIDataB910Type
-import no.rtv.namespacetss.SamhandlerIDataB961Type
 import no.rtv.namespacetss.SamhandlerIDataB985Type
-import no.rtv.namespacetss.SvarStatusType
 import no.rtv.namespacetss.TssSamhandlerData
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -39,9 +36,10 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     private fun validateB910response(inputData: String, tssResponse: TssSamhandlerData) {
         commonResponseValidation(tssResponse)
         val svarStatus = tssResponse.tssOutputData.svarStatus
-        val status = svarStatus.alvorligGrad
-        val statusOk = "00"
-        if (statusOk != status) {
+        if (svarStatus.alvorligGrad != TSS_STATUS_OK) {
+            if (svarStatus.kodeMelding == TSS_KODEMELDING_INGEN_FUNNET) {
+                throw TssNoDataFoundException("Ingen treff med med inputData=$inputData")
+            }
             throw TssResponseException(svarStatus.beskrMelding, svarStatus.alvorligGrad, svarStatus.kodeMelding)
         }
         if (tssResponse.tssOutputData.ingenReturData != null) {
@@ -50,8 +48,13 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun commonResponseValidation(tssResponse: TssSamhandlerData) {
-        if (tssResponse == null || tssResponse.tssOutputData == null || tssResponse.tssOutputData.svarStatus == null || tssResponse.tssOutputData.svarStatus.alvorligGrad == null) {
+        if (tssResponse.tssOutputData == null || tssResponse.tssOutputData.svarStatus == null || tssResponse.tssOutputData.svarStatus.alvorligGrad == null) {
             throw TssConnectionException("Ingen response. Mest sannsynlig timeout mot TSS")
         }
+    }
+
+    companion object {
+        const val TSS_KODEMELDING_INGEN_FUNNET = "B9XX008F"
+        const val TSS_STATUS_OK = "00"
     }
 }

@@ -44,11 +44,11 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(TssException::class)
     fun handleTssException(tssException: TssException): ResponseEntity<Ressurs<Nothing>> {
-        logger.warn("Feil mot TSS: ${tssException.feilmelding}", tssException)
+        logger.warn("Feil mot TSS: ${tssException.message}", tssException)
         return when (tssException) {
-            is TssConnectionException -> serviceUnavailable(tssException.feilmelding, tssException)
-            is TssNoDataFoundException -> notFound(tssException.feilmelding)
-            else -> illegalState(tssException.feilmelding, tssException)
+            is TssConnectionException -> serviceUnavailable(tssException.message!!, tssException)
+            is TssNoDataFoundException -> notFound(tssException.message!!)
+            else -> illegalState(tssException.message!!, tssException)
         }
     }
 
