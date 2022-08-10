@@ -1,7 +1,9 @@
 package no.nav.familie.oppdrag.tss
 
+import no.rtv.namespacetss.SamhandlerIDataB910Type
 import no.rtv.namespacetss.SamhandlerIDataB985Type
 import no.rtv.namespacetss.TssSamhandlerData
+import no.rtv.namespacetss.TypeOD910
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -9,28 +11,32 @@ import org.springframework.stereotype.Service
 class TssOppslagService(private val tssMQClient: TssMQClient) {
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    fun hentSamhandlerDataForOrganisasjon(orgNr: String): TssSamhandlerData {
+    fun hentSamhandlerDataForOrganisasjonB910(orgNr: String): TypeOD910 {
         val samhandlerData = tssMQClient.getOrgInfo(orgNr)
         validateB910response(orgNr, samhandlerData)
-        return samhandlerData
+        return samhandlerData.tssOutputData.samhandlerODataB910
+    }
+
+    fun hentSamhandlerDataForOrganisasjon(orgNr: String): SamhandlerInfo {
+        val samhandlerData910 = hentSamhandlerDataForOrganisasjonB910(orgNr)
+
+        val enkeltSamhandler = samhandlerData910.enkeltSamhandler.first()
+        val navn = enkeltSamhandler.samhandler110.samhandler.first().navnSamh
+        val tssId = enkeltSamhandler.samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS
+        val avdNr = enkeltSamhandler.samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().avdNr
+
+        val avdelingsAdresser = enkeltSamhandler.adresse130.adresseSamh.filter {
+            it.avdNr == avdNr && it.gyldigAdresse == "J" }
+            .map {
+                it.adrLinjeInfo.adresseLinje
+                SamhandlerAddresse(it.adrLinjeInfo.adresseLinje, it.postNr, it.poststed, it.beskrAdresseType)
+            }
+        return SamhandlerInfo(tssId, navn, avdelingsAdresser)
     }
 
     fun hentInformasjonOmSamhandlerInst(navn: String): TssSamhandlerData {
         val samhandlerData = tssMQClient.søkOrgInfo(navn)
-        validateB910response(navn, samhandlerData)
-        return samhandlerData
-    }
-
-    fun hentKomplettSamhandlerInfo(orgNr: String): TssSamhandlerData {
-        val samhandlerData = tssMQClient.getKomplettSamhandlerInfo(orgNr)
-        validateB910response(orgNr, samhandlerData)
-        return samhandlerData
-    }
-
-    fun hentInformasjonOmSamhandlerB85(request: SamhandlerIDataB985Type): TssSamhandlerData {
-        val samhandlerData = tssMQClient.søkOrgInfoB985(request)
-        val inputData= "${request.brukerID} ${request.navnSamh} ${request.delNavn} ${request.kodeSamhType} ${request.buffnr}"
-        validateB910response(inputData, samhandlerData)
+//        validateB910response(navn, samhandlerData)
         return samhandlerData
     }
     private fun validateB910response(inputData: String, tssResponse: TssSamhandlerData) {

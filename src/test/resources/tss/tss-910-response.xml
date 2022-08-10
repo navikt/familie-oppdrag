@@ -103,6 +103,69 @@
                         <tidReg>201105051624</tidReg>
                     </samhAvd>
                 </samhandlerAvd125>
+                <adresse130>
+                    <antAdresse>3</antAdresse>
+                    <adresseSamh>
+                        <avdNr>00</avdNr>
+                        <kodeAdresseType>PST</kodeAdresseType>
+                        <beskrAdresseType>Postadresse</beskrAdresseType>
+                        <kodeLand>NOR</kodeLand>
+                        <kommuneNr>3803</kommuneNr>
+                        <postNr>3103</postNr>
+                        <poststed>TØNSBERG</poststed>
+                        <datoAdresseFom>20200106</datoAdresseFom>
+                        <datoAdresseTom></datoAdresseTom>
+                        <gyldigAdresse>J</gyldigAdresse>
+                        <kilde>ENH</kilde>
+                        <brukerId></brukerId>
+                        <tidReg>202001062251</tidReg>
+                        <antAdrLinje>1</antAdrLinje>
+                        <adrLinjeInfo>
+                            <adresseLinje>Postboks 2233</adresseLinje>
+                        </adrLinjeInfo>
+                        <antAdrRegion></antAdrRegion>
+                    </adresseSamh>
+                    <adresseSamh>
+                        <avdNr>00</avdNr>
+                        <kodeAdresseType>WP</kodeAdresseType>
+                        <beskrAdresseType>Arbeidsadresse</beskrAdresseType>
+                        <kodeLand>NOR</kodeLand>
+                        <kommuneNr>5007</kommuneNr>
+                        <postNr>7820</postNr>
+                        <poststed>SPILLUM</poststed>
+                        <datoAdresseFom>20200106</datoAdresseFom>
+                        <datoAdresseTom></datoAdresseTom>
+                        <gyldigAdresse>J</gyldigAdresse>
+                        <kilde>ENH</kilde>
+                        <brukerId></brukerId>
+                        <tidReg>202001062251</tidReg>
+                        <antAdrLinje>1</antAdrLinje>
+                        <adrLinjeInfo>
+                            <adresseLinje>SPILLUM</adresseLinje>
+                        </adrLinjeInfo>
+                        <antAdrRegion></antAdrRegion>
+                    </adresseSamh>
+                    <adresseSamh>
+                        <avdNr>01</avdNr>
+                        <kodeAdresseType>WP</kodeAdresseType>
+                        <beskrAdresseType>Arbeidsadresse</beskrAdresseType>
+                        <kodeLand>NOR</kodeLand>
+                        <kommuneNr>5007</kommuneNr>
+                        <postNr>7820</postNr>
+                        <poststed>SPILLUM</poststed>
+                        <datoAdresseFom>20110505</datoAdresseFom>
+                        <datoAdresseTom></datoAdresseTom>
+                        <gyldigAdresse>J</gyldigAdresse>
+                        <kilde>IT00</kilde>
+                        <brukerId>GVA2830</brukerId>
+                        <tidReg>201105051624</tidReg>
+                        <antAdrLinje>1</antAdrLinje>
+                        <adrLinjeInfo>
+                            <adresseLinje>SPILLUM</adresseLinje>
+                        </adrLinjeInfo>
+                        <antAdrRegion></antAdrRegion>
+                    </adresseSamh>
+                </adresse130>
             </enkeltSamhandler>
         </samhandlerODataB910>
     </tssOutputData>

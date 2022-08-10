@@ -8,11 +8,9 @@ import no.rtv.namespacetss.TssSamhandlerData
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.jms.JmsException
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
 import java.util.UUID
-import javax.jms.JMSException
 import javax.jms.Message
 import javax.jms.Session
 
@@ -22,10 +20,6 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
 
     private fun kallTss(rawRequest: String): String {
         val uuid = UUID.randomUUID().toString()
-        "Kaller TSS med jmsCorrelationId=$uuid".apply {
-            logger.info(this)
-            secureLogger.info("$this request=$rawRequest")
-        }
         try {
             val response: Message? = jmsTemplateTss.sendAndReceive { session: Session ->
                 val requestMessage = session.createTextMessage(rawRequest)
@@ -34,20 +28,20 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
             }
 
             return if (response == null) {
-                logger.error("En feil oppsto i kallet til TSS. Response var null (timeout?)")
                 throw TssConnectionException("En feil oppsto i kallet til TSS. Response var null (timeout?)")
             } else {
                 val responseAsString = response.getBody(String::class.java)
                 secureLogger.info("Response fra tss=$responseAsString")
                 responseAsString
             }
-        } catch (exception: Exception) {
-            logger.info("Feil ved sending", exception)
-            when (exception) {
-                is JmsException, is JMSException -> {
-                    throw RuntimeException("En feil oppsto i kallet til TSS", exception)
-                }
-                else -> throw exception
+        } catch (e: Exception) {
+            "Feil mot TSS med uuid=$uuid".apply {
+                logger.info(this)
+                secureLogger.info("$this request=$rawRequest")
+            }
+            when (e) {
+                is TssException -> throw e
+                else -> throw TssConnectionException("En feil oppsto i kallet til TSS", e)
             }
         }
     }
