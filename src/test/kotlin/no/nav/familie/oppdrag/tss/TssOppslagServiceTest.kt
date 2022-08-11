@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.Message
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 internal class TssOppslagServiceTest {
 
@@ -33,6 +34,19 @@ internal class TssOppslagServiceTest {
         assertEquals(1, response.enkeltSamhandler.size)
         assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
         assertEquals("80000112244", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
+    }
+
+    @Test
+    fun `Skal hente samhandlerinfo for orgnr `() {
+        every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-response.xml")
+        val response = service.hentSamhandlerDataForOrganisasjon("ORGNR")
+        assertEquals("Inst 1", response.navn)
+        assertEquals("80000112244", response.tssEksternId)
+        assertEquals(1, response.adressser.size)
+        assertEquals("0550", response.adressser.first().postNr)
+        assertEquals("Oslo", response.adressser.first().postSted)
+        assertEquals("Arbeidsadresse", response.adressser.first().addresseType)
+        assertEquals("Vei 3", response.adressser.first().adresselinjer.first())
     }
 
     @Test
@@ -77,6 +91,34 @@ internal class TssOppslagServiceTest {
         }
 
         assertEquals("DET FINNES MER INFORMASJON-04-B9XX018I", tssResponseException.message)
+    }
+
+
+    @Test
+    fun `Skal hente samhandlerinfo ved søk på navn ved bruk av proxytjenesten b940`() {
+        every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
+        val response = service.hentInformasjonOmSamhandlerInstB940("Inst")
+        assertEquals(3, response.enkeltSamhandler.size)
+        assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
+        assertEquals("80000442211", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
+        assertEquals("80000112244", response.enkeltSamhandler.get(1).samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
+        assertEquals(0, response.enkeltSamhandler.get(2).samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.size)
+    }
+
+    @Test
+    fun `Skal søke samhandlerinfo fra navn `() {
+        every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR")
+        assertEquals(2, response.size)
+        assertEquals("Inst 1", response.first().navn)
+        assertEquals("80000442211", response.first().tssEksternId)
+        assertEquals(1, response.first().adressser.size)
+        assertEquals("0550", response.first().adressser.first().postNr)
+        assertEquals("Oslo", response.first().adressser.first().postSted)
+        assertEquals("Arbeidsadresse", response.first().adressser.first().addresseType)
+        assertEquals("[Vei 3]", response.first().adressser.first().adresselinjer.toString())
+        assertEquals("Inst 2", response.last().navn)
+        assertEquals("80000112244", response.last().tssEksternId)
     }
 
     private fun lesFil(fileName: String): String {

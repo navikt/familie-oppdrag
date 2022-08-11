@@ -110,9 +110,9 @@
                         <kodeAdresseType>PST</kodeAdresseType>
                         <beskrAdresseType>Postadresse</beskrAdresseType>
                         <kodeLand>NOR</kodeLand>
-                        <kommuneNr>3803</kommuneNr>
-                        <postNr>3103</postNr>
-                        <poststed>TØNSBERG</poststed>
+                        <kommuneNr>0103</kommuneNr>
+                        <postNr>0550</postNr>
+                        <poststed>OSLO</poststed>
                         <datoAdresseFom>20200106</datoAdresseFom>
                         <datoAdresseTom></datoAdresseTom>
                         <gyldigAdresse>J</gyldigAdresse>
@@ -121,7 +121,7 @@
                         <tidReg>202001062251</tidReg>
                         <antAdrLinje>1</antAdrLinje>
                         <adrLinjeInfo>
-                            <adresseLinje>Postboks 2233</adresseLinje>
+                            <adresseLinje>Postboks 1</adresseLinje>
                         </adrLinjeInfo>
                         <antAdrRegion></antAdrRegion>
                     </adresseSamh>
@@ -130,9 +130,9 @@
                         <kodeAdresseType>WP</kodeAdresseType>
                         <beskrAdresseType>Arbeidsadresse</beskrAdresseType>
                         <kodeLand>NOR</kodeLand>
-                        <kommuneNr>5007</kommuneNr>
-                        <postNr>7820</postNr>
-                        <poststed>SPILLUM</poststed>
+                        <kommuneNr>0103</kommuneNr>
+                        <postNr>0550</postNr>
+                        <poststed>Oslo</poststed>
                         <datoAdresseFom>20200106</datoAdresseFom>
                         <datoAdresseTom></datoAdresseTom>
                         <gyldigAdresse>J</gyldigAdresse>
@@ -141,7 +141,7 @@
                         <tidReg>202001062251</tidReg>
                         <antAdrLinje>1</antAdrLinje>
                         <adrLinjeInfo>
-                            <adresseLinje>SPILLUM</adresseLinje>
+                            <adresseLinje>Vei 2</adresseLinje>
                         </adrLinjeInfo>
                         <antAdrRegion></antAdrRegion>
                     </adresseSamh>
@@ -150,9 +150,9 @@
                         <kodeAdresseType>WP</kodeAdresseType>
                         <beskrAdresseType>Arbeidsadresse</beskrAdresseType>
                         <kodeLand>NOR</kodeLand>
-                        <kommuneNr>5007</kommuneNr>
-                        <postNr>7820</postNr>
-                        <poststed>SPILLUM</poststed>
+                        <kommuneNr>0103</kommuneNr>
+                        <postNr>0550</postNr>
+                        <poststed>Oslo</poststed>
                         <datoAdresseFom>20110505</datoAdresseFom>
                         <datoAdresseTom></datoAdresseTom>
                         <gyldigAdresse>J</gyldigAdresse>
@@ -161,7 +161,7 @@
                         <tidReg>201105051624</tidReg>
                         <antAdrLinje>1</antAdrLinje>
                         <adrLinjeInfo>
-                            <adresseLinje>SPILLUM</adresseLinje>
+                            <adresseLinje>Vei 3</adresseLinje>
                         </adrLinjeInfo>
                         <antAdrRegion></antAdrRegion>
                     </adresseSamh>

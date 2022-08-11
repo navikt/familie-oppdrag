@@ -30,17 +30,26 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Unprotected
     fun søkSamhnadlerinfoFraNavnProxy(
         @PathVariable("navn") navn: String
-    ): Ressurs<TOutputElementer> {
-        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInst(navn).tssOutputData)
+    ): Ressurs<TOutputElementer.SamhandlerODataB940> {
+        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInstB940(navn))
     }
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR ved bruk av TSS-tjensten B910")
-    @PostMapping(path = ["/b910/{orgnr}"])
+    @PostMapping(path = ["/orgnr/{orgnr}"])
     @Unprotected
     fun hentSamhandlerDataForOrganisasjon(
         @PathVariable("orgnr") orgnr: String
     ): Ressurs<SamhandlerInfo> {
         return Ressurs.success(tssOppslagService.hentSamhandlerDataForOrganisasjon(orgnr))
+    }
+
+    @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR ved bruk av TSS-tjensten B910")
+    @PostMapping(path = ["/navn/{navn}"])
+    @Unprotected
+    fun søkSamhnadlerinfoFraNavn(
+        @PathVariable("navn") navn: String
+    ): Ressurs<List<SamhandlerInfo>> {
+        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInst(navn))
     }
 }
 
