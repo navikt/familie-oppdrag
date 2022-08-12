@@ -11,9 +11,9 @@
     </tssInputData>
     <tssOutputData>
         <svarStatus>
-            <alvorligGrad>00</alvorligGrad>
-            <kodeMelding/>
-            <beskrMelding/>
+            <alvorligGrad>04</alvorligGrad>
+            <kodeMelding>B9XX018I</kodeMelding>
+            <beskrMelding>DET FINNES MER INFORMASJON</beskrMelding>
         </svarStatus>
         <samhandlerODataB940>
             <antallSamhandlere>2</antallSamhandlere>

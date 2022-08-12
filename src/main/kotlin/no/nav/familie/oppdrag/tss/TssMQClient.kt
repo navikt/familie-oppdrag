@@ -98,12 +98,13 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         return Jaxb.tilTssSamhandlerData(rawResponse)
     }
 
-    fun søkOrgInfo(navn: String): TssSamhandlerData {
+    fun søkOrgInfo(navn: String, side: String): TssSamhandlerData {
         val objectFactory = ObjectFactory()
         val samhandlerIDataB940Data = objectFactory.createSamhandlerIDataB940Type().apply {
             brukerID = "familie-oppdrag"
             navnSamh = navn
             kodeSamhType = "INST"
+            buffnr = side
         }
 
         val servicerutiner = objectFactory.createTServicerutiner().apply {

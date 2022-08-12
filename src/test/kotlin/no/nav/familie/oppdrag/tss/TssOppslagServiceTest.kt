@@ -8,8 +8,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.jms.core.JmsTemplate
 import javax.jms.Message
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class TssOppslagServiceTest {
 
@@ -97,7 +99,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal hente samhandlerinfo ved søk på navn ved bruk av proxytjenesten b940`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInstB940("Inst")
+        val response = service.hentInformasjonOmSamhandlerInstB940("Inst", "000").tssOutputData.samhandlerODataB940
         assertEquals(3, response.enkeltSamhandler.size)
         assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
         assertEquals("80000442211", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
@@ -106,19 +108,54 @@ internal class TssOppslagServiceTest {
     }
 
     @Test
-    fun `Skal søke samhandlerinfo fra navn `() {
+    fun `Skal søke samhandlerinfo fra navn returnere false hvis det ikke er flere sider`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInst("ORGNR")
-        assertEquals(2, response.size)
-        assertEquals("Inst 1", response.first().navn)
-        assertEquals("80000442211", response.first().tssEksternId)
-        assertEquals(1, response.first().adressser.size)
-        assertEquals("0550", response.first().adressser.first().postNr)
-        assertEquals("Oslo", response.first().adressser.first().postSted)
-        assertEquals("Arbeidsadresse", response.first().adressser.first().addresseType)
-        assertEquals("[Vei 3]", response.first().adressser.first().adresselinjer.toString())
-        assertEquals("Inst 2", response.last().navn)
-        assertEquals("80000112244", response.last().tssEksternId)
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR","000")
+        assertFalse { response.finnesMerInfo }
+        assertEquals(2, response.samhandlere.size)
+        assertEquals("Inst 1", response.samhandlere.first().navn)
+        assertEquals("80000442211", response.samhandlere.first().tssEksternId)
+        assertEquals(1, response.samhandlere.first().adressser.size)
+        assertEquals("0550", response.samhandlere.first().adressser.first().postNr)
+        assertEquals("Oslo", response.samhandlere.first().adressser.first().postSted)
+        assertEquals("Arbeidsadresse", response.samhandlere.first().adressser.first().addresseType)
+        assertEquals("[Vei 3]", response.samhandlere.first().adressser.first().adresselinjer.toString())
+        assertEquals("Inst 2", response.samhandlere.last().navn)
+        assertEquals("80000112244", response.samhandlere.last().tssEksternId)
+    }
+
+    @Test
+    fun `Skal søke samhandlerinfo fra navn returnere true hvis det er flere treff`() {
+        every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-mer-info-response.xml")
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR","000")
+        assertTrue { response.finnesMerInfo }
+        assertEquals(2, response.samhandlere.size)
+        assertEquals("Inst 1", response.samhandlere.first().navn)
+        assertEquals("80000442211", response.samhandlere.first().tssEksternId)
+        assertEquals(1, response.samhandlere.first().adressser.size)
+        assertEquals("0550", response.samhandlere.first().adressser.first().postNr)
+        assertEquals("Oslo", response.samhandlere.first().adressser.first().postSted)
+        assertEquals("Arbeidsadresse", response.samhandlere.first().adressser.first().addresseType)
+        assertEquals("[Vei 3]", response.samhandlere.first().adressser.first().adresselinjer.toString())
+        assertEquals("Inst 2", response.samhandlere.last().navn)
+        assertEquals("80000112244", response.samhandlere.last().tssEksternId)
+    }
+
+    @Test
+    fun `Skal søke samhandlerinfo fra navn returnere false hvis det ikke er flere treff`() {
+        every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-ikke-mer-info-response.xml")
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR","000")
+        assertFalse { response.finnesMerInfo }
+        assertEquals(2, response.samhandlere.size)
+        assertEquals("Inst 1", response.samhandlere.first().navn)
+        assertEquals("80000442211", response.samhandlere.first().tssEksternId)
+        assertEquals(1, response.samhandlere.first().adressser.size)
+        assertEquals("0550", response.samhandlere.first().adressser.first().postNr)
+        assertEquals("Oslo", response.samhandlere.first().adressser.first().postSted)
+        assertEquals("Arbeidsadresse", response.samhandlere.first().adressser.first().addresseType)
+        assertEquals("[Vei 3]", response.samhandlere.first().adressser.first().adresselinjer.toString())
+        assertEquals("Inst 2", response.samhandlere.last().navn)
+        assertEquals("80000112244", response.samhandlere.last().tssEksternId)
     }
 
     private fun lesFil(fileName: String): String {
