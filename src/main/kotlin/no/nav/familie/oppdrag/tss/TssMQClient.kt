@@ -2,8 +2,6 @@ package no.nav.familie.oppdrag.tss
 
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.rtv.namespacetss.ObjectFactory
-import no.rtv.namespacetss.SamhandlerIDataB910Type
-import no.rtv.namespacetss.SamhandlerIDataB985Type
 import no.rtv.namespacetss.TssSamhandlerData
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,6 +15,7 @@ import javax.jms.Session
 @Service
 class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate) {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+    private val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
 
     private fun kallTss(rawRequest: String): String {
         val uuid = UUID.randomUUID().toString()
@@ -54,7 +53,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
             kodeIdType = "ORG"
         }
         val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
-            brukerID = "familie-oppdrag"
+            brukerID = BRUKER_ID
             historikk = "N"
             ofFid = offIdData
         }
@@ -72,39 +71,13 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         return Jaxb.tilTssSamhandlerData(rawResponse)
     }
 
-    fun getKomplettSamhandlerInfo(orgNr: String): TssSamhandlerData {
-        val objectFactory = ObjectFactory()
-
-        val offIdData = objectFactory.createTidOFF1().apply {
-            idOff = orgNr
-            kodeIdType = "ORG"
-        }
-        val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
-            brukerID = "familie-oppdrag"
-            historikk = "N"
-            ofFid = offIdData
-        }
-        val servicerutiner = objectFactory.createTServicerutiner().apply {
-            samhandlerIDataB960 = samhandlerIDataB910Data
-        }
-        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
-            tssServiceRutine = servicerutiner
-        }
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
-            tssInputData = tssSamhandlerDataTssInputData
-        }
-        val xml = Jaxb.tilXml(tssSamhandlerData)
-        val rawResponse = kallTss(xml)
-        return Jaxb.tilTssSamhandlerData(rawResponse)
-    }
-
-    fun søkOrgInfo(navn: String, side: String): TssSamhandlerData {
+    fun søkOrgInfo(navn: String, side: Int): TssSamhandlerData {
         val objectFactory = ObjectFactory()
         val samhandlerIDataB940Data = objectFactory.createSamhandlerIDataB940Type().apply {
-            brukerID = "familie-oppdrag"
+            brukerID = BRUKER_ID
             navnSamh = navn
             kodeSamhType = "INST"
-            buffnr = side
+            buffnr = side.toString().padStart(3, '0')
         }
 
         val servicerutiner = objectFactory.createTServicerutiner().apply {
@@ -122,43 +95,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         return Jaxb.tilTssSamhandlerData(rawResponse)
     }
 
-    fun b960(samhandlerIDataB910Type: SamhandlerIDataB910Type): TssSamhandlerData {
-        val objectFactory = ObjectFactory()
-
-        val servicerutiner = objectFactory.createTServicerutiner().apply {
-            samhandlerIDataB960 = samhandlerIDataB910Type
-        }
-
-        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
-            tssServiceRutine = servicerutiner
-        }
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
-            tssInputData = tssSamhandlerDataTssInputData
-        }
-
-        val rawResponse = kallTss(Jaxb.tilXml(tssSamhandlerData))
-        return Jaxb.tilTssSamhandlerData(rawResponse)
-    }
-
-    fun søkOrgInfoB985(samhandlerIDataB985Data: SamhandlerIDataB985Type): TssSamhandlerData {
-        val objectFactory = ObjectFactory()
-
-        val servicerutiner = objectFactory.createTServicerutiner().apply {
-            samhandlerIDataB985 = samhandlerIDataB985Data
-        }
-
-        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
-            tssServiceRutine = servicerutiner
-        }
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
-            tssInputData = tssSamhandlerDataTssInputData
-        }
-
-        val rawResponse = kallTss(Jaxb.tilXml(tssSamhandlerData))
-        return Jaxb.tilTssSamhandlerData(rawResponse)
-    }
-
     companion object {
-        val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
+        const val BRUKER_ID = "familie-oppdrag"
     }
 }

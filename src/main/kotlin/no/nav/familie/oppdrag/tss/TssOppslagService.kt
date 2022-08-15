@@ -1,17 +1,18 @@
 package no.nav.familie.oppdrag.tss
 
+import no.nav.familie.kontrakter.ba.tss.SamhandlerAddresse
+import no.nav.familie.kontrakter.ba.tss.SamhandlerInfo
+import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfo
 import no.rtv.namespacetss.Samhandler
 import no.rtv.namespacetss.TssSamhandlerData
 import no.rtv.namespacetss.TypeKomp940
 import no.rtv.namespacetss.TypeOD910
 import no.rtv.namespacetss.TypeSamhAdr
 import no.rtv.namespacetss.TypeSamhAvd
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class TssOppslagService(private val tssMQClient: TssMQClient) {
-    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun hentSamhandlerDataForOrganisasjonB910(orgNr: String): TypeOD910 {
         val samhandlerData = tssMQClient.getOrgInfo(orgNr)
@@ -26,16 +27,17 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         return mapSamhandler(enkeltSamhandler)
     }
 
-    fun hentInformasjonOmSamhandlerInstB940(navn: String, side: String): TssSamhandlerData {
-        val samhandlerData = tssMQClient.søkOrgInfo(navn, side)
-        return samhandlerData
+    fun hentInformasjonOmSamhandlerInstB940(navn: String, side: Int): TssSamhandlerData {
+        return tssMQClient.søkOrgInfo(navn, side)
     }
 
-    fun hentInformasjonOmSamhandlerInst(navn: String, side: String): SøkSamhandlerInfo {
+    fun hentInformasjonOmSamhandlerInst(navn: String, side: Int): SøkSamhandlerInfo {
         val samhandlerData = hentInformasjonOmSamhandlerInstB940(navn, side)
         val finnesMerInfo = validateB940response(navn, samhandlerData)
         val samhandlerODataB940 = samhandlerData.tssOutputData.samhandlerODataB940
-        val samhandlere = samhandlerODataB940.enkeltSamhandler.filter { it.samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.isNotEmpty() }.map { mapSamhandler(it) }
+        val samhandlere = samhandlerODataB940.enkeltSamhandler
+            .filter { enkeltSamhandler -> enkeltSamhandler.samhandlerAvd125.samhAvd.any { it.kilde == "IT00" } }
+            .map { mapSamhandler(it) }
         return SøkSamhandlerInfo(finnesMerInfo, samhandlere)
     }
     private fun validateB910response(inputData: String, tssResponse: TssSamhandlerData) {
@@ -93,8 +95,8 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun mapTssEksternIdOgAvdNr(samhandlerAvd125: TypeSamhAvd): Pair<String, String> {
-        val tssId = samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS
-        val avdNr = samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().avdNr
+        val tssId = samhandlerAvd125.samhAvd.first { it.kilde == "IT00" }.idOffTSS
+        val avdNr = samhandlerAvd125.samhAvd.first { it.kilde == "IT00" }.avdNr
         return Pair(tssId, avdNr)
     }
 
