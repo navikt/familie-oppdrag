@@ -6,7 +6,6 @@ import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfo
 import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfoRequest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import no.nav.security.token.support.core.api.Unprotected
 import no.rtv.namespacetss.TOutputElementer
 import no.rtv.namespacetss.TypeOD910
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,7 +21,6 @@ class TssController(private val tssOppslagService: TssOppslagService) {
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
     @PostMapping(path = ["/proxy/b910/{orgnr}"])
-    @Unprotected
     fun hentSamhandlerDataForOrganisasjonProxy(
         @PathVariable("orgnr") orgnr: String
     ): Ressurs<TypeOD910> {
@@ -31,7 +29,6 @@ class TssController(private val tssOppslagService: TssOppslagService) {
 
     @Operation(summary = "Søk informasjon samhandlere av type INST ved bruk av navn og TSS-tjensten B940 og TSS-tjensten B940. Returnerer TSS-output data i rå format")
     @PostMapping(path = ["/proxy/b940"])
-    @Unprotected
     fun søkSamhnadlerinfoFraNavnProxy(
         @RequestBody request: SøkSamhandlerInfoRequest
     ): Ressurs<TOutputElementer> {
@@ -40,7 +37,6 @@ class TssController(private val tssOppslagService: TssOppslagService) {
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
     @PostMapping(path = ["/orgnr/{orgnr}"])
-    @Unprotected
     fun hentSamhandlerDataForOrganisasjon(
         @PathVariable("orgnr") orgnr: String
     ): Ressurs<SamhandlerInfo> {
@@ -49,7 +45,6 @@ class TssController(private val tssOppslagService: TssOppslagService) {
 
     @Operation(summary = "Søk samhandlere ved bruk av navn og TSS-tjensten B940. Første side er 0")
     @PostMapping(path = ["/navn"])
-    @Unprotected
     fun søkSamhnadlerinfoFraNavn(
         @RequestBody requst: SøkSamhandlerInfoRequest
     ): Ressurs<SøkSamhandlerInfo> {
