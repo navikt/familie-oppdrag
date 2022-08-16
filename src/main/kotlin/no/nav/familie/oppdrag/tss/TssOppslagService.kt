@@ -3,6 +3,7 @@ package no.nav.familie.oppdrag.tss
 import no.nav.familie.kontrakter.ba.tss.SamhandlerAddresse
 import no.nav.familie.kontrakter.ba.tss.SamhandlerInfo
 import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfo
+import no.rtv.namespacetss.SamhAvdPraType
 import no.rtv.namespacetss.Samhandler
 import no.rtv.namespacetss.TssSamhandlerData
 import no.rtv.namespacetss.TypeKomp940
@@ -36,7 +37,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         val finnesMerInfo = validateB940response(navn, samhandlerData)
         val samhandlerODataB940 = samhandlerData.tssOutputData.samhandlerODataB940
         val samhandlere = samhandlerODataB940.enkeltSamhandler
-            .filter { enkeltSamhandler -> enkeltSamhandler.samhandlerAvd125.samhAvd.any { it.kilde == "IT00" } }
+            .filter { enkeltSamhandler -> enkeltSamhandler.samhandlerAvd125.samhAvd.any { erInfotrygdTssAvdeling(it) } }
             .map { mapSamhandler(it) }
         return SøkSamhandlerInfo(finnesMerInfo, samhandlere)
     }
@@ -95,10 +96,16 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun mapTssEksternIdOgAvdNr(samhandlerAvd125: TypeSamhAvd): Pair<String, String> {
-        val tssId = samhandlerAvd125.samhAvd.first { it.kilde == "IT00" }.idOffTSS
-        val avdNr = samhandlerAvd125.samhAvd.first { it.kilde == "IT00" }.avdNr
+        val tssId = samhandlerAvd125.samhAvd.first { erInfotrygdTssAvdeling(it) }.idOffTSS
+        val avdNr = samhandlerAvd125.samhAvd.first { erInfotrygdTssAvdeling(it) }.avdNr
         return Pair(tssId, avdNr)
     }
+
+    /**
+     Info fra Tore på Infotrygd:
+     Når vi søker mot TSS (vedrørende BA…) har vi avdNr = 01 som et søkekriterie, og får bare den forekomsten tilbake.
+     */
+    private fun erInfotrygdTssAvdeling(it: SamhAvdPraType) = it.avdNr == TSS_INFOTRYGD_BA_AVDELING
 
     private fun madAdresse(
         adresse130: TypeSamhAdr,
@@ -116,5 +123,6 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         const val TSS_KODEMELDING_MER_INFO = "B9XX018I"
         const val TSS_KODEMELDING_INGEN_FLERE_FOREKOMSTER = "B9XX021I"
         const val TSS_STATUS_OK = "00"
+        const val TSS_INFOTRYGD_BA_AVDELING = "01"
     }
 }
