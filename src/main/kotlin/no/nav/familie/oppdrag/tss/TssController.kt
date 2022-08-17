@@ -8,6 +8,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.rtv.namespacetss.TOutputElementer
 import no.rtv.namespacetss.TypeOD910
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 class TssController(private val tssOppslagService: TssOppslagService) {
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
-    @PostMapping(path = ["/proxy/b910/{orgnr}"])
+    @GetMapping(path = ["/proxy/b910/{orgnr}"])
     fun hentSamhandlerDataForOrganisasjonProxy(
         @PathVariable("orgnr") orgnr: String
     ): Ressurs<TypeOD910> {
@@ -36,7 +37,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     }
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
-    @PostMapping(path = ["/orgnr/{orgnr}"])
+    @GetMapping(path = ["/orgnr/{orgnr}"])
     fun hentSamhandlerDataForOrganisasjon(
         @PathVariable("orgnr") orgnr: String
     ): Ressurs<SamhandlerInfo> {
