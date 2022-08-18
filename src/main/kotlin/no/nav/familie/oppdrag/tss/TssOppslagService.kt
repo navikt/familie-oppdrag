@@ -1,6 +1,6 @@
 package no.nav.familie.oppdrag.tss
 
-import no.nav.familie.kontrakter.ba.tss.SamhandlerAddresse
+import no.nav.familie.kontrakter.ba.tss.SamhandlerAdresse
 import no.nav.familie.kontrakter.ba.tss.SamhandlerInfo
 import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfo
 import no.rtv.namespacetss.SamhAvdPraType
@@ -115,7 +115,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
         .mapNotNull {
             val adresseLinje = if (it.antAdrLinje.isNullOrBlank()) emptyList() else it.adrLinjeInfo.adresseLinje
-            SamhandlerAddresse(adresseLinje, it.postNr, it.poststed, it.beskrAdresseType)
+            SamhandlerAdresse(adresseLinje, it.postNr, it.poststed, it.beskrAdresseType)
         }
 
     companion object {
