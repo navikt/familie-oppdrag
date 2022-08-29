@@ -26,7 +26,7 @@
         <kontrakter.version>2.0_20220829141845_3e75e0d</kontrakter.version>
         <token-validation-spring.version>2.0.5</token-validation-spring.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
-        <jaxb-core.version>3.0.2</jaxb-core.version>
+        <jaxb-core.version>4.0.0</jaxb-core.version>
         <jaxb-impl.version>3.0.2</jaxb-impl.version>
         <cxf.version>3.5.3</cxf.version>
         <mockk.version>1.12.4</mockk.version>
