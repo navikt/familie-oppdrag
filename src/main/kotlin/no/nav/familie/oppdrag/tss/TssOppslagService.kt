@@ -28,13 +28,13 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         return mapSamhandler(enkeltSamhandler)
     }
 
-    fun hentInformasjonOmSamhandlerInstB940(navn: String, side: Int): TssSamhandlerData {
-        return tssMQClient.søkOrgInfo(navn, side)
+    fun hentInformasjonOmSamhandlerInstB940(navn: String?, postNummer: String?, område: String?, side: Int): TssSamhandlerData {
+        return tssMQClient.søkOrgInfo(navn, postNummer, område, side)
     }
 
-    fun hentInformasjonOmSamhandlerInst(navn: String, side: Int): SøkSamhandlerInfo {
-        val samhandlerData = hentInformasjonOmSamhandlerInstB940(navn, side)
-        val finnesMerInfo = validateB940response(navn, samhandlerData)
+    fun hentInformasjonOmSamhandlerInst(navn: String?, postNummer: String?, område: String?, side: Int): SøkSamhandlerInfo {
+        val samhandlerData = hentInformasjonOmSamhandlerInstB940(navn, postNummer, område, side)
+        val finnesMerInfo = validateB940response("$navn $postNummer $område", samhandlerData)
         val samhandlerODataB940 = samhandlerData.tssOutputData.samhandlerODataB940
         val samhandlere = samhandlerODataB940.enkeltSamhandler
             .filter { enkeltSamhandler -> enkeltSamhandler.samhandlerAvd125.samhAvd.any { erInfotrygdTssAvdeling(it) } }
@@ -56,7 +56,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         }
     }
 
-    private fun validateB940response(inputData: String, tssResponse: TssSamhandlerData): Boolean {
+    private fun validateB940response(inputData: String?, tssResponse: TssSamhandlerData): Boolean {
         commonResponseValidation(tssResponse)
         val svarStatus = tssResponse.tssOutputData.svarStatus
         if (svarStatus.alvorligGrad != TSS_STATUS_OK) {

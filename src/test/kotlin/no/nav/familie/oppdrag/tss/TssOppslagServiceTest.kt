@@ -96,7 +96,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal hente samhandlerinfo ved søk på navn ved bruk av proxytjenesten b940`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInstB940("Inst", 0).tssOutputData.samhandlerODataB940
+        val response = service.hentInformasjonOmSamhandlerInstB940(navn = "Inst", postNummer = null, område = null, side = 0).tssOutputData.samhandlerODataB940
         assertEquals(3, response.enkeltSamhandler.size)
         assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
         assertEquals("80000442211", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
@@ -107,7 +107,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal søke samhandlerinfo fra navn returnere false hvis det ikke er flere sider`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInst("ORGNR", 0)
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR", postNummer = null, område = null, side = 0)
         assertFalse { response.finnesMerInfo }
         assertEquals(2, response.samhandlere.size)
         assertEquals("Inst 1", response.samhandlere.first().navn)
@@ -124,7 +124,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal søke samhandlerinfo fra navn returnere true hvis det er flere treff`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-mer-info-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInst("ORGNR", 0)
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR", postNummer = null, område = null, side = 0)
         assertTrue { response.finnesMerInfo }
         assertEquals(2, response.samhandlere.size)
         assertEquals("Inst 1", response.samhandlere.first().navn)
@@ -141,7 +141,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal søke samhandlerinfo fra navn returnere false hvis det ikke er flere treff`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-ikke-mer-info-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInst("ORGNR", 0)
+        val response = service.hentInformasjonOmSamhandlerInst("ORGNR", postNummer = null, område = null, side = 0)
         assertFalse { response.finnesMerInfo }
         assertEquals(2, response.samhandlere.size)
         assertEquals("Inst 1", response.samhandlere.first().navn)

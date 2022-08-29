@@ -33,7 +33,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     fun søkSamhnadlerinfoFraNavnProxy(
         @RequestBody request: SøkSamhandlerInfoRequest
     ): Ressurs<TOutputElementer> {
-        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInstB940(request.navn, request.side).tssOutputData)
+        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInstB940(request.navn, request.postNr, request.område, request.side).tssOutputData)
     }
 
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
@@ -47,8 +47,8 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Operation(summary = "Søk samhandlere ved bruk av navn og TSS-tjensten B940. Første side er 0")
     @PostMapping(path = ["/navn"])
     fun søkSamhnadlerinfoFraNavn(
-        @RequestBody requst: SøkSamhandlerInfoRequest
+        @RequestBody request: SøkSamhandlerInfoRequest
     ): Ressurs<SøkSamhandlerInfo> {
-        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInst(requst.navn, requst.side))
+        return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInst(request.navn, request.postNr, request.område, request.side))
     }
 }
