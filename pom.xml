@@ -41,7 +41,7 @@
         <spring.vault>2.3.2</spring.vault>
         <spring-cloud.version>2021.0.4</spring-cloud.version>
         <testcontainers.version>1.17.5</testcontainers.version>
-        <tjenestespesifikasjoner.version>2594.7c3ac50</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>2606.1f6354e</tjenestespesifikasjoner.version>
         <springdoc.version>1.6.9</springdoc.version>
 
     </properties>
