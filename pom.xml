@@ -19,7 +19,7 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.7.20</kotlin.version>
+        <kotlin.version>1.7.21</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <common-java-modules.version>2.2022.06.30_06.19-0603b0416483</common-java-modules.version>
         <felles.version>1.20221006150009_46021ed</felles.version>
