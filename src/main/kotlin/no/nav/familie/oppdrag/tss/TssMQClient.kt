@@ -51,6 +51,7 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         val offIdData = objectFactory.createTidOFF1().apply {
             idOff = orgNr
             kodeIdType = "ORG"
+            kodeSamhType = "INST"
         }
         val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
             brukerID = BRUKER_ID
