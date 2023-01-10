@@ -47,7 +47,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
 
         if (svarStatus.alvorligGrad != TSS_STATUS_OK) {
             if (svarStatus.kodeMelding == TSS_KODEMELDING_INGEN_FUNNET) {
-                throw TssNoDataFoundException("Ingen treff med med inputData=$inputData")
+                throw TssNoDataFoundException("Ingen treff med inputData=$inputData")
             }
             throw TssResponseException(svarStatus.beskrMelding, svarStatus.alvorligGrad, svarStatus.kodeMelding)
         }

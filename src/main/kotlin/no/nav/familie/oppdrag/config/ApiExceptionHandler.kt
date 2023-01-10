@@ -2,7 +2,6 @@ package no.nav.familie.oppdrag.config
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
-import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.serviceUnavailable
 import no.nav.familie.oppdrag.common.RessursUtils.unauthorized
 import no.nav.familie.oppdrag.tss.TssConnectionException
@@ -47,7 +46,10 @@ class ApiExceptionHandler {
         logger.warn("Feil mot TSS: ${tssException.message}", tssException)
         return when (tssException) {
             is TssConnectionException -> serviceUnavailable(tssException.message!!, tssException)
-            is TssNoDataFoundException -> notFound(tssException.message!!)
+            is TssNoDataFoundException -> {
+                ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Ressurs.failure(errorMessage = tssException.message))
+            }
             else -> illegalState(tssException.message!!, tssException)
         }
     }

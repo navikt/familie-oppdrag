@@ -57,7 +57,7 @@ internal class TssOppslagServiceTest {
             service.hentSamhandlerDataForOrganisasjon("ORGNR")
         }
 
-        assertEquals("Ingen treff med med inputData=ORGNR", tssNoDataFoundException.message)
+        assertEquals("Ingen treff med inputData=ORGNR", tssNoDataFoundException.message)
     }
 
     @Test
