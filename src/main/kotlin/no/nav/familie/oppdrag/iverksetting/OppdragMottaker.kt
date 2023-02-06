@@ -43,7 +43,8 @@ class OppdragMottaker(
 
         val kvittering = lesKvittering(svarFraOppdrag)
         val oppdragId = kvittering.id
-        LOG.info(
+        LOG.info("Mottatt melding på kvitteringskø for fagsak $oppdragId: Status ${kvittering.status}, se securelogg for beskrivende melding")
+        secureLogger.info(
             "Mottatt melding på kvitteringskø for fagsak $oppdragId: Status ${kvittering.status}, " +
                 "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}"
         )
