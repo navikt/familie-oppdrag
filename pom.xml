@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.8</version>
     </parent>
 
     <properties>
@@ -19,17 +19,17 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.7.20</kotlin.version>
+        <kotlin.version>1.8.10</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <common-java-modules.version>2.2022.06.30_06.19-0603b0416483</common-java-modules.version>
-        <felles.version>1.20221006150009_46021ed</felles.version>
-        <kontrakter.version>2.0_20230126101531_7e94a8f</kontrakter.version>
+        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
+        <felles.version>1.20230117091843_19b020f</felles.version>
+        <kontrakter.version>2.0_20230214140648_f5fa479</kontrakter.version>
         <token-validation-spring.version>2.0.5</token-validation-spring.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-core.version>3.0.2</jaxb-core.version>
         <jaxb-impl.version>3.0.2</jaxb-impl.version>
         <cxf.version>3.5.3</cxf.version>
-        <mockk.version>1.13.2</mockk.version>
+        <mockk.version>1.13.4</mockk.version>
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
         <sonar.organization>navit</sonar.organization>
@@ -38,11 +38,11 @@
         </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring.vault>2.3.2</spring.vault>
-        <spring-cloud.version>2021.0.4</spring-cloud.version>
-        <testcontainers.version>1.17.5</testcontainers.version>
-        <tjenestespesifikasjoner.version>2594.7c3ac50</tjenestespesifikasjoner.version>
-        <springdoc.version>1.6.9</springdoc.version>
+        <spring.vault>2.3.1</spring.vault>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
+        <tjenestespesifikasjoner.version>2610.9b6de22</tjenestespesifikasjoner.version>
+        <springdoc.version>1.6.14</springdoc.version>
 
     </properties>
 
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.allclient</artifactId>
-            <version>9.3.0.0</version>
+            <version>9.3.1.0</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
