@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.8</version>
+        <version>3.0.2</version>
     </parent>
 
     <properties>
@@ -21,10 +21,9 @@
         <jvmTarget>17</jvmTarget>
         <kotlin.version>1.8.10</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
-        <felles.version>1.20230117091843_19b020f</felles.version>
-        <kontrakter.version>2.0_20230214140648_f5fa479</kontrakter.version>
-        <token-validation-spring.version>2.0.9</token-validation-spring.version>
+        <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
+        <kontrakter.version>3.0_20230220145739_44aff8c-JAKARTA</kontrakter.version>
+        <token-validation-spring.version>3.0.3</token-validation-spring.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-core.version>3.0.2</jaxb-core.version>
         <jaxb-impl.version>3.0.2</jaxb-impl.version>
@@ -38,8 +37,7 @@
         </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring.vault>2.3.2</spring.vault>
-        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <spring-cloud.version>2022.0.1</spring-cloud.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <tjenestespesifikasjoner.version>2610.9b6de22</tjenestespesifikasjoner.version>
         <springdoc.version>1.6.14</springdoc.version>
@@ -159,7 +157,6 @@
         <dependency>
             <groupId>org.springframework.vault</groupId>
             <artifactId>spring-vault-core</artifactId>
-            <version>${spring.vault}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -414,7 +411,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <fork>true</fork>
                     <mainClass>${main-class}</mainClass>
                 </configuration>
                 <executions>
@@ -428,6 +424,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
