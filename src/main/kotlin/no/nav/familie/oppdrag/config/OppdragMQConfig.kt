@@ -80,7 +80,7 @@ class OppdragMQConfig(
 
     @Bean
     fun tssConnectionFactory(): ConnectionFactory {
-        val ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER)
+        val ff = JmsFactoryFactory.getInstance(WMQConstants.JAKARTA_WMQ_PROVIDER)
         val cf = ff.createConnectionFactory()
         // Set the properties
         cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, hostname)
