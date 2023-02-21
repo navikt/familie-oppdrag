@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" targetNamespace="http://nav.no/virksomhet/tjenester/avstemming/meldinger/v1" version="1.0" xmlns:meldinger="http://nav.no/virksomhet/tjenester/avstemming/meldinger/v1">
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" targetNamespace="http://nav.no/virksomhet2/tjenester/avstemming/meldinger/v1" version="1.0" xmlns:meldinger="http://nav.no/virksomhet2/tjenester/avstemming/meldinger/v1">
     <xsd:complexType name="Periodedata">
         <xsd:annotation>
             <xsd:documentation>Avleverende system må også sende med en perioderecord som definerer for hvilken periode avstemmingen gjelder.</xsd:documentation>

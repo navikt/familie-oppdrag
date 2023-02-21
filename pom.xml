@@ -219,6 +219,7 @@
             <artifactId>barnetrygd</artifactId>
             <version>${kontrakter.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>no.nav.tjenestespesifikasjoner</groupId>
             <artifactId>avstemming-v1-tjenestespesifikasjon</artifactId>
@@ -229,6 +230,12 @@
             <artifactId>tilbakekreving-v1-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>no.nav.common</groupId>
@@ -256,11 +263,6 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-core</artifactId>
@@ -458,6 +460,48 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>4.0.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources-avstemming</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/resources/wsdl/avstemming/avstemming.wsdl</wsdl>
+                                    <bindingFiles>
+                                        <bindingFile>
+                                            ${basedir}/src/main/resources/wsdl/avstemming/v1/Binding.wsdl
+                                        </bindingFile>
+                                    </bindingFiles>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>
+                                        ${basedir}/src/main/resources/wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl
+                                    </wsdl>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>
+                                        ${basedir}/src/main/resources/wsdl/simulering/tjenester/simulerFpService/simulerfpservicegrensesnitt.wsdl
+                                    </wsdl>
+                                    <bindingFiles>
+                                        <bindingFile>
+                                            ${basedir}/src/main/resources/wsdl/simulering/eksponering/simulerfpservicewsbinding.wsdl
+                                        </bindingFile>
+                                    </bindingFiles>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-xjc-plugin</artifactId>
                 <version>4.0.0</version>
                 <executions>
@@ -473,6 +517,7 @@
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/xsd/oppdragskjema-v1.xsd</xsd>
                                 </xsdOption>
+                                <!--
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/xsd/avstemmingskjema-v1.xsd</xsd>
                                 </xsdOption>
@@ -490,7 +535,7 @@
                                 </xsdOption>
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/xsd/tilbakekrevingsvedtak.xsd</xsd>
-                                </xsdOption>
+                                </xsdOption>-->
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/tss/tss.xsd</xsd>
                                 </xsdOption>
@@ -499,55 +544,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-            <plugin>
-                 Plugin required to build java classes from XSD using XJC
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>3.1.0</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.glassfish.jaxb</groupId>
-                        <artifactId>jaxb-runtime</artifactId>
-                        <version>4.0.1</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>kravgrunnlag</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/src/main/resources/xsd/krav_og_vedtakstatus.xsd</source>
-                                <source>${basedir}/src/main/resources/xsd/kravgrunnlag_annuller.xsd</source>
-                                <source>${basedir}/src/main/resources/xsd/kravgrunnlag_detalj.xsd</source>
-                                <source>${basedir}/src/main/resources/xsd/kravgrunnlag_liste.xsd</source>
-                                <source>${basedir}/src/main/resources/xsd/tilbakekrevingsvedtak.xsd</source>
-                            </sources>
-                            <extension>true</extension>
-                            <clearOutputDir>false</clearOutputDir>
-                            <encoding>UTF-8</encoding>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>tss</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/src/main/resources/tss/tss.xsd</source>
-                            </sources>
-                            <extension>true</extension>
-                            <clearOutputDir>false</clearOutputDir>
-                            <encoding>UTF-8</encoding>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

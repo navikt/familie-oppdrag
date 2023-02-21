@@ -2,7 +2,7 @@ package no.nav.familie.oppdrag.simulering.util
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.system.os.eksponering.simulerfpservicewsbinding.SimulerFpService
+import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerFpService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile

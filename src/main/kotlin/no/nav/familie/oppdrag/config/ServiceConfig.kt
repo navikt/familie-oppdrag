@@ -2,7 +2,7 @@ package no.nav.familie.oppdrag.config
 
 import no.nav.common.cxf.CXFClient
 import no.nav.common.cxf.StsConfig
-import no.nav.system.os.eksponering.simulerfpservicewsbinding.SimulerFpService
+import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerFpService
 import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

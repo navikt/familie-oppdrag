@@ -2,12 +2,12 @@ package no.nav.familie.oppdrag.tss
 
 import io.mockk.every
 import io.mockk.mockk
+import jakarta.jms.Message
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.jms.core.JmsTemplate
-import jakarta.jms.Message
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
