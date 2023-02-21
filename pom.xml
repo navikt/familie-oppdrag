@@ -25,7 +25,7 @@
         <kontrakter.version>3.0_20230220145739_44aff8c-JAKARTA</kontrakter.version>
         <token-validation-spring.version>3.0.3</token-validation-spring.version>
 
-        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
+        <common-java-modules.version>2023.02.08_14.02-e5f1a7a4b9e4</common-java-modules.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
         <jaxb-core.version>4.0.2</jaxb-core.version>
         <jaxb-impl.version>4.0.2</jaxb-impl.version>
@@ -238,12 +238,12 @@
         -->
 
         <dependency>
-            <groupId>no.nav.common</groupId>
+            <groupId>com.github.navikt.common-java-modules</groupId>
             <artifactId>cxf</artifactId>
             <version>${common-java-modules.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>no.nav.common</groupId>
+                    <groupId>com.github.navikt.common-java-modules</groupId>
                     <artifactId>log</artifactId>
                 </exclusion>
                 <exclusion>
@@ -286,6 +286,21 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-bindings-soap</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-policy</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-simple</artifactId>
             <version>${cxf.version}</version>
         </dependency>
 
@@ -360,10 +375,17 @@
 
     <repositories>
         <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/navikt/familie-oppdrag</url>
         </repository>
-
     </repositories>
 
     <profiles>
