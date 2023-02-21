@@ -1,14 +1,16 @@
 package no.nav.familie.oppdrag.config
 
 import com.ibm.mq.constants.CMQC.MQENC_NATIVE
-import com.ibm.mq.jms.MQQueue
-import com.ibm.mq.jms.MQQueueConnectionFactory
-import com.ibm.msg.client.jms.JmsConstants
-import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET
-import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_ENCODING
-import com.ibm.msg.client.jms.JmsFactoryFactory
-import com.ibm.msg.client.wmq.WMQConstants
-import com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT
+import com.ibm.mq.jakarta.jms.MQQueue
+import com.ibm.mq.jakarta.jms.MQQueueConnectionFactory
+import com.ibm.msg.client.jakarta.jms.JmsConstants
+import com.ibm.msg.client.jakarta.jms.JmsConstants.JMS_IBM_CHARACTER_SET
+import com.ibm.msg.client.jakarta.jms.JmsConstants.JMS_IBM_ENCODING
+import com.ibm.msg.client.jakarta.jms.JmsFactoryFactory
+import com.ibm.msg.client.jakarta.wmq.WMQConstants
+import com.ibm.msg.client.jakarta.wmq.common.CommonConstants.WMQ_CM_CLIENT
+import jakarta.jms.ConnectionFactory
+import jakarta.jms.JMSException
 import org.apache.activemq.jms.pool.PooledConnectionFactory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -22,8 +24,6 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
 import java.time.Duration
-import javax.jms.ConnectionFactory
-import javax.jms.JMSException
 
 private const val UTF_8_WITH_PUA = 1208
 

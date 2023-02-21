@@ -1,9 +1,9 @@
 package no.nav.familie.oppdrag.grensesnittavstemming
 
+import jakarta.xml.bind.JAXBContext
+import jakarta.xml.bind.Marshaller
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Avstemmingsdata
 import java.io.StringWriter
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.Marshaller
 
 object JaxbGrensesnittAvstemmingsdata {
 

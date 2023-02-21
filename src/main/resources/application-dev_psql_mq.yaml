@@ -22,7 +22,7 @@ spring.datasource.username: ${SPRING_DATASOURCE_USERNAME_OVERRIDE}
 spring.datasource.password: ${SPRING_DATASOURCE_PASSWORD_OVERRIDE}
 spring.datasource.driver-class-name: ${SPRING_DATASOURCE_DRIVER_OVERRIDE}
 
-SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
+STS_URL: https://localhost:8063/rest/v1/sts/token
 SERVICEUSER_USERNAME: not-a-real-srvuser
 SERVICEUSER_PASSWORD: not-a-real-pw
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt

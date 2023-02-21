@@ -29,7 +29,7 @@ spring:
 logging:
   config: "classpath:logback-e2e.xml"
 
-SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
+STS_URL: https://localhost:8063/rest/v1/sts/token
 SERVICEUSER_USERNAME: not-a-real-srvuser
 SERVICEUSER_PASSWORD: not-a-real-pw
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt

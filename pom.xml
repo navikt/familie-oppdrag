@@ -24,10 +24,13 @@
         <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
         <kontrakter.version>3.0_20230220145739_44aff8c-JAKARTA</kontrakter.version>
         <token-validation-spring.version>3.0.3</token-validation-spring.version>
+
+        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
-        <jaxb-core.version>3.0.2</jaxb-core.version>
-        <jaxb-impl.version>3.0.2</jaxb-impl.version>
-        <cxf.version>3.5.3</cxf.version>
+        <jaxb-core.version>4.0.2</jaxb-core.version>
+        <jaxb-impl.version>4.0.2</jaxb-impl.version>
+        <cxf.version>4.0.0</cxf.version>
+
         <mockk.version>1.13.4</mockk.version>
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
@@ -102,9 +105,9 @@
 
         <!-- XML -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${jaxb-api.version}</version>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -116,6 +119,8 @@
             <artifactId>jaxb-impl</artifactId>
             <version>${jaxb-impl.version}</version>
         </dependency>
+
+
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
@@ -128,12 +133,12 @@
         </dependency>
         <dependency>
             <groupId>com.ibm.mq</groupId>
-            <artifactId>com.ibm.mq.allclient</artifactId>
-            <version>9.3.1.0</version>
+            <artifactId>com.ibm.mq.jakarta.client</artifactId>
+            <version>9.3.2.0</version>
         </dependency>
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>javax.jms-api</artifactId>
+            <groupId>jakarta.jms</groupId>
+            <artifactId>jakarta.jms-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -142,6 +147,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-jms-pool</artifactId>
+            <version>5.17.3</version>
         </dependency>
 
 
@@ -223,6 +229,7 @@
             <artifactId>tilbakekreving-v1-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
+
         <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>cxf</artifactId>
@@ -243,6 +250,66 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-ri</artifactId>
+            <version>3.0.2</version>
+            <scope>runtime</scope>
+            <type>pom</type>
+        </dependency>
+        -->
+        <!--<dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-kotlin</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <!-- Test -->
@@ -282,62 +349,6 @@
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-core</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-ws-security</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-features-logging</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>jaxws-ri</artifactId>
-            <version>3.0.2</version>
-            <scope>runtime</scope>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-kotlin</artifactId>
-            <version>${springdoc.version}</version>
         </dependency>
     </dependencies>
 
@@ -444,7 +455,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-xjc-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>4.0.0</version>
                 <executions>
                     <execution>
                         <id>xjc</id>

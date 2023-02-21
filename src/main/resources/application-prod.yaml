@@ -23,5 +23,5 @@ spring:
     url: jdbc:postgresql://A01DBVL011.adeo.no:5432/familie-oppdrag
 
 OPPDRAG_SERVICE_URL: https://wasapp.adeo.no/cics/services/simulerFpServiceWSBinding
-SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
+STS_URL: http://security-token-service.default/rest/v1/sts/token
 TILBAKEKREVING_V1_URL: https://cics.adeo.no/oppdrag/K231CW80

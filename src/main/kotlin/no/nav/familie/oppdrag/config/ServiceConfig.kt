@@ -10,17 +10,11 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ServiceConfig(
-    @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
+    @Value("\${STS_URL}") private val stsUrl: String,
     @Value("\${SERVICEUSER_USERNAME}") private val systemuserUsername: String,
     @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
     @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String
 ) {
-
-    init {
-        System.setProperty("no.nav.modig.security.sts.url", stsUrl)
-        System.setProperty("no.nav.modig.security.systemuser.username", systemuserUsername)
-        System.setProperty("no.nav.modig.security.systemuser.password", systemuserPwd)
-    }
 
     @Bean
     fun stsConfig(): StsConfig {
