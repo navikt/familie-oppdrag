@@ -26,7 +26,7 @@
         <token-validation-spring.version>3.0.3</token-validation-spring.version>
 
         <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <jaxb-api.version>4.0.2</jaxb-api.version>
         <jaxb-core.version>4.0.2</jaxb-core.version>
         <jaxb-impl.version>4.0.2</jaxb-impl.version>
         <cxf.version>4.0.0</cxf.version>
@@ -238,6 +238,10 @@
                 <exclusion>
                     <groupId>no.nav.common</groupId>
                     <artifactId>log</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -472,72 +476,78 @@
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/xsd/avstemmingskjema-v1.xsd</xsd>
                                 </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/xsd/krav_og_vedtakstatus.xsd</xsd>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_annuller.xsd</xsd>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_detalj.xsd</xsd>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_liste.xsd</xsd>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/xsd/tilbakekrevingsvedtak.xsd</xsd>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/tss/tss.xsd</xsd>
+                                </xsdOption>
                             </xsdOptions>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!--
             <plugin>
-                <!-- Plugin required to build java classes from XSD using XJC -->
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.14.0</version>
+                 Plugin required to build java classes from XSD using XJC
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>3.1.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.glassfish.jaxb</groupId>
                         <artifactId>jaxb-runtime</artifactId>
-                        <version>${jaxb-api.version}</version>
+                        <version>4.0.1</version>
                     </dependency>
                 </dependencies>
-                <configuration>
-                    <markGenerated>true</markGenerated>
-                    <enableIntrospection>true</enableIntrospection>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.jvnet.jaxb2_commons</groupId>
-                            <artifactId>jaxb2-basics</artifactId>
-                            <version>1.11.1</version>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.jvnet.jaxb2_commons</groupId>
-                            <artifactId>jaxb2-basics-annotate</artifactId>
-                            <version>1.1.0</version>
-                        </plugin>
-                    </plugins>
-                </configuration>
                 <executions>
                     <execution>
                         <id>kravgrunnlag</id>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <schemaDirectory>${basedir}/src/main/resources/xsd/</schemaDirectory>
-                            <schemaIncludes>
-                                <include>krav_og_vedtakstatus.xsd</include>
-                                <include>kravgrunnlag_annuller.xsd</include>
-                                <include>kravgrunnlag_detalj.xsd</include>
-                                <include>kravgrunnlag_liste.xsd</include>
-                                <include>tilbakekrevingsvedtak.xsd</include>
-                            </schemaIncludes>
-                            <generateDirectory>${project.build.directory}/generated-sources/kravgrunnlag</generateDirectory>
+                            <sources>
+                                <source>${basedir}/src/main/resources/xsd/krav_og_vedtakstatus.xsd</source>
+                                <source>${basedir}/src/main/resources/xsd/kravgrunnlag_annuller.xsd</source>
+                                <source>${basedir}/src/main/resources/xsd/kravgrunnlag_detalj.xsd</source>
+                                <source>${basedir}/src/main/resources/xsd/kravgrunnlag_liste.xsd</source>
+                                <source>${basedir}/src/main/resources/xsd/tilbakekrevingsvedtak.xsd</source>
+                            </sources>
+                            <extension>true</extension>
+                            <clearOutputDir>false</clearOutputDir>
+                            <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
                     <execution>
                         <id>tss</id>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <schemaDirectory>${basedir}/src/main/resources/tss/</schemaDirectory>
-                            <schemaIncludes>
-                                <include>tss.xsd</include>
-                            </schemaIncludes>
-                            <generateDirectory>${project.build.directory}/generated-sources/tss</generateDirectory>
+                            <sources>
+                                <source>${basedir}/src/main/resources/tss/tss.xsd</source>
+                            </sources>
+                            <extension>true</extension>
+                            <clearOutputDir>false</clearOutputDir>
+                            <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
