@@ -145,9 +145,9 @@
             <artifactId>spring-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-jms-pool</artifactId>
-            <version>5.17.3</version>
+            <groupId>org.messaginghub</groupId>
+            <artifactId>pooled-jms</artifactId>
+            <version>3.1.0</version>
         </dependency>
 
 

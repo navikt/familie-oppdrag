@@ -11,7 +11,7 @@ import com.ibm.msg.client.jakarta.wmq.WMQConstants
 import com.ibm.msg.client.jakarta.wmq.common.CommonConstants.WMQ_CM_CLIENT
 import jakarta.jms.ConnectionFactory
 import jakarta.jms.JMSException
-import org.apache.activemq.jms.pool.PooledConnectionFactory
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -45,7 +45,7 @@ class OppdragMQConfig(
 
     @Bean
     @Throws(JMSException::class)
-    fun mqQueueConnectionFactory(): PooledConnectionFactory {
+    fun mqQueueConnectionFactory(): JmsPoolConnectionFactory {
         val targetFactory = MQQueueConnectionFactory()
         targetFactory.hostName = hostname
         targetFactory.queueManager = queuemanager
@@ -62,10 +62,10 @@ class OppdragMQConfig(
         cf.setPassword(password)
         cf.setTargetConnectionFactory(targetFactory)
 
-        val pooledFactory = PooledConnectionFactory()
+        val pooledFactory = JmsPoolConnectionFactory()
         pooledFactory.connectionFactory = cf
         pooledFactory.maxConnections = 10
-        pooledFactory.maximumActiveSessionPerConnection = 10
+        pooledFactory.maxSessionsPerConnection = 10
 
         return pooledFactory
     }
