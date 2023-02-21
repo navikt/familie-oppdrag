@@ -1,7 +1,7 @@
 package no.nav.familie.oppdrag.avstemming
 
-import com.ibm.mq.jms.MQConnectionFactory
-import com.ibm.msg.client.wmq.WMQConstants
+import com.ibm.mq.jakarta.jms.MQConnectionFactory
+import com.ibm.msg.client.jakarta.wmq.WMQConstants
 import io.mockk.called
 import io.mockk.spyk
 import io.mockk.verify

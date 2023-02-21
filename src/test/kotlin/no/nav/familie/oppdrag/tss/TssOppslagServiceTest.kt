@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.jms.core.JmsTemplate
-import javax.jms.Message
+import jakarta.jms.Message
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
