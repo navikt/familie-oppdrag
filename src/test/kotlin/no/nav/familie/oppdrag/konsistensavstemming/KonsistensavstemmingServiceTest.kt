@@ -121,6 +121,38 @@ class KonsistensavstemmingServiceTest {
     }
 
     @Test
+    internal fun `Bruk verdi fra input til å sette utbetalTilId`() {
+        every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "2"))) } returns
+            listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag1_2)
+
+        val perioder = listOf(
+            PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0], "tss-id"),
+            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0])
+        )
+        val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
+
+        konsistensavstemmingService.utførKonsistensavstemming(request, true, true, null)
+
+        val oppdrag = slot<Konsistensavstemmingsdata>()
+        val totalData = slot<Konsistensavstemmingsdata>()
+        verifyOrder {
+            avstemmingSender.sendKonsistensAvstemming(any())
+            avstemmingSender.sendKonsistensAvstemming(capture(oppdrag))
+            avstemmingSender.sendKonsistensAvstemming(capture(totalData))
+            avstemmingSender.sendKonsistensAvstemming(any())
+        }
+
+        assertThat(oppdrag.captured.oppdragsdataListe).hasSize(1)
+        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(2)
+        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[0])
+        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe[0].utbetalesTilId == "tss-id")
+        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe[1].utbetalesTilId == aktiveFødselsnummere[0])
+
+        assertThat(totalData.captured.totaldata.totalBelop.toInt()).isEqualTo(322)
+        assertThat(totalData.captured.totaldata.totalAntall.toInt()).isEqualTo(1)
+    }
+
+    @Test
     internal fun `sender hver fagsak i ulike meldinger`() {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "3"))) } returns
             listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag2_1)
