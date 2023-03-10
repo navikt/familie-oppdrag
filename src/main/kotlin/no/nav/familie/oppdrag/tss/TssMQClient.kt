@@ -45,19 +45,34 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
         }
     }
 
-    fun getOrgInfo(orgNr: String): TssSamhandlerData {
+    fun getOrgInfo(tssSamhandlerIdent: TssSamhandlerIdent): TssSamhandlerData {
         val objectFactory = ObjectFactory()
 
-        val offIdData = objectFactory.createTidOFF1().apply {
-            idOff = orgNr
-            kodeIdType = "ORG"
-            kodeSamhType = "INST"
+        val samhandlerIDataB910Data = when (tssSamhandlerIdent.type) {
+            TssSamhandlerIdentType.ORGNR -> {
+                val offIdData = objectFactory.createTidOFF1().apply {
+                    idOff = tssSamhandlerIdent.ident
+                    kodeIdType = "ORG"
+                    kodeSamhType = "INST"
+                }
+                val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
+                    brukerID = BRUKER_ID
+                    historikk = "N"
+                    ofFid = offIdData
+                }
+                samhandlerIDataB910Data
+            }
+
+            TssSamhandlerIdentType.TSS -> {
+                val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
+                    idOffTSS = tssSamhandlerIdent.ident
+                    brukerID = BRUKER_ID
+                    historikk = "N"
+                }
+                samhandlerIDataB910Data
+            }
         }
-        val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
-            brukerID = BRUKER_ID
-            historikk = "N"
-            ofFid = offIdData
-        }
+
         val servicerutiner = objectFactory.createTServicerutiner().apply {
             samhandlerIDataB910 = samhandlerIDataB910Data
         }
