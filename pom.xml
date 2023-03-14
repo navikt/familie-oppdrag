@@ -251,10 +251,6 @@
                     <groupId>com.github.navikt.common-java-modules</groupId>
                     <artifactId>log</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
