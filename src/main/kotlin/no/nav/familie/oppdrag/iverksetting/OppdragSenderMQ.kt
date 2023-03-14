@@ -1,6 +1,6 @@
 package no.nav.familie.oppdrag.iverksetting
 
-import com.ibm.mq.jakarta.jms.MQQueue
+import com.ibm.mq.jms.MQQueue
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.jms.JmsException
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
+import java.lang.UnsupportedOperationException
 
 @Service
 @Profile("!e2e")

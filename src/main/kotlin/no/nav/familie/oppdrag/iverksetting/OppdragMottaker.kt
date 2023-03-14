@@ -12,7 +12,7 @@ import org.springframework.core.env.Environment
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import jakarta.jms.TextMessage
+import javax.jms.TextMessage
 
 @Service
 @Profile("!e2e")

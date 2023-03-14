@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.core.env.Environment
-import jakarta.jms.TextMessage
+import javax.jms.TextMessage
 import kotlin.test.assertEquals
 
 class OppdragMQMottakTest {

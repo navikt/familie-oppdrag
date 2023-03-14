@@ -2,7 +2,7 @@ package no.nav.familie.oppdrag.config
 
 import no.nav.common.cxf.CXFClient
 import no.nav.common.cxf.StsConfig
-import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerFpService
+import no.nav.system.os.eksponering.simulerfpservicewsbinding.SimulerFpService
 import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -15,6 +15,12 @@ class ServiceConfig(
     @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
     @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String
 ) {
+
+    init {
+        System.setProperty("no.nav.modig.security.sts.url", stsUrl)
+        System.setProperty("no.nav.modig.security.systemuser.username", systemuserUsername)
+        System.setProperty("no.nav.modig.security.systemuser.password", systemuserPwd)
+    }
 
     @Bean
     fun stsConfig(): StsConfig {

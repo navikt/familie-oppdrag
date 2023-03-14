@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.2</version>
+        <version>2.7.8</version>
     </parent>
 
     <properties>
@@ -21,16 +21,14 @@
         <jvmTarget>17</jvmTarget>
         <kotlin.version>1.8.10</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
-        <kontrakter.version>3.0_20230314075921_27fa962-JAKARTA</kontrakter.version>
-        <token-validation-spring.version>3.0.3</token-validation-spring.version>
-
-        <common-java-modules.version>3.2023.02.16_14.15-895462f3dde1</common-java-modules.version>
-        <jaxb-api.version>4.0.2</jaxb-api.version>
-        <jaxb-core.version>4.0.2</jaxb-core.version>
-        <jaxb-impl.version>4.0.2</jaxb-impl.version>
-        <cxf.version>4.0.0</cxf.version>
-
+        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
+        <felles.version>1.20230117091843_19b020f</felles.version>
+        <kontrakter.version>2.0_20230223121809_a777026</kontrakter.version>
+        <token-validation-spring.version>2.0.9</token-validation-spring.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <jaxb-core.version>3.0.2</jaxb-core.version>
+        <jaxb-impl.version>3.0.2</jaxb-impl.version>
+        <cxf.version>3.5.3</cxf.version>
         <mockk.version>1.13.4</mockk.version>
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
@@ -40,7 +38,8 @@
         </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring-cloud.version>2022.0.1</spring-cloud.version>
+        <spring.vault>2.3.2</spring.vault>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <tjenestespesifikasjoner.version>2610.9b6de22</tjenestespesifikasjoner.version>
         <springdoc.version>1.6.14</springdoc.version>
@@ -79,11 +78,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- https://github.com/spring-projects/spring-boot/issues/33044#issuecomment-1379812611 -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -110,12 +104,12 @@
 
         <!-- XML -->
         <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0</version>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
+            <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
             <version>${jaxb-core.version}</version>
         </dependency>
@@ -124,8 +118,6 @@
             <artifactId>jaxb-impl</artifactId>
             <version>${jaxb-impl.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
@@ -138,21 +130,20 @@
         </dependency>
         <dependency>
             <groupId>com.ibm.mq</groupId>
-            <artifactId>com.ibm.mq.jakarta.client</artifactId>
-            <version>9.3.2.0</version>
+            <artifactId>com.ibm.mq.allclient</artifactId>
+            <version>9.3.1.0</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.jms</groupId>
-            <artifactId>jakarta.jms-api</artifactId>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.messaginghub</groupId>
-            <artifactId>pooled-jms</artifactId>
-            <version>3.1.0</version>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-jms-pool</artifactId>
         </dependency>
 
 
@@ -168,6 +159,7 @@
         <dependency>
             <groupId>org.springframework.vault</groupId>
             <artifactId>spring-vault-core</artifactId>
+            <version>${spring.vault}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -224,7 +216,6 @@
             <artifactId>barnetrygd</artifactId>
             <version>${kontrakter.version}</version>
         </dependency>
-        <!--
         <dependency>
             <groupId>no.nav.tjenestespesifikasjoner</groupId>
             <artifactId>avstemming-v1-tjenestespesifikasjon</artifactId>
@@ -236,19 +227,12 @@
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
         <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
-        -->
-
-        <dependency>
-            <groupId>com.github.navikt.common-java-modules</groupId>
+            <groupId>no.nav.common</groupId>
             <artifactId>cxf</artifactId>
             <version>${common-java-modules.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.github.navikt.common-java-modules</groupId>
+                    <groupId>no.nav.common</groupId>
                     <artifactId>log</artifactId>
                 </exclusion>
             </exclusions>
@@ -262,76 +246,6 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-core</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-ws-security</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-features-logging</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-bindings-soap</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-ws-policy</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-simple</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>jaxws-ri</artifactId>
-            <version>4.0.1</version>
-            <scope>runtime</scope>
-            <type>pom</type>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-kotlin</artifactId>
-            <version>${springdoc.version}</version>
         </dependency>
 
         <!-- Test -->
@@ -372,21 +286,70 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-ri</artifactId>
+            <version>3.0.2</version>
+            <scope>runtime</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-kotlin</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-        <repository>
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/navikt/familie-oppdrag</url>
         </repository>
+
     </repositories>
 
     <profiles>
@@ -451,6 +414,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <fork>true</fork>
                     <mainClass>${main-class}</mainClass>
                 </configuration>
                 <executions>
@@ -464,7 +428,6 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
@@ -483,50 +446,8 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-codegen-plugin</artifactId>
-                <version>4.0.0</version>
-                <executions>
-                    <execution>
-                        <id>generate-sources-avstemming</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
-                            <wsdlOptions>
-                                <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/avstemming/avstemming.wsdl</wsdl>
-                                    <bindingFiles>
-                                        <bindingFile>
-                                            ${basedir}/src/main/resources/wsdl/avstemming/v1/Binding.wsdl
-                                        </bindingFile>
-                                    </bindingFiles>
-                                </wsdlOption>
-                                <wsdlOption>
-                                    <wsdl>
-                                        ${basedir}/src/main/resources/wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl
-                                    </wsdl>
-                                </wsdlOption>
-                                <wsdlOption>
-                                    <wsdl>
-                                        ${basedir}/src/main/resources/wsdl/simulering/tjenester/simulerFpService/simulerfpservicegrensesnitt.wsdl
-                                    </wsdl>
-                                    <bindingFiles>
-                                        <bindingFile>
-                                            ${basedir}/src/main/resources/wsdl/simulering/eksponering/simulerfpservicewsbinding.wsdl
-                                        </bindingFile>
-                                    </bindingFiles>
-                                </wsdlOption>
-                            </wsdlOptions>
-                        </configuration>
-                        <goals>
-                            <goal>wsdl2java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-xjc-plugin</artifactId>
-                <version>4.0.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>xjc</id>
@@ -540,29 +461,71 @@
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/xsd/oppdragskjema-v1.xsd</xsd>
                                 </xsdOption>
-                                <!--
                                 <xsdOption>
                                     <xsd>${basedir}/src/main/resources/xsd/avstemmingskjema-v1.xsd</xsd>
                                 </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/krav_og_vedtakstatus.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_annuller.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_detalj.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_liste.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/tilbakekrevingsvedtak.xsd</xsd>
-                                </xsdOption>-->
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/tss/tss.xsd</xsd>
-                                </xsdOption>
                             </xsdOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Plugin required to build java classes from XSD using XJC -->
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish.jaxb</groupId>
+                        <artifactId>jaxb-runtime</artifactId>
+                        <version>${jaxb-api.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <markGenerated>true</markGenerated>
+                    <enableIntrospection>true</enableIntrospection>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics</artifactId>
+                            <version>1.11.1</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics-annotate</artifactId>
+                            <version>1.1.0</version>
+                        </plugin>
+                    </plugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>kravgrunnlag</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>${basedir}/src/main/resources/xsd/</schemaDirectory>
+                            <schemaIncludes>
+                                <include>krav_og_vedtakstatus.xsd</include>
+                                <include>kravgrunnlag_annuller.xsd</include>
+                                <include>kravgrunnlag_detalj.xsd</include>
+                                <include>kravgrunnlag_liste.xsd</include>
+                                <include>tilbakekrevingsvedtak.xsd</include>
+                            </schemaIncludes>
+                            <generateDirectory>${project.build.directory}/generated-sources/kravgrunnlag</generateDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>tss</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>${basedir}/src/main/resources/tss/</schemaDirectory>
+                            <schemaIncludes>
+                                <include>tss.xsd</include>
+                            </schemaIncludes>
+                            <generateDirectory>${project.build.directory}/generated-sources/tss</generateDirectory>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,7 +1,5 @@
 package no.nav.familie.oppdrag.tss
 
-import jakarta.jms.Message
-import jakarta.jms.Session
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.rtv.namespacetss.ObjectFactory
 import no.rtv.namespacetss.TssSamhandlerData
@@ -11,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
 import java.util.UUID
+import javax.jms.Message
+import javax.jms.Session
 
 @Service
 class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate) {

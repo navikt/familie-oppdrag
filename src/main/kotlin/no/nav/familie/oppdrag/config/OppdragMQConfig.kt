@@ -1,17 +1,15 @@
 package no.nav.familie.oppdrag.config
 
 import com.ibm.mq.constants.CMQC.MQENC_NATIVE
-import com.ibm.mq.jakarta.jms.MQQueue
-import com.ibm.mq.jakarta.jms.MQQueueConnectionFactory
-import com.ibm.msg.client.jakarta.jms.JmsConstants
-import com.ibm.msg.client.jakarta.jms.JmsConstants.JMS_IBM_CHARACTER_SET
-import com.ibm.msg.client.jakarta.jms.JmsConstants.JMS_IBM_ENCODING
-import com.ibm.msg.client.jakarta.jms.JmsFactoryFactory
-import com.ibm.msg.client.jakarta.wmq.WMQConstants
-import com.ibm.msg.client.jakarta.wmq.common.CommonConstants.WMQ_CM_CLIENT
-import jakarta.jms.ConnectionFactory
-import jakarta.jms.JMSException
-import org.messaginghub.pooled.jms.JmsPoolConnectionFactory
+import com.ibm.mq.jms.MQQueue
+import com.ibm.mq.jms.MQQueueConnectionFactory
+import com.ibm.msg.client.jms.JmsConstants
+import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_CHARACTER_SET
+import com.ibm.msg.client.jms.JmsConstants.JMS_IBM_ENCODING
+import com.ibm.msg.client.jms.JmsFactoryFactory
+import com.ibm.msg.client.wmq.WMQConstants
+import com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT
+import org.apache.activemq.jms.pool.PooledConnectionFactory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -24,6 +22,8 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter
 import org.springframework.jms.core.JmsTemplate
 import java.time.Duration
+import javax.jms.ConnectionFactory
+import javax.jms.JMSException
 
 private const val UTF_8_WITH_PUA = 1208
 
@@ -45,7 +45,7 @@ class OppdragMQConfig(
 
     @Bean
     @Throws(JMSException::class)
-    fun mqQueueConnectionFactory(): JmsPoolConnectionFactory {
+    fun mqQueueConnectionFactory(): PooledConnectionFactory {
         val targetFactory = MQQueueConnectionFactory()
         targetFactory.hostName = hostname
         targetFactory.queueManager = queuemanager
@@ -62,10 +62,10 @@ class OppdragMQConfig(
         cf.setPassword(password)
         cf.setTargetConnectionFactory(targetFactory)
 
-        val pooledFactory = JmsPoolConnectionFactory()
+        val pooledFactory = PooledConnectionFactory()
         pooledFactory.connectionFactory = cf
         pooledFactory.maxConnections = 10
-        pooledFactory.maxSessionsPerConnection = 10
+        pooledFactory.maximumActiveSessionPerConnection = 10
 
         return pooledFactory
     }
@@ -80,7 +80,7 @@ class OppdragMQConfig(
 
     @Bean
     fun tssConnectionFactory(): ConnectionFactory {
-        val ff = JmsFactoryFactory.getInstance(WMQConstants.JAKARTA_WMQ_PROVIDER)
+        val ff = JmsFactoryFactory.getInstance(WMQConstants.WMQ_PROVIDER)
         val cf = ff.createConnectionFactory()
         // Set the properties
         cf.setStringProperty(WMQConstants.WMQ_HOST_NAME, hostname)

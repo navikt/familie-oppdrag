@@ -1,9 +1,9 @@
 package no.nav.familie.oppdrag.konsistensavstemming
 
-import jakarta.xml.bind.JAXBContext
-import jakarta.xml.bind.Marshaller
 import no.nav.virksomhet.tjenester.avstemming.v1.SendAsynkronKonsistensavstemmingsdata
 import java.io.StringWriter
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.Marshaller
 
 object JaxbKonsistensavstemming {
 
