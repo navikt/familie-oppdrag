@@ -3,6 +3,7 @@ package no.nav.familie.oppdrag.tss
 import io.mockk.every
 import io.mockk.mockk
 import jakarta.jms.Message
+import no.nav.familie.oppdrag.tss.TssSamhandlerIdentType.ORGNR
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +31,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal hente samhandlerinfo for orgnr ved bruk av proxytjenesten b910`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-response.xml")
-        val response = service.hentSamhandlerDataForOrganisasjonB910("ORGNR")
+        val response = service.hentSamhandlerDataForOrganisasjonB910(TssSamhandlerIdent("ORGNR", ORGNR))
         assertEquals(1, response.enkeltSamhandler.size)
         assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
         assertEquals("80000112244", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
@@ -39,7 +40,7 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal hente samhandlerinfo for orgnr `() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-response.xml")
-        val response = service.hentSamhandlerDataForOrganisasjon("ORGNR")
+        val response = service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
         assertEquals("Inst 1", response.navn)
         assertEquals("80000112244", response.tssEksternId)
         assertEquals(1, response.adresser.size)
@@ -54,10 +55,10 @@ internal class TssOppslagServiceTest {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-notfound-response.xml")
 
         val tssNoDataFoundException = assertThrows(TssNoDataFoundException::class.java) {
-            service.hentSamhandlerDataForOrganisasjon("ORGNR")
+            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
         }
 
-        assertEquals("Ingen treff med inputData=ORGNR", tssNoDataFoundException.message)
+        assertEquals("Ingen treff med inputData=TssSamhandlerIdent(ident=ORGNR, type=ORGNR)", tssNoDataFoundException.message)
     }
 
     @Test
@@ -65,7 +66,7 @@ internal class TssOppslagServiceTest {
         every { jmsTemplate.sendAndReceive(any()) } returns null
 
         val tssNoDataFoundException = assertThrows(TssConnectionException::class.java) {
-            service.hentSamhandlerDataForOrganisasjon("ORGNR")
+            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
         }
 
         assertEquals("En feil oppsto i kallet til TSS. Response var null (timeout?)", tssNoDataFoundException.message)
@@ -76,7 +77,7 @@ internal class TssOppslagServiceTest {
         every { jmsTemplate.sendAndReceive(any()) } throws RuntimeException("Ukjent feil")
 
         val tssNoDataFoundException = assertThrows(TssConnectionException::class.java) {
-            service.hentSamhandlerDataForOrganisasjon("ORGNR")
+            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
         }
 
         assertEquals("En feil oppsto i kallet til TSS", tssNoDataFoundException.message)
@@ -87,7 +88,7 @@ internal class TssOppslagServiceTest {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-error-response.xml")
 
         val tssResponseException = assertThrows(TssResponseException::class.java) {
-            service.hentSamhandlerDataForOrganisasjon("ORGNR")
+            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
         }
 
         assertEquals("DET FINNES MER INFORMASJON-04-B9XX018I", tssResponseException.message)

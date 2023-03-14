@@ -6,6 +6,8 @@ import no.nav.familie.kontrakter.felles.oppdrag.KonsistensavstemmingRequestV2
 import no.nav.familie.kontrakter.felles.oppdrag.KonsistensavstemmingUtbetalingsoppdrag
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.ok
+import no.nav.familie.oppdrag.repository.UtbetalingsoppdragForKonsistensavstemming
+import no.nav.familie.oppdrag.service.Fagsystem
 import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
 import no.nav.familie.oppdrag.service.KonsistensavstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -96,6 +99,13 @@ class AvstemmingController(
             onSuccess = { ok("Konsistensavstemming sendt ok") }
         )
     }
+
+    @PostMapping("/{fagsystem}/fagsaker/siste-utbetalingsoppdrag")
+    fun hentSisteUtbetalingsoppdragForFagsaker(
+        @PathVariable fagsystem: Fagsystem,
+        @RequestBody fagsakIder: Set<String>,
+    ): ResponseEntity<Ressurs<List<UtbetalingsoppdragForKonsistensavstemming>>> =
+        ok(konsistensavstemmingService.hentSisteUtbetalingsoppdragForFagsaker(fagsystem.name, fagsakIder))
 
     companion object {
 

@@ -74,6 +74,10 @@ class KonsistensavstemmingService(
         LOG.info("Fullført konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}")
     }
 
+    fun hentSisteUtbetalingsoppdragForFagsaker(fagsystem: String, fagsakIder: Set<String>): List<UtbetalingsoppdragForKonsistensavstemming> {
+        return oppdragLagerRepository.hentSisteUtbetalingsoppdragForFagsaker(fagsystem, fagsakIder)
+    }
+
     @Transactional
     fun utførKonsistensavstemming(
         request: KonsistensavstemmingRequestV2,
@@ -90,6 +94,7 @@ class KonsistensavstemmingService(
         verifyUnikeBehandlinger(perioderPåBehandling, request)
 
         val fødselsnummerPåBehandling = request.perioderForBehandlinger.associate { it.behandlingId to it.aktivFødselsnummer }
+        val utbetalesTilPåBehandling = request.perioderForBehandlinger.associate { it.behandlingId to it.utebetalesTil }
 
         val utbetalingsoppdragForKonsistensavstemming =
             oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(fagsystem, perioderPåBehandling.keys)
@@ -97,7 +102,8 @@ class KonsistensavstemmingService(
         val utbetalingsoppdrag = leggAktuellePerioderISisteUtbetalingsoppdraget(
             utbetalingsoppdragForKonsistensavstemming,
             perioderPåBehandling,
-            fødselsnummerPåBehandling
+            fødselsnummerPåBehandling,
+            utbetalesTilPåBehandling
         )
 
         utførKonsistensavstemming(
@@ -146,7 +152,8 @@ class KonsistensavstemmingService(
     private fun leggAktuellePerioderISisteUtbetalingsoppdraget(
         utbetalingsoppdrag: List<UtbetalingsoppdragForKonsistensavstemming>,
         perioderPåBehandling: Map<String, Set<Long>>,
-        fødselsnummerPåBehandling: Map<String, String>
+        fødselsnummerPåBehandling: Map<String, String>,
+        utbetalesTilPåBehandling: Map<String, String?>
     ): List<Utbetalingsoppdrag> {
         val utbetalingsoppdragPåFagsak = utbetalingsoppdrag.groupBy { it.fagsakId }
 
@@ -163,11 +170,13 @@ class KonsistensavstemmingService(
             var aktivtFødselsnummer: String? = null
             val perioderTilKonsistensavstemming = utbetalingsoppdragListe.flatMap {
                 aktivtFødselsnummer = hentFødselsnummerForBehandling(fødselsnummerPåBehandling, it.behandlingId)
+                val utbetalesTil = utbetalesTilPåBehandling[it.behandlingId] ?: aktivtFødselsnummer
+
                 it.utbetalingsoppdrag.utbetalingsperiode
                     .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
                     // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
                     .map { utbetalingsperiode ->
-                        utbetalingsperiode.copy(utbetalesTil = aktivtFødselsnummer ?: utbetalingsperiode.utbetalesTil)
+                        utbetalingsperiode.copy(utbetalesTil = utbetalesTil ?: utbetalingsperiode.utbetalesTil)
                     }
             }
 

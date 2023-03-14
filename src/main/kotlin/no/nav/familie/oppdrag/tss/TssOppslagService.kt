@@ -3,6 +3,7 @@ package no.nav.familie.oppdrag.tss
 import no.nav.familie.kontrakter.ba.tss.SamhandlerAdresse
 import no.nav.familie.kontrakter.ba.tss.SamhandlerInfo
 import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfo
+import no.nav.familie.oppdrag.tss.TssSamhandlerIdentType.ORGNR
 import no.rtv.namespacetss.SamhAvdPraType
 import no.rtv.namespacetss.Samhandler
 import no.rtv.namespacetss.TssSamhandlerData
@@ -10,22 +11,28 @@ import no.rtv.namespacetss.TypeKomp940
 import no.rtv.namespacetss.TypeOD910
 import no.rtv.namespacetss.TypeSamhAdr
 import no.rtv.namespacetss.TypeSamhAvd
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class TssOppslagService(private val tssMQClient: TssMQClient) {
+    private val logger = LoggerFactory.getLogger(TssOppslagService::class.java)
 
-    fun hentSamhandlerDataForOrganisasjonB910(orgNr: String): TypeOD910 {
-        val samhandlerData = tssMQClient.getOrgInfo(orgNr)
-        validateB910response(orgNr, samhandlerData)
+    fun hentSamhandlerDataForOrganisasjonB910(tssSamhandlerIdent: TssSamhandlerIdent): TypeOD910 {
+        val samhandlerData = tssMQClient.getOrgInfo(tssSamhandlerIdent)
+        validateB910response(tssSamhandlerIdent, samhandlerData)
         return samhandlerData.tssOutputData.samhandlerODataB910
     }
 
-    fun hentSamhandlerDataForOrganisasjon(orgNr: String): SamhandlerInfo {
-        val samhandlerData910 = hentSamhandlerDataForOrganisasjonB910(orgNr)
+    fun hentSamhandlerInformasjon(tssSamhandlerIdent: TssSamhandlerIdent): SamhandlerInfo {
+        val samhandlerData910 = hentSamhandlerDataForOrganisasjonB910(tssSamhandlerIdent)
 
+        if (samhandlerData910.antallSamhandlere.toInt() > 1) {
+            logger.warn("Fant flere samhandlere for $tssSamhandlerIdent")
+        }
         val enkeltSamhandler = samhandlerData910.enkeltSamhandler.first()
-        return mapSamhandler(enkeltSamhandler)
+        val orgNr = if (tssSamhandlerIdent.type == ORGNR) tssSamhandlerIdent.ident else null
+        return mapSamhandler(enkeltSamhandler, orgNr)
     }
 
     fun hentInformasjonOmSamhandlerInstB940(navn: String?, postNummer: String?, område: String?, side: Int): TssSamhandlerData {
@@ -41,7 +48,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
             .map { mapSamhandler(it) }
         return SøkSamhandlerInfo(finnesMerInfo, samhandlere)
     }
-    private fun validateB910response(inputData: String, tssResponse: TssSamhandlerData) {
+    private fun validateB910response(inputData: TssSamhandlerIdent, tssResponse: TssSamhandlerData) {
         commonResponseValidation(tssResponse)
         val svarStatus = tssResponse.tssOutputData.svarStatus
 
@@ -79,12 +86,14 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         }
     }
 
-    private fun mapSamhandler(enkeltSamhandler: Samhandler): SamhandlerInfo {
+    private fun mapSamhandler(enkeltSamhandler: Samhandler, orgnr: String?): SamhandlerInfo {
         val navn = enkeltSamhandler.samhandler110.samhandler.first().navnSamh
+        val orgnr = orgnr ?: enkeltSamhandler.alternativId111.samhId.filter { it.kodeAltIdentType == "ORG" && it.datoIdentTom.isBlank() }
+            .firstOrNull()?.idAlternativ
         val (tssId, avdNr) = mapTssEksternIdOgAvdNr(enkeltSamhandler.samhandlerAvd125)
 
         val avdelingsAdresser = madAdresse(enkeltSamhandler.adresse130, avdNr)
-        return SamhandlerInfo(tssId, navn, avdelingsAdresser)
+        return SamhandlerInfo(tssEksternId = tssId, navn = navn, adresser = avdelingsAdresser, orgNummer = orgnr?.trimStart('0'))
     }
 
     private fun mapSamhandler(enkeltSamhandler: TypeKomp940): SamhandlerInfo {
