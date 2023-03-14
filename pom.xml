@@ -25,7 +25,7 @@
         <kontrakter.version>3.0_20230314075921_27fa962-JAKARTA</kontrakter.version>
         <token-validation-spring.version>3.0.3</token-validation-spring.version>
 
-        <common-java-modules.version>3.2023.02.16_14.15-895462f3dde1</common-java-modules.version>
+        <common-java-modules.version>3.2023.02.28_14.59-ff398ca0d33e</common-java-modules.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
         <jaxb-core.version>4.0.2</jaxb-core.version>
         <jaxb-impl.version>4.0.2</jaxb-impl.version>
