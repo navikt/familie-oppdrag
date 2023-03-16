@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.rest
 
+import jakarta.validation.Valid
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.oppdrag.tilbakekreving.ØkonomiClient
 import no.nav.okonomi.tilbakekrevingservice.KravgrunnlagAnnulerRequest
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigInteger
 import java.util.UUID
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/tilbakekreving")

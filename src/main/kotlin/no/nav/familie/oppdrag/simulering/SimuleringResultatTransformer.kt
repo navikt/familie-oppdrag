@@ -1,6 +1,5 @@
 package no.nav.familie.oppdrag.simulering
 
-import no.nav.common.utils.StringUtils
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.BetalingType
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
@@ -80,7 +79,7 @@ class SimuleringResultatTransformer {
     }
 
     private fun erOrgNr(verdi: String): Boolean {
-        if (StringUtils.nullOrEmpty(verdi)) {
+        if (verdi.isBlank()) {
             throw IllegalArgumentException("org.nr verdi er tom")
         }
         // orgNr i responsen fra økonomi starter med "00"

@@ -1,7 +1,7 @@
 package no.nav.familie.oppdrag.common
 
+import jakarta.xml.ws.soap.SOAPFaultException
 import org.slf4j.LoggerFactory
-import javax.xml.ws.soap.SOAPFaultException
 
 private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
