@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.iverksetting
 
+import jakarta.jms.TextMessage
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.config.ApplicationConfig.Companion.LOKALE_PROFILER
 import no.nav.familie.oppdrag.domene.id
@@ -12,7 +13,6 @@ import org.springframework.core.env.Environment
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import jakarta.jms.TextMessage
 
 @Service
 @Profile("!e2e")
