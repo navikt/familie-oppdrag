@@ -42,7 +42,7 @@
         <sonar.login>${SONAR_LOGIN}</sonar.login>
         <spring-cloud.version>2022.0.1</spring-cloud.version>
         <testcontainers.version>1.17.6</testcontainers.version>
-        <tjenestespesifikasjoner.version>2610.9b6de22</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.0_20230320122056_cbf7dad</tjenestespesifikasjoner.version>
         <springdoc.version>1.6.14</springdoc.version>
 
     </properties>
@@ -224,23 +224,33 @@
             <artifactId>barnetrygd</artifactId>
             <version>${kontrakter.version}</version>
         </dependency>
-        <!--
+
         <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <groupId>no.nav.familie.tjenestespesifikasjoner</groupId>
             <artifactId>avstemming-v1-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
         <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <groupId>no.nav.familie.tjenestespesifikasjoner</groupId>
             <artifactId>tilbakekreving-v1-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
         <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <groupId>no.nav.familie.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-virksomhet-oppdragsbehandling-v1-meldingsdefinisjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.familie.tjenestespesifikasjoner</groupId>
             <artifactId>nav-system-os-simuler-fp-service-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
-        -->
+        <dependency>
+            <groupId>no.nav.familie.tjenestespesifikasjoner</groupId>
+            <artifactId>tss</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.github.navikt.common-java-modules</groupId>
@@ -487,97 +497,6 @@
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-codegen-plugin</artifactId>
-                <version>4.0.0</version>
-                <executions>
-                    <execution>
-                        <id>generate-sources-avstemming</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
-                            <wsdlOptions>
-                                <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/wsdl/avstemming/avstemming.wsdl</wsdl>
-                                    <bindingFiles>
-                                        <bindingFile>
-                                            ${basedir}/src/main/resources/wsdl/avstemming/v1/Binding.wsdl
-                                        </bindingFile>
-                                    </bindingFiles>
-                                </wsdlOption>
-                                <wsdlOption>
-                                    <wsdl>
-                                        ${basedir}/src/main/resources/wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl
-                                    </wsdl>
-                                </wsdlOption>
-                                <wsdlOption>
-                                    <wsdl>
-                                        ${basedir}/src/main/resources/wsdl/simulering/tjenester/simulerFpService/simulerfpservicegrensesnitt.wsdl
-                                    </wsdl>
-                                    <bindingFiles>
-                                        <bindingFile>
-                                            ${basedir}/src/main/resources/wsdl/simulering/eksponering/simulerfpservicewsbinding.wsdl
-                                        </bindingFile>
-                                    </bindingFiles>
-                                </wsdlOption>
-                            </wsdlOptions>
-                        </configuration>
-                        <goals>
-                            <goal>wsdl2java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-xjc-plugin</artifactId>
-                <version>4.0.0</version>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>xsdtojava</goal>
-                        </goals>
-                        <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
-                            <xsdOptions>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/oppdragskjema-v1.xsd</xsd>
-                                </xsdOption>
-                                <!--
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/avstemmingskjema-v1.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/krav_og_vedtakstatus.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_annuller.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_detalj.xsd</xsd>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/kravgrunnlag_liste.xsd</xsd>
-                                </xsdOption>
-                                -->
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/xsd/tilbakekrevingsvedtak.xsd</xsd>
-                                    <extension>true</extension>
-                                    <bindingFile>
-                                        ${basedir}/src/main/resources/xsd/binding.xml
-                                    </bindingFile>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/tss/tss.xsd</xsd>
-                                </xsdOption>
-                            </xsdOptions>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

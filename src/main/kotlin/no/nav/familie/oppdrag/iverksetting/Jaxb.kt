@@ -5,6 +5,7 @@ import jakarta.xml.bind.Marshaller
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 import no.rtv.namespacetss.TssSamhandlerData
+import no.trygdeetaten.skjema.oppdrag.ObjectFactory
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.io.StringReader
 import java.io.StringWriter
@@ -35,7 +36,7 @@ object Jaxb {
         val marshaller = jaxbContext.createMarshaller().apply {
             setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
         }
-        marshaller.marshal(oppdrag, stringWriter)
+        marshaller.marshal(ObjectFactory().createOppdrag(oppdrag), stringWriter)
         return stringWriter.toString()
     }
 
