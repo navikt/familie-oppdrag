@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns6:oppdrag xmlns:ns6="http://www.trygdeetaten.no/skjema/oppdrag" xmlns:ns5="http://www.rtv.no/NamespaceTSS" xmlns:ns2="http://nav.no/system/os/entiteter/oppdragSkjema" xmlns:ns4="http://nav.no/system/os/entiteter/beregningSkjema" xmlns:ns3="http://nav.no/system/os/tjenester/simulerFpService/simulerFpServiceGrensesnitt"/>
+<ns6:oppdrag xmlns:ns6="http://www.trygdeetaten.no/skjema/oppdrag" xmlns:ns5="http://www.rtv.no/NamespaceTSS" xmlns:ns2="http://nav.no/system/os/entiteter/oppdragSkjema" xmlns:ns4="http://nav.no/system/os/entiteter/beregningSkjema" xmlns:ns3="http://nav.no/system/os/tjenester/simulerFpService/simulerFpServiceGrensesnitt">
+    <oppdrag-110>
+        <datoForfall>2022-01-01+01:00</datoForfall>
+    </oppdrag-110>
+</ns6:oppdrag>

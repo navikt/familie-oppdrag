@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns3:simulerBeregningResponse xmlns:ns5="http://www.rtv.no/NamespaceTSS" xmlns:ns2="http://nav.no/system/os/entiteter/oppdragSkjema" xmlns:ns4="http://nav.no/system/os/entiteter/beregningSkjema" xmlns:ns3="http://nav.no/system/os/tjenester/simulerFpService/simulerFpServiceGrensesnitt"/>
+<ns3:simulerBeregningResponse xmlns:ns5="http://www.rtv.no/NamespaceTSS" xmlns:ns2="http://nav.no/system/os/entiteter/oppdragSkjema" xmlns:ns4="http://nav.no/system/os/entiteter/beregningSkjema" xmlns:ns3="http://nav.no/system/os/tjenester/simulerFpService/simulerFpServiceGrensesnitt">
+    <response>
+        <simulering>
+            <datoBeregnet>2022-01-02</datoBeregnet>
+            <belop>10</belop>
+        </simulering>
+    </response>
+</ns3:simulerBeregningResponse>
