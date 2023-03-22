@@ -23,7 +23,7 @@
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
         <kontrakter.version>3.0_20230314075921_27fa962-JAKARTA</kontrakter.version>
-        <token-validation-spring.version>3.0.3</token-validation-spring.version>
+        <token-validation-spring.version>3.0.8</token-validation-spring.version>
 
         <common-java-modules.version>3.2023.02.16_14.15-895462f3dde1</common-java-modules.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
