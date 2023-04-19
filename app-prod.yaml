@@ -59,6 +59,13 @@ spec:
           cluster: prod-gcp
         - application: familie-ef-iverksett
           cluster: prod-gcp
+    outbound:
+      external:
+        - host: mpls02.adeo.no
+          ports:
+            - name: mq
+              port: 1414
+              protocol: TCP
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
