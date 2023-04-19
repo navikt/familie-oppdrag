@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 class OppdragSenderMQ(
     val jmsTemplateUtgående: JmsTemplate,
     @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
-    @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String
+    @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String,
 ) : OppdragSender {
 
     override fun sendOppdrag(oppdrag: Oppdrag): String {
@@ -27,7 +27,7 @@ class OppdragSenderMQ(
         val oppdragXml = Jaxb.tilXml(oppdrag)
         LOG.info(
             "Sender oppdrag for fagsystem=${oppdrag.oppdrag110.kodeFagomraade} og " +
-                "fagsak=${oppdrag.oppdrag110.fagsystemId} behandling=$oppdragId til Oppdragsystemet"
+                "fagsak=${oppdrag.oppdrag110.fagsystemId} behandling=$oppdragId til Oppdragsystemet",
         )
         try {
             jmsTemplateUtgående.send { session ->

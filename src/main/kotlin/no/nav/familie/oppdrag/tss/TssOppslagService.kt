@@ -118,7 +118,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
 
     private fun madAdresse(
         adresse130: TypeSamhAdr,
-        avdNr: String?
+        avdNr: String?,
     ) = adresse130.adresseSamh.filter {
         it.avdNr == avdNr && it.gyldigAdresse == "J"
     }

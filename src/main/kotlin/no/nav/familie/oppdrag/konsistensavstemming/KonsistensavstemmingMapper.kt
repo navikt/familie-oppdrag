@@ -32,7 +32,7 @@ class KonsistensavstemmingMapper(
     private var aggregertAntallOppdrag: Int,
     private val sendStartmelding: Boolean,
     private val sendAvsluttmelding: Boolean,
-    transaksjonsId: UUID? = UUID.randomUUID()
+    transaksjonsId: UUID? = UUID.randomUUID(),
 ) {
 
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
@@ -47,7 +47,7 @@ class KonsistensavstemmingMapper(
             sendStartmelding && sendAvsluttmelding -> (
                 listOf(lagStartmelding()) + lagDatameldinger() + listOf(
                     lagTotaldata(),
-                    lagSluttmelding()
+                    lagSluttmelding(),
                 )
                 )
             sendStartmelding -> (listOf(lagStartmelding()) + lagDatameldinger())
@@ -63,8 +63,9 @@ class KonsistensavstemmingMapper(
         val dataListe: MutableList<Konsistensavstemmingsdata> = arrayListOf()
 
         for (utbetalingsoppdrag in utbetalingsoppdrag) {
-            if (!behandledeSaker.add(utbetalingsoppdrag.saksnummer))
+            if (!behandledeSaker.add(utbetalingsoppdrag.saksnummer)) {
                 error("Har allerede lagt til ${utbetalingsoppdrag.saksnummer} i listen over avstemminger")
+            }
 
             val konsistensavstemmingsdata = lagAksjonsmelding(KonsistensavstemmingConstants.DATA)
             konsistensavstemmingsdata.apply {
@@ -91,8 +92,8 @@ class KonsistensavstemmingMapper(
                     oppdragslinjeListe.add(
                         lagOppdragsLinjeListe(
                             utbetalingsperiode = periode,
-                            utbetalingsoppdrag = utbetalingsoppdrag
-                        )
+                            utbetalingsoppdrag = utbetalingsoppdrag,
+                        ),
                     )
                 }
         }
@@ -100,7 +101,7 @@ class KonsistensavstemmingMapper(
 
     private fun lagOppdragsLinjeListe(
         utbetalingsperiode: Utbetalingsperiode,
-        utbetalingsoppdrag: Utbetalingsoppdrag
+        utbetalingsoppdrag: Utbetalingsoppdrag,
     ): Oppdragslinje {
         totalBeløp += utbetalingsperiode.sats.toLong()
         return Oppdragslinje().apply {
@@ -128,7 +129,7 @@ class KonsistensavstemmingMapper(
                     Grad().apply {
                         gradKode = GradTypeKode.UTBETALINGSGRAD.kode
                         grad = utbetalingsgrad
-                    }
+                    },
                 )
             }
         }
@@ -142,7 +143,7 @@ class KonsistensavstemmingMapper(
             LOG.error(
                 "fagsystem=$fagsystem vedtakdatoTom=$vedtakdatoTom (periodens tom-dato) " +
                     "er etter avstemmingsdato=$avstemmingsdato for" +
-                    " periodeId=${utbetalingsperiode.periodeId} behandlingId=${utbetalingsperiode.behandlingId}"
+                    " periodeId=${utbetalingsperiode.periodeId} behandlingId=${utbetalingsperiode.behandlingId}",
             )
         }
         return aktiv
@@ -175,8 +176,11 @@ class KonsistensavstemmingMapper(
     }
 
     private fun getFortegn(satsbeløp: Long): String {
-        return if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO)
-            KonsistensavstemmingConstants.FORTEGN_T else KonsistensavstemmingConstants.FORTEGN_F
+        return if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO) {
+            KonsistensavstemmingConstants.FORTEGN_T
+        } else {
+            KonsistensavstemmingConstants.FORTEGN_F
+        }
     }
 
     private fun lagAksjonsmelding(aksjontype: String): Konsistensavstemmingsdata =

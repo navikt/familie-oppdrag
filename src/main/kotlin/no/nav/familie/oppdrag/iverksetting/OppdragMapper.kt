@@ -18,7 +18,6 @@ class OppdragMapper {
     val tidspunktFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     fun tilOppdrag110(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdrag110 {
-
         val avstemming = objectFactory.createAvstemming115().apply {
             nokkelAvstemming = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
             kodeKomponent = fagområdeTilAvleverendeKomponentKode(utbetalingsoppdrag.fagSystem)
@@ -52,9 +51,8 @@ class OppdragMapper {
 
     private fun tilOppdragsLinje150(
         utbetalingsperiode: Utbetalingsperiode,
-        utbetalingsoppdrag: Utbetalingsoppdrag
+        utbetalingsoppdrag: Utbetalingsoppdrag,
     ): OppdragsLinje150 {
-
         val attestant = objectFactory.createAttestant180().apply {
             attestantId = utbetalingsoppdrag.saksbehandlerId
         }
@@ -80,8 +78,11 @@ class OppdragMapper {
             sats = utbetalingsperiode.sats
             fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG
             typeSats = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
-            brukKjoreplan = if (utbetalingsoppdrag.gOmregning)
-                OppdragSkjemaConstants.BRUK_KJØREPLAN_G_OMBEREGNING else OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
+            brukKjoreplan = if (utbetalingsoppdrag.gOmregning) {
+                OppdragSkjemaConstants.BRUK_KJØREPLAN_G_OMBEREGNING
+            } else {
+                OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
+            }
             saksbehId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
             henvisning = utbetalingsperiode.behandlingId.toString()
@@ -92,7 +93,7 @@ class OppdragMapper {
                     objectFactory.createGrad170().apply {
                         typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
                         grad = utbetalingsgrad.toBigInteger()
-                    }
+                    },
                 )
             }
         }

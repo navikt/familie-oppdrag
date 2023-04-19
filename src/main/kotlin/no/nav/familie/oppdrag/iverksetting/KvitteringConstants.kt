@@ -3,6 +3,7 @@ package no.nav.familie.oppdrag.iverksetting
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.lang.IllegalArgumentException
 
+@Suppress("ktlint:trailing-comma-on-declaration-site")
 enum class Status(val kode: String) {
     OK("00"),
     AKSEPTERT_MEN_NOE_ER_FEIL("04"),

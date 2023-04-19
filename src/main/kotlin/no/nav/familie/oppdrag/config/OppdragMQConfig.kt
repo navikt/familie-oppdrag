@@ -37,7 +37,7 @@ class OppdragMQConfig(
     @Value("\${oppdrag.mq.tss}") val tssQueue: String,
     @Value("\${oppdrag.mq.port}") val port: Int,
     @Value("\${oppdrag.mq.user}") val user: String,
-    @Value("\${oppdrag.mq.password}") val password: String
+    @Value("\${oppdrag.mq.password}") val password: String,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -97,9 +97,8 @@ class OppdragMQConfig(
 
     @Bean
     fun jmsTemplateTss(
-        @Qualifier("tssConnectionFactory") tssConnectionFactory: ConnectionFactory
+        @Qualifier("tssConnectionFactory") tssConnectionFactory: ConnectionFactory,
     ): JmsTemplate {
-
         val mq = MQQueue(tssQueue)
         mq.targetClient = WMQConstants.WMQ_CLIENT_NONJMS_MQ
 
@@ -112,7 +111,7 @@ class OppdragMQConfig(
 
     @Bean fun jmsListenerContainerFactory(
         mqQueueConnectionFactory: ConnectionFactory,
-        configurer: DefaultJmsListenerContainerFactoryConfigurer
+        configurer: DefaultJmsListenerContainerFactoryConfigurer,
     ): JmsListenerContainerFactory<*> {
         val factory = DefaultJmsListenerContainerFactory()
         configurer.configure(factory, mqQueueConnectionFactory)

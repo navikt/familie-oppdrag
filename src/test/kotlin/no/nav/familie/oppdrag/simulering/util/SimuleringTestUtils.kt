@@ -17,7 +17,6 @@ import java.time.temporal.TemporalAdjusters
 import java.util.UUID
 
 fun lagTestUtbetalingsoppdragForFGBMedEttBarn(): Utbetalingsoppdrag {
-
     val personIdent = "12345678901"
 
     val vedtakDato = LocalDate.now()
@@ -46,14 +45,13 @@ fun lagTestUtbetalingsoppdragForFGBMedEttBarn(): Utbetalingsoppdrag {
                 BigDecimal(1054),
                 Utbetalingsperiode.SatsType.MND,
                 personIdent,
-                behandlingId
-            )
-        )
+                behandlingId,
+            ),
+        ),
     )
 }
 
 fun lagBeregningsPeriode(bergeningStopNiva: List<BeregningStoppnivaa>, date: LocalDate): BeregningsPeriode {
-
     val beregningsPeriode = BeregningsPeriode()
     beregningsPeriode.periodeFom = date.with(TemporalAdjusters.firstDayOfMonth()).toString()
     beregningsPeriode.periodeTom = date.with(TemporalAdjusters.lastDayOfMonth()).toString()
@@ -63,7 +61,6 @@ fun lagBeregningsPeriode(bergeningStopNiva: List<BeregningStoppnivaa>, date: Loc
 }
 
 fun lagSimulerBeregningResponse(beregningsPerioder: List<BeregningsPeriode>): SimulerBeregningResponse {
-
     val beregning = Beregning()
     beregning.beregningsPeriode.addAll(beregningsPerioder)
 
@@ -83,11 +80,13 @@ fun lagTestSimuleringResponse(): SimulerBeregningResponse {
     val enTideligereMåned = currentDate.plusMonths(1)
 
     val periodeNåværendeMåned = lagBeregningsPeriode(
-        listOf(lagBeregningStoppniva(currentDate)), currentDate
+        listOf(lagBeregningStoppniva(currentDate)),
+        currentDate,
     )
 
     val periodeTidligereMåned = lagBeregningsPeriode(
-        listOf(lagBeregningStoppniva(enTideligereMåned, 2)), enTideligereMåned
+        listOf(lagBeregningStoppniva(enTideligereMåned, 2)),
+        enTideligereMåned,
     )
 
     return lagSimulerBeregningResponse(listOf(periodeNåværendeMåned, periodeTidligereMåned))
@@ -96,7 +95,7 @@ fun lagTestSimuleringResponse(): SimulerBeregningResponse {
 fun lagBeregningStoppnivaFeilUtbetaling(
     date: LocalDate,
     forfall: Long = 0,
-    fagOmrade: String = "BA"
+    fagOmrade: String = "BA",
 ): BeregningStoppnivaa {
     val beregningStoppnivaa = BeregningStoppnivaa()
     beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
@@ -110,9 +109,8 @@ fun lagBeregningStoppnivaFeilUtbetaling(
 fun lagBeregningStoppniva(
     date: LocalDate,
     forfall: Long = 0,
-    fagOmrade: String = "BA"
+    fagOmrade: String = "BA",
 ): BeregningStoppnivaa {
-
     val beregningStoppnivaa = BeregningStoppnivaa()
     beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
     beregningStoppnivaa.kodeFagomraade = fagOmrade
@@ -126,7 +124,7 @@ fun lagBeregningStoppniva(
 fun lagBeregningStoppnivaRevurdering(
     date: LocalDate,
     forfall: Long = 0,
-    fagOmrade: String = "BA"
+    fagOmrade: String = "BA",
 ): BeregningStoppnivaa {
     val beregningStoppnivaa = BeregningStoppnivaa()
     beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
@@ -141,7 +139,7 @@ fun lagBeregningStoppnivaRevurdering(
 private fun lagBeregningStoppnivaaDetaljer(
     typeKlasse: String = TypeKlasse.YTEL.name,
     belop: BigDecimal = BigDecimal(1000),
-    dato: LocalDate? = null
+    dato: LocalDate? = null,
 ): BeregningStoppnivaaDetaljer {
     val beregningStoppnivaaDetaljer = BeregningStoppnivaaDetaljer()
     beregningStoppnivaaDetaljer.typeKlasse = typeKlasse

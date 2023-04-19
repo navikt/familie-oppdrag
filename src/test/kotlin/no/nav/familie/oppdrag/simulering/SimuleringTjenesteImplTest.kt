@@ -33,6 +33,7 @@ import kotlin.test.assertTrue
 internal class SimuleringTjenesteImplTest {
 
     @Autowired lateinit var simuleringLagerTjeneste: SimuleringLagerTjeneste
+
     @Autowired lateinit var simuleringTjeneste: SimuleringTjeneste
 
     @Autowired
@@ -78,8 +79,8 @@ internal class SimuleringTjenesteImplTest {
                 behandlingId = fagsystemsbehandlingId,
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 requestXml = requestXml,
-                responseXml = responsXml
-            )
+                responseXml = responsXml,
+            ),
         )
 
         val feilutbetalingerFraSimulering = simuleringTjeneste
@@ -87,8 +88,8 @@ internal class SimuleringTjenesteImplTest {
                 HentFeilutbetalingerFraSimuleringRequest(
                     ytelsestype = Ytelsestype.OVERGANGSSTØNAD,
                     eksternFagsakId = eksternFagsakId,
-                    fagsystemsbehandlingId = fagsystemsbehandlingId
-                )
+                    fagsystemsbehandlingId = fagsystemsbehandlingId,
+                ),
             )
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
@@ -118,8 +119,8 @@ internal class SimuleringTjenesteImplTest {
                 behandlingId = fagsystemsbehandlingId,
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 requestXml = requestXml,
-                responseXml = responsXml
-            )
+                responseXml = responsXml,
+            ),
         )
 
         val feilutbetalingerFraSimulering = simuleringTjeneste
@@ -127,8 +128,8 @@ internal class SimuleringTjenesteImplTest {
                 HentFeilutbetalingerFraSimuleringRequest(
                     ytelsestype = Ytelsestype.BARNETRYGD,
                     eksternFagsakId = eksternFagsakId,
-                    fagsystemsbehandlingId = fagsystemsbehandlingId
-                )
+                    fagsystemsbehandlingId = fagsystemsbehandlingId,
+                ),
             )
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
@@ -172,8 +173,8 @@ internal class SimuleringTjenesteImplTest {
                 behandlingId = fagsystemsbehandlingId,
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 requestXml = requestXml,
-                responseXml = responsXml
-            )
+                responseXml = responsXml,
+            ),
         )
 
         val feilutbetalingerFraSimulering = simuleringTjeneste
@@ -181,8 +182,8 @@ internal class SimuleringTjenesteImplTest {
                 HentFeilutbetalingerFraSimuleringRequest(
                     ytelsestype = Ytelsestype.BARNETILSYN,
                     eksternFagsakId = eksternFagsakId,
-                    fagsystemsbehandlingId = fagsystemsbehandlingId
-                )
+                    fagsystemsbehandlingId = fagsystemsbehandlingId,
+                ),
             )
         assertTrue { feilutbetalingerFraSimulering.feilutbetaltePerioder.isEmpty() }
     }
@@ -195,7 +196,7 @@ internal class SimuleringTjenesteImplTest {
     @Configuration
     @ComponentScan(
         basePackages = ["no.nav.familie.oppdrag"],
-        excludeFilters = [ComponentScan.Filter(type = FilterType.REGEX, pattern = [".*[MQ].*"])]
+        excludeFilters = [ComponentScan.Filter(type = FilterType.REGEX, pattern = [".*[MQ].*"])],
     )
     class TestConfig
 }

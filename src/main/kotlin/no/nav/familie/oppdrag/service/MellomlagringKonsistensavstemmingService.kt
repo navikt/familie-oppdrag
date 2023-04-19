@@ -14,7 +14,7 @@ class MellomlagringKonsistensavstemmingService(
     private val mellomlagringKonsistensavstemmingRepository: MellomlagringKonsistensavstemmingRepository,
 ) {
     fun hentAggregertBeløp(
-        metaInfo: KonsistensavstemmingMetaInfo
+        metaInfo: KonsistensavstemmingMetaInfo,
     ): Long =
         if (metaInfo.erSisteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingRepository.hentAggregertTotalBeløp(metaInfo.transaksjonsId!!)
@@ -23,7 +23,7 @@ class MellomlagringKonsistensavstemmingService(
         }
 
     fun hentAggregertAntallOppdrag(
-        metaInfo: KonsistensavstemmingMetaInfo
+        metaInfo: KonsistensavstemmingMetaInfo,
     ): Int {
         return if (metaInfo.erSisteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingRepository.hentAggregertAntallOppdrag(metaInfo.transaksjonsId!!)

@@ -38,7 +38,6 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun skal_ikke_lagre_duplikat() {
-
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
@@ -50,7 +49,6 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun skal_lagre_status() {
-
         val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
             .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
@@ -83,7 +81,7 @@ internal class OppdragLagerRepositoryJdbcTest {
     private fun kvitteringsmelding(): Mmel {
         val kvitteringsmelding = Jaxb.tilOppdrag(
             this::class.java.getResourceAsStream("/kvittering-avvist.xml")
-                .bufferedReader().use { it.readText() }
+                .bufferedReader().use { it.readText() },
         )
         return kvitteringsmelding.mmel
     }
@@ -110,7 +108,7 @@ internal class OppdragLagerRepositoryJdbcTest {
         assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
         assertEquals(
             avstemmingsTidspunktetSomSkalKjøres.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")),
-            oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss"))
+            oppdrageneTilGrensesnittavstemming.first().avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss")),
         )
     }
 
@@ -143,22 +141,22 @@ internal class OppdragLagerRepositoryJdbcTest {
         oppdragLagerRepository.opprettOppdrag(
             baOppdragLager.copy(
                 fagsakId = UUID.randomUUID().toString(),
-                behandlingId = UUID.randomUUID().toString()
-            )
+                behandlingId = UUID.randomUUID().toString(),
+            ),
         )
         assertThat(
             oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
                 baOppdragLager.fagsystem,
-                setOf("finnes ikke")
-            )
+                setOf("finnes ikke"),
+            ),
         )
             .isEmpty()
 
         assertThat(
             oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
                 baOppdragLager.fagsystem,
-                setOf(baOppdragLager.behandlingId)
-            )
+                setOf(baOppdragLager.behandlingId),
+            ),
         )
             .hasSize(1)
 
@@ -167,9 +165,9 @@ internal class OppdragLagerRepositoryJdbcTest {
                 baOppdragLager.fagsystem,
                 setOf(
                     baOppdragLager.behandlingId,
-                    behandlingB.behandlingId
-                )
-            )
+                    behandlingB.behandlingId,
+                ),
+            ),
         )
             .hasSize(2)
     }

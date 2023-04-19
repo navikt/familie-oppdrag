@@ -25,17 +25,18 @@ class GrensesnittavstemmingMapper(
     private val oppdragsliste: List<OppdragLager>,
     private val fagområde: String,
     private val fom: LocalDateTime,
-    private val tom: LocalDateTime
+    private val tom: LocalDateTime,
 ) {
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
 
     fun lagAvstemmingsmeldinger(): List<Avstemmingsdata> {
-        if (oppdragsliste.isEmpty())
+        if (oppdragsliste.isEmpty()) {
             return emptyList()
-        else
+        } else {
             return (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagSluttmelding()))
+        }
     }
 
     private fun lagStartmelding() = lagMelding(AksjonType.START)

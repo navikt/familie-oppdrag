@@ -96,7 +96,7 @@ class OppdragMQSenderTest {
             attestant180.add(
                 objectFactory.createAttestant180().apply {
                     attestantId = "Z999999"
-                }
+                },
             )
         }
 
@@ -114,7 +114,7 @@ class OppdragMQSenderTest {
                     enhet = OppdragSkjemaConstants.ENHET
                     typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
                     datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate()
-                }
+                },
             )
             avstemming115 = objectFactory.createAvstemming115().apply {
                 nokkelAvstemming = avstemmingsTidspunkt

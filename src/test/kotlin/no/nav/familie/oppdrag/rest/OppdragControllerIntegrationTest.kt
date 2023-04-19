@@ -30,16 +30,17 @@ import kotlin.test.assertEquals
 internal class OppdragControllerIntegrationTest {
 
     @Autowired lateinit var oppdragService: OppdragService
+
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
     companion object {
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
+
         @Container var ibmMQContainer = Containers.ibmMQContainer
     }
 
     @Test
     fun `Test skal lagre oppdrag for utbetalingoppdrag`() {
-
         val mapper = OppdragMapper()
         val oppdragController = OppdragController(oppdragService, mapper)
 
@@ -59,7 +60,6 @@ internal class OppdragControllerIntegrationTest {
 
     @Test
     fun `Test skal returnere https statuscode 409 ved dobbel sending`() {
-
         val mapper = OppdragMapper()
         val oppdragController = OppdragController(oppdragService, mapper)
 

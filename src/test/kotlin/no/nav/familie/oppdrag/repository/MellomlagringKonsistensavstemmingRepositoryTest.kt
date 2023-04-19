@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 @ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))
 @SpringBootTest(
     classes = [MellomlagringKonsistensavstemmingRepositoryTest.TestConfig::class],
-    properties = ["spring.cloud.vault.enabled=false"]
+    properties = ["spring.cloud.vault.enabled=false"],
 )
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
@@ -68,13 +68,13 @@ internal class MellomlagringKonsistensavstemmingRepositoryTest {
             fagsystem = Fagsystem.BA,
             transaksjonsId = transaksjonsId,
             antallOppdrag = antallOppdrag,
-            totalBeløp = totalBeløp
+            totalBeløp = totalBeløp,
         )
 
     @Configuration
     @ComponentScan(
         basePackages = ["no.nav.familie.oppdrag"],
-        excludeFilters = [ComponentScan.Filter(type = FilterType.REGEX, pattern = [".*[MQ].*"])]
+        excludeFilters = [ComponentScan.Filter(type = FilterType.REGEX, pattern = [".*[MQ].*"])],
     )
     class TestConfig
 }

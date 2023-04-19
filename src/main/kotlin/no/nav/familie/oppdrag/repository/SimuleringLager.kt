@@ -20,20 +20,20 @@ data class SimuleringLager(
     val utbetalingsoppdrag: String,
     @Column("request_xml") val requestXml: String,
     @Column("response_xml") var responseXml: String? = null,
-    @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+    @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
 ) {
 
     companion object {
         fun lagFraOppdrag(
             utbetalingsoppdrag: Utbetalingsoppdrag,
-            request: SimulerBeregningRequest
+            request: SimulerBeregningRequest,
         ): SimuleringLager {
             return SimuleringLager(
                 fagsystem = utbetalingsoppdrag.fagSystem,
                 fagsakId = utbetalingsoppdrag.saksnummer,
                 behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                 utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
-                requestXml = Jaxb.tilXml(request = request)
+                requestXml = Jaxb.tilXml(request = request),
             )
         }
     }

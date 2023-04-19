@@ -13,7 +13,7 @@ class ServiceConfig(
     @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
     @Value("\${SERVICEUSER_USERNAME}") private val systemuserUsername: String,
     @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
-    @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String
+    @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String,
 ) {
 
     @Bean

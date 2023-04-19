@@ -37,7 +37,7 @@ class SimuleringResultatTransformer {
             SimuleringMottaker(
                 mottakerNummer = utbetalesTilId,
                 simulertPostering = simulertPostering,
-                mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId)
+                mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId),
             )
         }
         return DetaljertSimuleringResultat(simuleringMottakerListe)
@@ -46,7 +46,7 @@ class SimuleringResultatTransformer {
     private fun mapPostering(
         utenInntrekk: Boolean,
         stoppnivaa: BeregningStoppnivaa,
-        detaljer: BeregningStoppnivaaDetaljer
+        detaljer: BeregningStoppnivaaDetaljer,
     ): SimulertPostering {
         return SimulertPostering(
             betalingType = utledBetalingType(detaljer.belop),
@@ -57,7 +57,7 @@ class SimuleringResultatTransformer {
             tom = parseDato(detaljer.faktiskTom),
             forfallsdato = parseDato(stoppnivaa.forfall),
             posteringType = PosteringType.fraKode(detaljer.typeKlasse),
-            utenInntrekk = utenInntrekk
+            utenInntrekk = utenInntrekk,
         )
     }
 
@@ -75,7 +75,9 @@ class SimuleringResultatTransformer {
         }
         return if (erOrgNr(utbetalesTilId)) {
             MottakerType.ARBG_ORG
-        } else MottakerType.ARBG_PRIV
+        } else {
+            MottakerType.ARBG_PRIV
+        }
     }
 
     private fun erOrgNr(verdi: String): Boolean {
@@ -89,7 +91,9 @@ class SimuleringResultatTransformer {
     private fun utledBetalingType(belop: BigDecimal): BetalingType {
         return if (belop > BigDecimal.ZERO) {
             BetalingType.DEBIT
-        } else BetalingType.KREDIT
+        } else {
+            BetalingType.KREDIT
+        }
     }
 
     private fun parseDato(dato: String): LocalDate {

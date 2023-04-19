@@ -11,7 +11,7 @@ data class Periode constructor(
     val oldSats: BigDecimal?,
     val typeSats: String?,
     var periodeType: PeriodeType?,
-    val kodeKlassifik: String?
+    val kodeKlassifik: String?,
 ) : Comparable<Periode> {
     constructor(
         fom: LocalDate,
@@ -19,7 +19,7 @@ data class Periode constructor(
         sats: BigDecimal? = null,
         typeSats: String? = null,
         kodeKlassifik: String? = null,
-        periodeType: PeriodeType? = null
+        periodeType: PeriodeType? = null,
     ) :
         this(
             fom = fom,
@@ -28,7 +28,7 @@ data class Periode constructor(
             oldSats = null,
             typeSats = typeSats,
             kodeKlassifik = kodeKlassifik,
-            periodeType = periodeType
+            periodeType = periodeType,
         )
 
     constructor(
@@ -37,7 +37,7 @@ data class Periode constructor(
         oldSats: BigDecimal,
         sats: BigDecimal?,
         typeSats: String?,
-        kodeKlassifik: String?
+        kodeKlassifik: String?,
     ) :
         this(
             fom = fom,
@@ -50,7 +50,7 @@ data class Periode constructor(
                 PeriodeType.ØKNING
             } else {
                 PeriodeType.REDUKSJON
-            }
+            },
         )
 
     override fun compareTo(other: Periode): Int {

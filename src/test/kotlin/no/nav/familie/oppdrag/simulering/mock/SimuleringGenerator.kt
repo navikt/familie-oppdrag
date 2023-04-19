@@ -87,8 +87,8 @@ class SimuleringGenerator {
                     beregningsPerioder.add(
                         opprettBeregningsperiode(
                             oppdragsperiode,
-                            simulerBeregningRequest.request.oppdrag
-                        )
+                            simulerBeregningRequest.request.oppdrag,
+                        ),
                     )
                 }
             }
@@ -147,50 +147,50 @@ class SimuleringGenerator {
                             opprettNegativBeregningStoppNivaaDetaljer(
                                 periode,
                                 oppdragsperiode,
-                                i
-                            )
+                                i,
+                            ),
                         )
                     }
                 } else if (oppdragsperiode.periodeType == PeriodeType.REDUKSJON && YearMonth.from(periode.fom)
-                    .isBefore(nesteMåned)
+                        .isBefore(nesteMåned)
                 ) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
                         opprettBeregningStoppNivaaDetaljer(
                             periode,
-                            oppdragsperiode
-                        )
+                            oppdragsperiode,
+                        ),
                     )
                     for (i in 2..3) {
                         stoppnivaa.beregningStoppnivaaDetaljer.add(
                             opprettNegativBeregningStoppNivaaDetaljer(
                                 periode,
                                 oppdragsperiode,
-                                i
-                            )
+                                i,
+                            ),
                         )
                     }
                 } else if (oppdragsperiode.periodeType == PeriodeType.ØKNING && YearMonth.from(periode.fom)
-                    .isBefore(nesteMåned)
+                        .isBefore(nesteMåned)
                 ) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
                         opprettNegativBeregningStoppNivaaDetaljer(
                             periode,
                             oppdragsperiode,
-                            3
-                        )
+                            3,
+                        ),
                     )
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
                         opprettBeregningStoppNivaaDetaljer(
                             periode,
-                            oppdragsperiode
-                        )
+                            oppdragsperiode,
+                        ),
                     )
                 } else if (oppdragsperiode.periodeType != PeriodeType.OPPH) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
                         opprettBeregningStoppNivaaDetaljer(
                             periode,
-                            oppdragsperiode
-                        )
+                            oppdragsperiode,
+                        ),
                     )
                 }
                 if (!stoppnivaa.beregningStoppnivaaDetaljer.isEmpty()) {
@@ -203,7 +203,7 @@ class SimuleringGenerator {
 
     private fun opprettBeregningStoppNivaaDetaljer(
         periode: Periode,
-        oppdragsperiode: Periode
+        oppdragsperiode: Periode,
     ): BeregningStoppnivaaDetaljer {
         val stoppnivaaDetaljer = BeregningStoppnivaaDetaljer()
         stoppnivaaDetaljer.faktiskFom = dateTimeFormatter.format(periode.fom)
@@ -212,7 +212,9 @@ class SimuleringGenerator {
         stoppnivaaDetaljer.behandlingskode = "2"
         if (periode.typeSats == "DAG") {
             stoppnivaaDetaljer.belop = oppdragsperiode.sats!!.multiply(BigDecimal.valueOf(periode.antallVirkedager.toLong()))
-        } else stoppnivaaDetaljer.belop = oppdragsperiode.sats
+        } else {
+            stoppnivaaDetaljer.belop = oppdragsperiode.sats
+        }
         stoppnivaaDetaljer.trekkVedtakId = 0L
         stoppnivaaDetaljer.stonadId = "1234"
         stoppnivaaDetaljer.korrigering = ""
@@ -233,14 +235,16 @@ class SimuleringGenerator {
         stoppnivaaDetaljer.typeKlasseBeskrivelse = "DUMMY"
         if (erRefusjon!! && refunderesOrgNr != null) {
             stoppnivaaDetaljer.refunderesOrgNr = refunderesOrgNr
-        } else stoppnivaaDetaljer.refunderesOrgNr = ""
+        } else {
+            stoppnivaaDetaljer.refunderesOrgNr = ""
+        }
         return stoppnivaaDetaljer
     }
 
     private fun opprettNegativBeregningStoppNivaaDetaljer(
         periode: Periode,
         oppdragsperiode: Periode,
-        sequence: Int
+        sequence: Int,
     ): BeregningStoppnivaaDetaljer {
         val stoppnivaaDetaljer = BeregningStoppnivaaDetaljer()
 
@@ -293,7 +297,9 @@ class SimuleringGenerator {
         stoppnivaaDetaljer.typeKlasseBeskrivelse = "DUMMY"
         if (erRefusjon!! && refunderesOrgNr != null) {
             stoppnivaaDetaljer.refunderesOrgNr = refunderesOrgNr
-        } else stoppnivaaDetaljer.refunderesOrgNr = ""
+        } else {
+            stoppnivaaDetaljer.refunderesOrgNr = ""
+        }
         return stoppnivaaDetaljer
     }
 
@@ -318,7 +324,9 @@ class SimuleringGenerator {
                 if (oppdragsperiode.typeSats == "DAG") {
                     oppdragsperiode.oldSats!!.multiply(BigDecimal.valueOf(antallVirkedager.toLong())).negate()
                 } else { oppdragsperiode.oldSats!!.negate() }
-            } else belop
+            } else {
+                belop
+            }
         }
     }
 
@@ -328,7 +336,7 @@ class SimuleringGenerator {
             val perioder: MutableList<Periode> = ArrayList()
             require(!oppdragsperiode.tom.isBefore(oppdragsperiode.fom)) {
                 "Startdato " + oppdragsperiode.fom.format(
-                    dateTimeFormatter
+                    dateTimeFormatter,
                 ) + " kan ikke være etter sluttdato " + oppdragsperiode.tom.format(dateTimeFormatter)
             }
             var dato = oppdragsperiode.fom

@@ -27,7 +27,8 @@ class TilbakekrevingController(private val økonomiClient: ØkonomiClient) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/iverksett/{behandlingId}"])
     fun iverksettVedtak(
         @PathVariable("behandlingId") behandlingId: UUID,
-        @Valid @RequestBody tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest
+        @Valid @RequestBody
+        tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest,
     ): Ressurs<TilbakekrevingsvedtakResponse> {
         return Ressurs.success(økonomiClient.iverksettVedtak(behandlingId, tilbakekrevingsvedtakRequest))
     }
@@ -35,7 +36,8 @@ class TilbakekrevingController(private val økonomiClient: ØkonomiClient) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/kravgrunnlag/{kravgrunnlagId}"])
     fun hentKravgrunnlag(
         @PathVariable("kravgrunnlagId") kravgrunnlagId: BigInteger,
-        @Valid @RequestBody hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest
+        @Valid @RequestBody
+        hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest,
     ): Ressurs<KravgrunnlagHentDetaljResponse> {
         return Ressurs.success(økonomiClient.hentKravgrunnlag(kravgrunnlagId, hentKravgrunnlagRequest))
     }
@@ -43,7 +45,8 @@ class TilbakekrevingController(private val økonomiClient: ØkonomiClient) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/annuler/kravgrunnlag/{kravgrunnlagId}"])
     fun annulerKravgrunnlag(
         @PathVariable("kravgrunnlagId") kravgrunnlagId: BigInteger,
-        @Valid @RequestBody kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest
+        @Valid @RequestBody
+        kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest,
     ): Ressurs<KravgrunnlagAnnulerResponse> {
         return Ressurs.success(økonomiClient.annulerKravgrunnlag(kravgrunnlagId, kravgrunnlagAnnulerRequest))
     }

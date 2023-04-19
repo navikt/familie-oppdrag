@@ -98,7 +98,6 @@ class OppdragMQMottakTest {
 
     @Test
     fun skal_logge_error_hvis_det_finnes_to_identiske_oppdrag_i_databasen() {
-
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
         every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } throws Exception()

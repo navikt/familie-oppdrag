@@ -15,7 +15,8 @@ import java.util.UUID
 
 data class OppdragLager(
     @Id
-    @Column("id") val uuid: UUID = UUID.randomUUID(),
+    @Column("id")
+    val uuid: UUID = UUID.randomUUID(),
     val fagsystem: String,
     @Column("person_ident") val personIdent: String,
     @Column("fagsak_id") val fagsakId: String,
@@ -26,7 +27,7 @@ data class OppdragLager(
     @Column("avstemming_tidspunkt") val avstemmingTidspunkt: LocalDateTime,
     @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
     val kvitteringsmelding: Mmel?,
-    val versjon: Int = 0
+    val versjon: Int = 0,
 ) {
 
     companion object {
@@ -41,7 +42,7 @@ data class OppdragLager(
                 utbetalingsoppdrag = utbetalingsoppdrag,
                 utgåendeOppdrag = Jaxb.tilXml(oppdrag),
                 kvitteringsmelding = null,
-                versjon = versjon
+                versjon = versjon,
             )
         }
     }

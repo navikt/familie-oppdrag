@@ -31,7 +31,7 @@ class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste
     @PostMapping(path = ["/etterbetalingsbelop"])
     fun hentEtterbetalingsbeløp(
         @Valid @RequestBody
-        utbetalingsoppdrag: Utbetalingsoppdrag
+        utbetalingsoppdrag: Utbetalingsoppdrag,
     ): ResponseEntity<Ressurs<RestSimulerResultat>> {
         logger.info("Hente simulert etterbetaling for saksnr ${utbetalingsoppdrag.saksnummer}")
         return ok(simuleringTjeneste.utførSimulering(utbetalingsoppdrag))
@@ -40,7 +40,7 @@ class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste
     @PostMapping(path = ["/v1"])
     fun utførSimuleringOgHentResultat(
         @Valid @RequestBody
-        utbetalingsoppdrag: Utbetalingsoppdrag
+        utbetalingsoppdrag: Utbetalingsoppdrag,
     ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
         return ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
     }
@@ -50,16 +50,19 @@ class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste
     @PostMapping(path = ["/direktesimulering"])
     fun direkteSimulering(
         @Valid @RequestBody
-        utbetalingsoppdrag: Utbetalingsoppdrag
+        utbetalingsoppdrag: Utbetalingsoppdrag,
     ): ResponseEntity<Ressurs<SimulerBeregningResponse>> =
         ok(simuleringTjeneste.hentSimulerBeregningResponse(utbetalingsoppdrag))
 
     @PostMapping(path = ["/feilutbetalinger"])
-    fun hentFeilutbetalinger(@Valid @RequestBody request: HentFeilutbetalingerFraSimuleringRequest): ResponseEntity<Ressurs<FeilutbetalingerFraSimulering>> {
+    fun hentFeilutbetalinger(
+        @Valid @RequestBody
+        request: HentFeilutbetalingerFraSimuleringRequest,
+    ): ResponseEntity<Ressurs<FeilutbetalingerFraSimulering>> {
         logger.info(
             "Henter feilutbetalinger for ytelsestype=${request.ytelsestype}, " +
                 "fagsak=${request.eksternFagsakId}," +
-                " behandlingId=${request.eksternFagsakId}"
+                " behandlingId=${request.eksternFagsakId}",
         )
         return ok(simuleringTjeneste.hentFeilutbetalinger(request))
     }

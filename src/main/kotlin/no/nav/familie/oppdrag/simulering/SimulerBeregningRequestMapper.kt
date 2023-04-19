@@ -62,7 +62,6 @@ class SimulerBeregningRequestMapper {
     }
 
     private fun tilOppdragsLinje(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag): Oppdragslinje {
-
         val attest = oppdragSkjemaFactory.createAttestant().apply {
             attestantId = utbetalingsoppdrag.saksbehandlerId
         }
@@ -99,7 +98,7 @@ class SimulerBeregningRequestMapper {
                     oppdragSkjemaFactory.createGrad().apply {
                         typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
                         grad = utbetalingsgrad.toBigInteger()
-                    }
+                    },
                 )
             }
         }

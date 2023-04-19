@@ -35,7 +35,7 @@ import java.time.LocalDate
 class SimuleringTjenesteImpl(
     @Autowired val simuleringSender: SimuleringSender,
     @Autowired val simulerBeregningRequestMapper: SimulerBeregningRequestMapper,
-    @Autowired val simuleringLagerTjeneste: SimuleringLagerTjeneste
+    @Autowired val simuleringLagerTjeneste: SimuleringLagerTjeneste,
 ) : SimuleringTjeneste {
 
     val mapper = jacksonObjectMapper()
@@ -50,7 +50,7 @@ class SimuleringTjenesteImpl(
 
         secureLogger.info(
             "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest)
+                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest),
         )
 
         return hentSimulerBeregningResponse(simulerBeregningRequest, utbetalingsoppdrag)
@@ -58,13 +58,13 @@ class SimuleringTjenesteImpl(
 
     private fun hentSimulerBeregningResponse(
         simulerBeregningRequest: SimulerBeregningRequest,
-        utbetalingsoppdrag: Utbetalingsoppdrag
+        utbetalingsoppdrag: Utbetalingsoppdrag,
     ): SimulerBeregningResponse {
         try {
             val response = simuleringSender.hentSimulerBeregningResponse(simulerBeregningRequest)
             secureLogger.info(
                 "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response)
+                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response),
             )
             return response
         } catch (ex: SimulerBeregningFeilUnderBehandling) {
@@ -84,7 +84,7 @@ class SimuleringTjenesteImpl(
 
         secureLogger.info(
             "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest)
+                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest),
         )
 
         val simuleringsLager = SimuleringLager.lagFraOppdrag(utbetalingsoppdrag, simulerBeregningRequest)
@@ -103,7 +103,7 @@ class SimuleringTjenesteImpl(
         val simuleringLager = simuleringLagerTjeneste.hentSisteSimuleringsresultat(
             request.ytelsestype.kode,
             request.eksternFagsakId,
-            request.fagsystemsbehandlingId
+            request.fagsystemsbehandlingId,
         )
         val respons = Jaxb.tilSimuleringsrespons(simuleringLager.responseXml!!)
         val simulering = respons.response.simulering
@@ -120,7 +120,7 @@ class SimuleringTjenesteImpl(
                 tom = LocalDate.parse(periode.periodeTom),
                 feilutbetaltBeløp = feilutbetaltBeløp,
                 tidligereUtbetaltBeløp = summerNegativeYtelPosteringer(ytelPosteringerForPeriode, alleYtelPosteringer).abs(),
-                nyttBeløp = summerPostiveYtelPosteringer(ytelPosteringerForPeriode, alleYtelPosteringer) - feilutbetaltBeløp
+                nyttBeløp = summerPostiveYtelPosteringer(ytelPosteringerForPeriode, alleYtelPosteringer) - feilutbetaltBeløp,
             )
         }
         return FeilutbetalingerFraSimulering(feilutbetaltePerioder = feilutbetaltPerioder)
@@ -149,7 +149,7 @@ class SimuleringTjenesteImpl(
 
     private fun hentYtelPerioder(
         feilutbetaltePeriode: BeregningsPeriode,
-        ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>
+        ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
     ): List<BeregningsPeriode> {
         return ytelPerioder.keys.filter { ytelPeriode ->
             ytelPeriode.periodeFom == feilutbetaltePeriode.periodeFom &&
@@ -159,7 +159,7 @@ class SimuleringTjenesteImpl(
 
     private fun summerNegativeYtelPosteringer(
         perioder: List<BeregningsPeriode>,
-        ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>
+        ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
     ) =
         perioder.sumOf { beregningsperiode ->
             ytelPerioder.getValue(beregningsperiode).filter { it.belop < BigDecimal.ZERO }
@@ -168,7 +168,7 @@ class SimuleringTjenesteImpl(
 
     private fun summerPostiveYtelPosteringer(
         perioder: List<BeregningsPeriode>,
-        ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>
+        ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
     ) =
         perioder.sumOf { beregningsperiode ->
             ytelPerioder.getValue(beregningsperiode).filter { it.belop > BigDecimal.ZERO }

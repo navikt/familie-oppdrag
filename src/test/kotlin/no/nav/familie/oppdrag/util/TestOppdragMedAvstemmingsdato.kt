@@ -24,7 +24,7 @@ object TestOppdragMedAvstemmingsdato {
             aktoer = AKTOER,
             saksbehandlerId = "Z999999",
             avstemmingTidspunkt = avstemmingstidspunkt,
-            utbetalingsperiode = utbetalingsperiode.toList()
+            utbetalingsperiode = utbetalingsperiode.toList(),
         )
 
     fun lagUtbetalingsperiode(
@@ -47,6 +47,6 @@ object TestOppdragMedAvstemmingsdato {
             satsType = Utbetalingsperiode.SatsType.MND,
             utbetalesTil = AKTOER,
             behandlingId = Random.nextLong(),
-            utbetalingsgrad = 50
+            utbetalingsgrad = 50,
         )
 }

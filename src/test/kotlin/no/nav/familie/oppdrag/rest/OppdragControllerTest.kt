@@ -47,14 +47,13 @@ internal class OppdragControllerTest {
                 BigDecimal.ONE,
                 Utbetalingsperiode.SatsType.MND,
                 "UTEBETALES_TIL",
-                1
-            )
-        )
+                1,
+            ),
+        ),
     )
 
     @Test
     fun `Skal lagre oppdrag for utbetalingoppdrag`() {
-
         val (oppdragLagerRepository, oppdragController) = mockkOppdragController(false)
 
         oppdragController.sendOppdrag(utbetalingsoppdrag)
@@ -65,7 +64,7 @@ internal class OppdragControllerTest {
                     it.utgåendeOppdrag.contains("BA") &&
                         it.status == OppdragStatus.LAGT_PÅ_KØ &&
                         it.opprettetTidspunkt > localDateTimeNow
-                }
+                },
             )
         }
     }

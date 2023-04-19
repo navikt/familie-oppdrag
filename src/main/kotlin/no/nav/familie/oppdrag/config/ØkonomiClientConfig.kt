@@ -18,7 +18,7 @@ import javax.xml.namespace.QName
 
 @Configuration
 class ØkonomiClientConfig(
-    @Value("\${TILBAKEKREVING_V1_URL}") private val tilbakekrevingUrl: String
+    @Value("\${TILBAKEKREVING_V1_URL}") private val tilbakekrevingUrl: String,
 ) {
 
     private val WSDL = "wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl"

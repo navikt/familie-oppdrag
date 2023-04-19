@@ -27,7 +27,8 @@ class OppdragSkjemaConstants {
 enum class EndringsKode(val kode: String) {
     NY("NY"),
     UENDRET("UEND"),
-    ENDRING("ENDR");
+    ENDRING("ENDR"),
+    ;
 
     companion object {
         fun fromKode(kode: String): EndringsKode {
@@ -44,7 +45,7 @@ enum class UtbetalingsfrekvensKode(val kode: String) {
     UKENTLIG("UKE"),
     MÅNEDLIG("MND"),
     DAGLIG_14("14DG"),
-    ENGANGSUTBETALING("ENG")
+    ENGANGSUTBETALING("ENG"),
 }
 
 enum class SatsTypeKode(val kode: String) {
@@ -55,7 +56,8 @@ enum class SatsTypeKode(val kode: String) {
     ENGANGSBELØP("ENG"),
     ÅRLIG("AAR"),
     A_KONTO("AKTO"),
-    UKJENT("-");
+    UKJENT("-"),
+    ;
 
     companion object {
         fun fromKode(kode: String): SatsTypeKode {
@@ -71,7 +73,7 @@ enum class GradTypeKode(val kode: String) {
     UFØREGRAD("UFOR"),
     UTBETALINGSGRAD("UBGR"),
     UTTAKSGRAD_ALDERSPENSJON("UTAP"),
-    UTTAKSGRAD_AFP("AFPG")
+    UTTAKSGRAD_AFP("AFPG"),
 }
 
 fun LocalDate.toXMLDate(): XMLGregorianCalendar {

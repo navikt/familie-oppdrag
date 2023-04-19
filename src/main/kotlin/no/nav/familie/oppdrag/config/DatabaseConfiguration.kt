@@ -37,8 +37,8 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
                 PGobjectTilUtbetalingsoppdragConverter(),
                 UtbetalingsoppdragTilPGobjectConverter(),
                 PGobjectTilMmelConverter(),
-                MmelTilPGobjectConverter()
-            )
+                MmelTilPGobjectConverter(),
+            ),
         )
     }
 

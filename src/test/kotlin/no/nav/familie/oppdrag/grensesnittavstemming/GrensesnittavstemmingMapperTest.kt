@@ -74,7 +74,7 @@ class GrensesnittavstemmingMapperTest {
         avstemmingFom: LocalDateTime,
         avstemmingTom: LocalDateTime,
         expected: AksjonType,
-        actual: Aksjonsdata
+        actual: Aksjonsdata,
     ) {
         assertEquals(expected, actual.aksjonType)
         assertEquals(KildeType.AVLEV, actual.kildeType)
@@ -106,11 +106,11 @@ class GrensesnittavstemmingMapperTest {
     fun assertPeriodeData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Periodedata) {
         assertEquals(
             utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
-            actual.datoAvstemtFom
+            actual.datoAvstemtFom,
         )
         assertEquals(
             utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
-            actual.datoAvstemtTom
+            actual.datoAvstemtTom,
         )
     }
 

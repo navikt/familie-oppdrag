@@ -7,9 +7,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun SimulerBeregningResponse.toRestSimulerResult(
-    dato: LocalDate = LocalDate.now()
+    dato: LocalDate = LocalDate.now(),
 ): RestSimulerResultat {
-
     val totalEtterbetalingsBeløp =
         this.response?.simulering?.beregningsPeriode?.sumOf { finnEtterbetalingPerPeriode(it, dato) }
             ?: 0
@@ -44,5 +43,5 @@ private fun forfallPassert(forfall: String, dato: LocalDate): Boolean =
 // TODO: Er dette det same som PosteringType?
 enum class TypeKlasse {
     FEIL,
-    YTEL
+    YTEL,
 }

@@ -9,7 +9,8 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.PostgreSQLContainer
 
 @Configuration
-@ComponentScan("no.nav.familie.oppdrag") class TestConfig
+@ComponentScan("no.nav.familie.oppdrag")
+class TestConfig
 
 object Containers {
 
@@ -34,7 +35,7 @@ object Containers {
             TestPropertyValues.of(
                 "spring.datasource.url=" + postgreSQLContainer.jdbcUrl,
                 "spring.datasource.username=" + postgreSQLContainer.username,
-                "spring.datasource.password=" + postgreSQLContainer.password
+                "spring.datasource.password=" + postgreSQLContainer.password,
             ).applyTo(configurableApplicationContext.environment)
         }
     }
@@ -51,7 +52,7 @@ object Containers {
                 "oppdrag.mq.hostname=localhost",
                 "oppdrag.mq.user=admin",
                 "oppdrag.mq.password: passw0rd",
-                "oppdrag.mq.enabled: true"
+                "oppdrag.mq.enabled: true",
             ).applyTo(configurableApplicationContext.environment)
         }
     }

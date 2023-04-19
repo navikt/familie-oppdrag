@@ -26,5 +26,5 @@ object AvstemmingMapper {
 }
 
 enum class SystemKode(val kode: String) {
-    OPPDRAGSSYSTEMET("OS")
+    OPPDRAGSSYSTEMET("OS"),
 }

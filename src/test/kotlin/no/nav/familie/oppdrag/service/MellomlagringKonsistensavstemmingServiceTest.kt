@@ -50,9 +50,9 @@ class MellomlagringKonsistensavstemmingServiceTest {
                 opprettMetaInfo(
                     true,
                     true,
-                    transaksjonsId
-                )
-            )
+                    transaksjonsId,
+                ),
+            ),
         )
     }
 
@@ -72,7 +72,7 @@ class MellomlagringKonsistensavstemmingServiceTest {
     private fun opprettMetaInfo(
         sendStartmelding: Boolean,
         sendAvsluttmelding: Boolean,
-        transaksjonsId: UUID?
+        transaksjonsId: UUID?,
     ) =
         KonsistensavstemmingMetaInfo(Fagsystem.BA, transaksjonsId, LocalDateTime.now(), sendStartmelding, sendAvsluttmelding, emptyList())
 }

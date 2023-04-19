@@ -14,7 +14,7 @@ interface SimuleringLagerRepository : RepositoryInterface<SimuleringLager, UUID>
              WHERE sim.fagsystem=:fagsystem AND sim.fagsak_id=:fagsakId AND sim.behandling_id=:behandlingId
              AND sim.response_xml IS NOT NULL
              ORDER BY sim.opprettet_tidspunkt DESC LIMIT 1
-    """
+    """,
     )
     fun finnSisteSimuleringsresultat(fagsystem: String, fagsakId: String, behandlingId: String): SimuleringLager
 }

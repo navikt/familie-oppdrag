@@ -144,7 +144,7 @@ internal class SimuleringGeneratorTest {
         utbetalesTilId: String,
         datoVedtakFom: String,
         datoVedtakTom: String,
-        datoStatusFom: String?
+        datoStatusFom: String?,
     ): Oppdragslinje {
         val oppdragslinje = Oppdragslinje()
         oppdragslinje.kodeEndringLinje = kodeEndringLinje

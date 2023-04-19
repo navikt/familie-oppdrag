@@ -17,12 +17,11 @@ import org.springframework.transaction.annotation.Transactional
 @Profile("!e2e")
 class OppdragServiceImpl(
     @Autowired private val oppdragSender: OppdragSender,
-    @Autowired private val oppdragLagerRepository: OppdragLagerRepository
+    @Autowired private val oppdragLagerRepository: OppdragLagerRepository,
 ) : OppdragService {
 
     @Transactional(rollbackFor = [Throwable::class])
     override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
-
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         try {
             oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)

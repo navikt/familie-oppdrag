@@ -49,7 +49,7 @@ class KonsistensavstemmingServiceTest {
             saksnummer,
             "1",
             lagUtbetalingsperiode(periodeId = 1, beløp = 111, behandlingsId = 1),
-            lagUtbetalingsperiode(periodeId = 2, beløp = 100, behandlingsId = 1)
+            lagUtbetalingsperiode(periodeId = 2, beløp = 100, behandlingsId = 1),
         )
 
     // Opphør på periode 2, ny periode med annet beløp
@@ -58,14 +58,14 @@ class KonsistensavstemmingServiceTest {
             saksnummer,
             "2",
             lagUtbetalingsperiode(periodeId = 2, beløp = 100, behandlingsId = 1, opphør = true),
-            lagUtbetalingsperiode(periodeId = 3, beløp = 211, behandlingsId = 2)
+            lagUtbetalingsperiode(periodeId = 3, beløp = 211, behandlingsId = 2),
         )
     private val utbetalingsoppdrag2_1 =
         lagUtbetalingsoppdrag(
             saksnummer2,
             "3",
             lagUtbetalingsperiode(periodeId = 1, beløp = 20, behandlingsId = 3),
-            lagUtbetalingsperiode(periodeId = 2, beløp = 30, behandlingsId = 3)
+            lagUtbetalingsperiode(periodeId = 2, beløp = 30, behandlingsId = 3),
         )
 
     @BeforeEach
@@ -93,7 +93,7 @@ class KonsistensavstemmingServiceTest {
 
         val perioder = listOf(
             PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
-            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0])
+            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]),
         )
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
@@ -127,7 +127,7 @@ class KonsistensavstemmingServiceTest {
 
         val perioder = listOf(
             PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0], "tss-id"),
-            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0])
+            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]),
         )
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
@@ -159,7 +159,7 @@ class KonsistensavstemmingServiceTest {
 
         val perioder = listOf(
             PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
-            PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1])
+            PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]),
         )
 
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
@@ -268,7 +268,7 @@ class KonsistensavstemmingServiceTest {
         val avstemmingstidspunkt = LocalDateTime.now()
         val perioder = listOf(
             PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
-            PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1])
+            PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]),
         )
 
         val request = KonsistensavstemmingRequestV2("BA", perioder, avstemmingstidspunkt)
@@ -316,7 +316,7 @@ class KonsistensavstemmingServiceTest {
             sats = BigDecimal(beløp),
             satsType = Utbetalingsperiode.SatsType.MND,
             utbetalesTil = "meg",
-            behandlingId = behandlingsId
+            behandlingId = behandlingsId,
         )
 
     private fun lagUtbetalingsoppdrag(saksnummer: String, behandlingId: String, vararg utbetalingsperiode: Utbetalingsperiode) =
@@ -329,7 +329,7 @@ class KonsistensavstemmingServiceTest {
                 saksnummer = saksnummer,
                 aktoer = "aktoer",
                 saksbehandlerId = "saksbehandler",
-                utbetalingsperiode = utbetalingsperiode.toList()
-            )
+                utbetalingsperiode = utbetalingsperiode.toList(),
+            ),
         )
 }

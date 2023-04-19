@@ -15,17 +15,15 @@ import org.springframework.stereotype.Service
 @Service
 class AvstemmingSenderMQ(
     val jmsTemplateAvstemming: JmsTemplate,
-    @Value("\${oppdrag.mq.enabled}") val erEnabled: String
+    @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
 ) : AvstemmingSender {
 
     override fun sendGrensesnittAvstemming(avstemmingsdata: Avstemmingsdata) {
-
         val avstemmingXml = JaxbGrensesnittAvstemmingsdata.tilXml(avstemmingsdata)
         leggPåKø(avstemmingXml)
     }
 
     override fun sendKonsistensAvstemming(avstemmingsdata: Konsistensavstemmingsdata) {
-
         val konsistensavstemmingRequest = SendAsynkronKonsistensavstemmingsdata().apply {
             request = SendAsynkronKonsistensavstemmingsdataRequest().apply { konsistensavstemmingsdata = avstemmingsdata }
         }
@@ -43,7 +41,7 @@ class AvstemmingSenderMQ(
         try {
             jmsTemplateAvstemming.convertAndSend(
                 "queue:///${jmsTemplateAvstemming.defaultDestinationName}?targetClient=1",
-                melding
+                melding,
             )
         } catch (e: JmsException) {
             LOG.error("Klarte ikke sende avstemming til OS. Feil: ", e)

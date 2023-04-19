@@ -18,14 +18,14 @@ object Jaxb {
         Oppdrag::class.java,
         SimulerBeregningRequest::class.java,
         SimulerBeregningResponse::class.java,
-        TssSamhandlerData::class.java
+        TssSamhandlerData::class.java,
     )
     val xmlInputFactory = XMLInputFactory.newInstance()
 
     fun tilOppdrag(oppdragXml: String): Oppdrag {
         val oppdrag = jaxbContext.createUnmarshaller().unmarshal(
             xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(oppdragXml))),
-            Oppdrag::class.java
+            Oppdrag::class.java,
         )
 
         return oppdrag.value
@@ -61,7 +61,7 @@ object Jaxb {
     fun tilSimuleringsrespons(responsXml: String): SimulerBeregningResponse {
         val simuleringBeregningResponse = jaxbContext.createUnmarshaller().unmarshal(
             xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(responsXml))),
-            SimulerBeregningResponse::class.java
+            SimulerBeregningResponse::class.java,
         )
 
         return simuleringBeregningResponse.value
@@ -78,7 +78,7 @@ object Jaxb {
     fun tilTssSamhandlerData(responsXml: String): TssSamhandlerData {
         val tssSamhandlerData = jaxbContext.createUnmarshaller().unmarshal(
             xmlInputFactory.createXMLStreamReader(StreamSource(StringReader(responsXml))),
-            TssSamhandlerData::class.java
+            TssSamhandlerData::class.java,
         )
 
         return tssSamhandlerData.value

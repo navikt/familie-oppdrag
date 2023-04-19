@@ -26,7 +26,7 @@ class KonsistensavstemmingService(
         request: KonsistensavstemmingUtbetalingsoppdrag,
         sendStartmelding: Boolean,
         sendAvsluttmelding: Boolean,
-        transaksjonsId: UUID?
+        transaksjonsId: UUID?,
     ) {
         utførKonsistensavstemming(
             KonsistensavstemmingMetaInfo(
@@ -35,13 +35,13 @@ class KonsistensavstemmingService(
                 avstemmingstidspunkt = request.avstemmingstidspunkt,
                 sendStartmelding = sendStartmelding,
                 sendAvsluttmelding = sendAvsluttmelding,
-                utbetalingsoppdrag = request.utbetalingsoppdrag
-            )
+                utbetalingsoppdrag = request.utbetalingsoppdrag,
+            ),
         )
     }
 
     private fun utførKonsistensavstemming(
-        metaInfo: KonsistensavstemmingMetaInfo
+        metaInfo: KonsistensavstemmingMetaInfo,
     ) {
         if (metaInfo.erFørsteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingService.sjekkAtDetteErFørsteMelding(metaInfo.transaksjonsId!!)
@@ -58,7 +58,7 @@ class KonsistensavstemmingService(
 
         LOG.info(
             "Utfører konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId} " +
-                "antall meldinger er ${meldinger.size}"
+                "antall meldinger er ${meldinger.size}",
         )
         meldinger.forEach {
             avstemmingSender.sendKonsistensAvstemming(it)
@@ -68,7 +68,7 @@ class KonsistensavstemmingService(
             mellomlagringKonsistensavstemmingService.opprettInnslagIMellomlagring(
                 metaInfo,
                 konsistensavstemmingMapper.antallOppdrag,
-                konsistensavstemmingMapper.totalBeløp
+                konsistensavstemmingMapper.totalBeløp,
             )
         }
         LOG.info("Fullført konsistensavstemming for id ${konsistensavstemmingMapper.avstemmingId}")
@@ -83,7 +83,7 @@ class KonsistensavstemmingService(
         request: KonsistensavstemmingRequestV2,
         sendStartMelding: Boolean,
         sendAvsluttmelding: Boolean,
-        transaksjonsId: UUID?
+        transaksjonsId: UUID?,
     ) {
         sjekkAtTransaktionsIdErSattHvisSplittetBatch(sendStartMelding, sendAvsluttmelding, transaksjonsId)
 
@@ -103,7 +103,7 @@ class KonsistensavstemmingService(
             utbetalingsoppdragForKonsistensavstemming,
             perioderPåBehandling,
             fødselsnummerPåBehandling,
-            utbetalesTilPåBehandling
+            utbetalesTilPåBehandling,
         )
 
         utførKonsistensavstemming(
@@ -113,15 +113,15 @@ class KonsistensavstemmingService(
                 avstemmingstidspunkt = avstemmingstidspunkt,
                 sendStartmelding = sendStartMelding,
                 sendAvsluttmelding = sendAvsluttmelding,
-                utbetalingsoppdrag = utbetalingsoppdrag
-            )
+                utbetalingsoppdrag = utbetalingsoppdrag,
+            ),
         )
     }
 
     private fun sjekkAtTransaktionsIdErSattHvisSplittetBatch(
         sendStartMelding: Boolean,
         sendAvsluttmelding: Boolean,
-        transaksjonsId: UUID?
+        transaksjonsId: UUID?,
     ) {
         if (!(sendStartMelding && sendAvsluttmelding) && isNull(transaksjonsId)) {
             throw Exception("Er sendStartmelding eller sendAvsluttmelding satt til false må transaksjonsId være definert.")
@@ -153,7 +153,7 @@ class KonsistensavstemmingService(
         utbetalingsoppdrag: List<UtbetalingsoppdragForKonsistensavstemming>,
         perioderPåBehandling: Map<String, Set<Long>>,
         fødselsnummerPåBehandling: Map<String, String>,
-        utbetalesTilPåBehandling: Map<String, String?>
+        utbetalesTilPåBehandling: Map<String, String?>,
     ): List<Utbetalingsoppdrag> {
         val utbetalingsoppdragPåFagsak = utbetalingsoppdrag.groupBy { it.fagsakId }
 
@@ -184,7 +184,7 @@ class KonsistensavstemmingService(
                 it.copy(
                     utbetalingsperiode = perioderTilKonsistensavstemming,
                     // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
-                    aktoer = aktivtFødselsnummer ?: it.aktoer
+                    aktoer = aktivtFødselsnummer ?: it.aktoer,
                 )
             }
         }

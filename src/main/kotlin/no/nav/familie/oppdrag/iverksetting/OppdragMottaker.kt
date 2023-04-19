@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 @Profile("!e2e")
 class OppdragMottaker(
     val oppdragLagerRepository: OppdragLagerRepository,
-    val env: Environment
+    val env: Environment,
 ) {
 
     internal var LOG = LoggerFactory.getLogger(OppdragMottaker::class.java)
@@ -50,7 +50,7 @@ class OppdragMottaker(
         LOG.info("Mottatt melding på kvitteringskø for fagsak $oppdragId: Status ${kvittering.status}, se securelogg for beskrivende melding")
         secureLogger.info(
             "Mottatt melding på kvitteringskø for fagsak $oppdragId: Status ${kvittering.status}, " +
-                "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}"
+                "svar ${kvittering.mmel?.beskrMelding ?: "Beskrivende melding ikke satt fra OS"}",
         )
 
         LOG.debug("Henter oppdrag $oppdragId fra databasen")

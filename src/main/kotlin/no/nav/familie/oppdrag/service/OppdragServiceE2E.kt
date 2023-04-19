@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Profile("e2e")
 class OppdragServiceE2E(
-    @Autowired private val oppdragLagerRepository: OppdragLagerRepository
+    @Autowired private val oppdragLagerRepository: OppdragLagerRepository,
 ) : OppdragService {
 
     @Transactional(rollbackFor = [Throwable::class])

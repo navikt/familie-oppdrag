@@ -14,7 +14,7 @@ fun logSoapFaultException(e: Exception) {
             "SOAPFaultException -" +
                 " faultCode=${e.fault.faultCode}" +
                 " faultString=${e.fault.faultString}" +
-                " details=$details"
+                " details=$details",
         )
     }
 }

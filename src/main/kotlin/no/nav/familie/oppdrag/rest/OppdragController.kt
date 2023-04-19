@@ -27,11 +27,14 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = "azuread")
 class OppdragController(
     @Autowired val oppdragService: OppdragService,
-    @Autowired val oppdragMapper: OppdragMapper
+    @Autowired val oppdragMapper: OppdragMapper,
 ) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
-    fun sendOppdrag(@Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag): ResponseEntity<Ressurs<String>> {
+    fun sendOppdrag(
+        @Valid @RequestBody
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+    ): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
             val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
             val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
@@ -47,14 +50,15 @@ class OppdragController(
             },
             onSuccess = {
                 ok("Oppdrag sendt OK")
-            }
+            },
         )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
     fun sendOppdragPåNytt(
-        @Valid @RequestBody utbetalingsoppdrag: Utbetalingsoppdrag,
-        @PathVariable versjon: Int
+        @Valid @RequestBody
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        @PathVariable versjon: Int,
     ): ResponseEntity<Ressurs<String>> {
         return Result.runCatching {
             val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
@@ -67,12 +71,15 @@ class OppdragController(
             },
             onSuccess = {
                 ok("Oppdrag sendt OK")
-            }
+            },
         )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])
-    fun hentStatus(@Valid @RequestBody oppdragId: OppdragId): ResponseEntity<Ressurs<OppdragStatus>> {
+    fun hentStatus(
+        @Valid @RequestBody
+        oppdragId: OppdragId,
+    ): ResponseEntity<Ressurs<OppdragStatus>> {
         return Result.runCatching { oppdragService.hentStatusForOppdrag(oppdragId) }
             .fold(
                 onFailure = {
@@ -80,7 +87,7 @@ class OppdragController(
                 },
                 onSuccess = {
                     ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "Savner kvitteringsmelding")
-                }
+                },
             )
     }
 }

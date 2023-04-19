@@ -23,7 +23,7 @@ class ØkonomiClient(private val økonomiService: TilbakekrevingPortType) {
 
     fun iverksettVedtak(
         behandlingId: UUID,
-        tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest
+        tilbakekrevingsvedtakRequest: TilbakekrevingsvedtakRequest,
     ): TilbakekrevingsvedtakResponse {
         logger.info("Iverksetter vedtak for tilbakekrevingsbehandling $behandlingId")
         try {
@@ -33,14 +33,14 @@ class ØkonomiClient(private val økonomiService: TilbakekrevingPortType) {
             throw IntegrasjonException(
                 system = Integrasjonssystem.TILBAKEKREVING,
                 msg = "Noe gikk galt ved iverksetting av tilbakekrevingsbehandling=$behandlingId",
-                throwable = exception
+                throwable = exception,
             )
         }
     }
 
     fun hentKravgrunnlag(
         kravgrunnlagId: BigInteger,
-        hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest
+        hentKravgrunnlagRequest: KravgrunnlagHentDetaljRequest,
     ): KravgrunnlagHentDetaljResponse {
         logger.info("Henter kravgrunnlag for kravgrunnlagId $kravgrunnlagId")
         try {
@@ -50,14 +50,14 @@ class ØkonomiClient(private val økonomiService: TilbakekrevingPortType) {
             throw IntegrasjonException(
                 system = Integrasjonssystem.TILBAKEKREVING,
                 msg = "Noe gikk galt ved henting av kravgrunnlag for kravgrunnlagId=$kravgrunnlagId",
-                throwable = exception
+                throwable = exception,
             )
         }
     }
 
     fun annulerKravgrunnlag(
         kravgrunnlagId: BigInteger,
-        kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest
+        kravgrunnlagAnnulerRequest: KravgrunnlagAnnulerRequest,
     ): KravgrunnlagAnnulerResponse {
         logger.info("Annulerer kravgrunnlag for kravgrunnlagId $kravgrunnlagId")
         try {
@@ -67,7 +67,7 @@ class ØkonomiClient(private val økonomiService: TilbakekrevingPortType) {
             throw IntegrasjonException(
                 system = Integrasjonssystem.TILBAKEKREVING,
                 msg = "Noe gikk galt ved annulering av kravgrunnlag for kravgrunnlagId=$kravgrunnlagId",
-                throwable = exception
+                throwable = exception,
             )
         }
     }

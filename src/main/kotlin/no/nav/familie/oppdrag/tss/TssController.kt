@@ -23,7 +23,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
     @PostMapping(path = ["/proxy/b910"])
     fun hentSamhandlerDataForOrganisasjonProxy(
-        @RequestBody tssSamhandlerIdent: TssSamhandlerIdent
+        @RequestBody tssSamhandlerIdent: TssSamhandlerIdent,
     ): Ressurs<TypeOD910> {
         return Ressurs.success(tssOppslagService.hentSamhandlerDataForOrganisasjonB910(tssSamhandlerIdent))
     }
@@ -31,7 +31,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Operation(summary = "Søk informasjon samhandlere av type INST ved bruk av navn og TSS-tjensten B940 og TSS-tjensten B940. Returnerer TSS-output data i rå format")
     @PostMapping(path = ["/proxy/b940"])
     fun søkSamhnadlerinfoFraNavnProxy(
-        @RequestBody request: SøkSamhandlerInfoRequest
+        @RequestBody request: SøkSamhandlerInfoRequest,
     ): Ressurs<TOutputElementer> {
         return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInstB940(request.navn, request.postNr, request.område, request.side).tssOutputData)
     }
@@ -39,7 +39,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ORGNR og TSS-tjensten B910")
     @GetMapping(path = ["/orgnr/{orgnr}"])
     fun hentSamhandlerDataForOrganisasjon(
-        @PathVariable("orgnr") orgnr: String
+        @PathVariable("orgnr") orgnr: String,
     ): Ressurs<SamhandlerInfo> {
         return Ressurs.success(tssOppslagService.hentSamhandlerInformasjon(TssSamhandlerIdent(ident = orgnr, type = TssSamhandlerIdentType.ORGNR)))
     }
@@ -47,7 +47,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Operation(summary = "Henter informasjon om samhandler ved bruk av ekstern id fra TSS og TSS-tjensten B910")
     @GetMapping(path = ["/tssnr/{tssnr}"])
     fun hentSamhandlerDataForTssEksternId(
-        @PathVariable("tssnr") tssnr: String
+        @PathVariable("tssnr") tssnr: String,
     ): Ressurs<SamhandlerInfo> {
         return Ressurs.success(tssOppslagService.hentSamhandlerInformasjon(TssSamhandlerIdent(ident = tssnr, type = TssSamhandlerIdentType.TSS)))
     }
@@ -55,7 +55,7 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     @Operation(summary = "Søk samhandlere ved bruk av navn og TSS-tjensten B940. Første side er 0")
     @PostMapping(path = ["/navn"])
     fun søkSamhnadlerinfoFraNavn(
-        @RequestBody request: SøkSamhandlerInfoRequest
+        @RequestBody request: SøkSamhandlerInfoRequest,
     ): Ressurs<SøkSamhandlerInfo> {
         return Ressurs.success(tssOppslagService.hentInformasjonOmSamhandlerInst(request.navn, request.postNr, request.område, request.side))
     }
