@@ -110,7 +110,7 @@ internal class JaxbTest {
                 "tilbakekrevingsperiode" : null
               }
             }
-        """.trimIndent()
+            """.trimIndent()
         )
     }
 

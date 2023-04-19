@@ -67,6 +67,13 @@ spec:
           cluster: dev-gcp
         - application: familie-ef-iverksett-lokal
           cluster: dev-gcp
+    outbound:
+      external:
+        - host: b27apvl220.preprod.local
+          ports:
+            - name: mq
+              port: 1413
+              protocol: TCP
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
