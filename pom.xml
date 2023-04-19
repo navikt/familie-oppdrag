@@ -42,7 +42,7 @@
         <spring-cloud.version>2022.0.1</spring-cloud.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20230320122056_cbf7dad</tjenestespesifikasjoner.version>
-        <springdoc.version>1.7.0</springdoc.version>
+        <springdoc.version>2.1.0</springdoc.version>
 
     </properties>
 
@@ -341,12 +341,12 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-common</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-kotlin</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
 

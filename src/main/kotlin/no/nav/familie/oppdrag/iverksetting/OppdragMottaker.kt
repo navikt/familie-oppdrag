@@ -38,9 +38,9 @@ class OppdragMottaker(
     private fun behandleMelding(melding: TextMessage) {
         var svarFraOppdrag = melding.text as String
         if (!env.activeProfiles.any { it in LOKALE_PROFILER }) {
-            if(svarFraOppdrag.contains("ns2:oppdrag")) {
+            if (svarFraOppdrag.contains("ns2:oppdrag")) {
                 svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
-            } else if(svarFraOppdrag.contains("ns6:oppdrag")) {
+            } else if (svarFraOppdrag.contains("ns6:oppdrag")) {
                 svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns6:oppdrag xmlns:ns6")
             }
         }
