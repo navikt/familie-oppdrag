@@ -32,6 +32,10 @@ class OppdragServiceE2E(
         return oppdragLagerRepository.hentOppdrag(oppdragId)
     }
 
+    override fun resentOppdrag(oppdragId: OppdragId) {
+        throw NotImplementedError("Ikke implementert")
+    }
+
     companion object {
 
         val LOG = LoggerFactory.getLogger(OppdragServiceE2E::class.java)
