@@ -8,5 +8,5 @@ import no.trygdeetaten.skjema.oppdrag.Oppdrag
 interface OppdragService {
     fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int)
     fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager
-    fun resentOppdrag(oppdragId: OppdragId)
+    fun resendOppdrag(oppdragId: OppdragId)
 }

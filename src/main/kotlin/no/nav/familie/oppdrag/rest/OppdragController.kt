@@ -80,7 +80,7 @@ class OppdragController(
         @Valid @RequestBody
         oppdragId: OppdragId,
     ) {
-        oppdragService.resentOppdrag(oppdragId)
+        oppdragService.resendOppdrag(oppdragId)
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])

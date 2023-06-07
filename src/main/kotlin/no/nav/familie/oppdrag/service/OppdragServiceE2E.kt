@@ -32,7 +32,7 @@ class OppdragServiceE2E(
         return oppdragLagerRepository.hentOppdrag(oppdragId)
     }
 
-    override fun resentOppdrag(oppdragId: OppdragId) {
+    override fun resendOppdrag(oppdragId: OppdragId) {
         throw NotImplementedError("Ikke implementert")
     }
 

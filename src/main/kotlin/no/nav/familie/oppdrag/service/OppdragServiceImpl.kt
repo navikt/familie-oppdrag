@@ -41,7 +41,7 @@ class OppdragServiceImpl(
     }
 
     @Transactional(rollbackFor = [Throwable::class])
-    override fun resentOppdrag(oppdragId: OppdragId) {
+    override fun resendOppdrag(oppdragId: OppdragId) {
         val oppdrag = oppdragLagerRepository.hentOppdrag(oppdragId)
         if (oppdrag.status != OppdragStatus.KVITTERT_FUNKSJONELL_FEIL) {
             LOG.info("Kan ikke resende $oppdragId då status=${oppdrag.status}")
