@@ -3,7 +3,6 @@ package no.nav.familie.oppdrag.grensesnittavstemming
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.SystemKode
-import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingConstants
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.somOppdragLager
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag
@@ -50,16 +49,19 @@ class GrensesnittavstemmingMapperTest {
         val meldinger = mapper.lagAlleMeldinger(listOf(oppdragLager))
         assertEquals(4, meldinger.size)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.START, meldinger[0].aksjon)
-        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, meldinger[1].aksjon)
-        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, meldinger[2].aksjon)
+        val datamelding = meldinger[1]
+        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, datamelding.aksjon)
+        val totalmelding = meldinger[2]
+        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, totalmelding.aksjon)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.AVSL, meldinger.last().aksjon)
+
         assertThat(meldinger[0].detalj).isEmpty()
-        assertThat(meldinger[1].detalj).hasSize(1)
-        assertThat(meldinger[2].detalj).isEmpty()
+        assertThat(datamelding.detalj).hasSize(1)
+        assertThat(totalmelding.detalj).isEmpty()
         assertThat(meldinger[3].detalj).isEmpty()
 
-        val totalmelding = meldinger[2]
-        assertDetaljData(utbetalingsoppdrag, totalmelding.detalj.first())
+        assertDetaljData(utbetalingsoppdrag, datamelding.detalj.single())
+
         assertTotalData(utbetalingsoppdrag, totalmelding.total)
         assertPeriodeData(utbetalingsoppdrag, totalmelding.periode)
         assertGrunnlagsdata(utbetalingsoppdrag, totalmelding.grunnlag)
@@ -69,9 +71,8 @@ class GrensesnittavstemmingMapperTest {
     fun `skal summere flere batcher med oppdrag`() {
         val now = LocalDateTime.now()
         val periode = lagUtbetalingsperiode()
-        val utbetalingsperiode = arrayOf(periode)
-        val oppdrag = lagTestUtbetalingsoppdrag(now.minusDays(1), fagområde, utbetalingsperiode = utbetalingsperiode)
-        val oppdrag2 = lagTestUtbetalingsoppdrag(now.plusDays(1), fagområde, utbetalingsperiode = utbetalingsperiode)
+        val oppdrag = lagTestUtbetalingsoppdrag(now.minusDays(1), fagområde, utbetalingsperiode = arrayOf(periode))
+        val oppdrag2 = lagTestUtbetalingsoppdrag(now.plusDays(1), fagområde, utbetalingsperiode = arrayOf(periode))
         val oppdrag3 = lagTestUtbetalingsoppdrag(now, fagområde, utbetalingsperiode = arrayOf(periode, periode))
 
         val mapper = GrensesnittavstemmingMapper(fagområde, now.withHour(0), now.withHour(23))

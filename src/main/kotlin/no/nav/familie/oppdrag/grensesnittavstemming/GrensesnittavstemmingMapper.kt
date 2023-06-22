@@ -113,7 +113,7 @@ class GrensesnittavstemmingMapper(
         if (fom == null || fom > oppdrag.avstemmingTidspunkt) {
             avstemmingstidspunkt.fom = oppdrag.avstemmingTidspunkt
         }
-        if (tom == null || tom > oppdrag.avstemmingTidspunkt) {
+        if (tom == null || tom < oppdrag.avstemmingTidspunkt) {
             avstemmingstidspunkt.tom = oppdrag.avstemmingTidspunkt
         }
     }

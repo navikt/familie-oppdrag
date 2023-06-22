@@ -108,11 +108,11 @@ class OppdragLagerRepositoryJdbc(
     ): List<OppdragLager> {
         val hentStatement =
             "SELECT * FROM oppdrag_lager WHERE avstemming_tidspunkt >= ? AND avstemming_tidspunkt < ? AND fagsystem = ?" +
-                " ORDER BY behandling_id OFFSET ? LIMIT 10000"
+                " ORDER BY behandling_id ASC OFFSET ? LIMIT ?"
 
         return jdbcTemplate.query(
             hentStatement,
-            arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde, page),
+            arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde, page * antall, antall),
             OppdragLagerRowMapper(),
         )
     }
