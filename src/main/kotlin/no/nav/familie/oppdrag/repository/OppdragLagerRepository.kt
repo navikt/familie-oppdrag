@@ -18,6 +18,8 @@ interface OppdragLagerRepository {
         fomTidspunkt: LocalDateTime,
         tomTidspunkt: LocalDateTime,
         fagOmråde: String,
+        antall: Int,
+        page: Int,
     ): List<OppdragLager>
 
     fun hentUtbetalingsoppdragForKonsistensavstemming(

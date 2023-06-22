@@ -33,6 +33,7 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
     companion object {
+
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
     }
 
@@ -94,7 +95,8 @@ internal class OppdragLagerRepositoryJdbcTest {
 
         val avstemmingsTidspunktetSomSkalKjøres = dag
 
-        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
+        val baOppdragLager =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
         val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag.minusDays(1), "BA").somOppdragLager
         val efOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag, "EFOG").somOppdragLager
 
@@ -102,7 +104,8 @@ internal class OppdragLagerRepositoryJdbcTest {
         oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
         oppdragLagerRepository.opprettOppdrag(efOppdragLager)
 
-        val oppdrageneTilGrensesnittavstemming = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA")
+        val oppdrageneTilGrensesnittavstemming =
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA", 1, 0)
 
         assertEquals(1, oppdrageneTilGrensesnittavstemming.size)
         assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
@@ -113,10 +116,37 @@ internal class OppdragLagerRepositoryJdbcTest {
     }
 
     @Test
+    fun `skal kunne hente ut deler av grensesnittsavstemminger`() {
+        val dag = LocalDateTime.now()
+        val startenPåDagen = dag.withHour(0).withMinute(0)
+        val sluttenAvDagen = dag.withHour(23).withMinute(59)
+
+        val avstemmingsTidspunktetSomSkalKjøres = dag
+
+        val baOppdragLager =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
+        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag.minusDays(1), "BA").somOppdragLager
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager)
+        oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
+        assertThat(
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA", 1, 0),
+        ).hasSize(1)
+
+        assertThat(
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA", 1, 1),
+        ).hasSize(1)
+
+        assertThat(
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA", 1, 2),
+        ).isEmpty()
+    }
+
+    @Test
     fun skal_hente_ut_oppdrag_for_konsistensavstemming() {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
         val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA").somOppdragLager
-        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA").somOppdragLager
+        val baOppdragLager2 =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA").somOppdragLager
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
 
@@ -194,7 +224,8 @@ internal class OppdragLagerRepositoryJdbcTest {
     fun `hentSisteUtbetalingsoppdragForFagsaker test spørring går fint`() {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
         val utbetalingsoppdrag1 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA", fagsak = "1")
-        val utbetalingsoppdrag2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA", fagsak = "2")
+        val utbetalingsoppdrag2 =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA", fagsak = "2")
 
         val oppdragLager1 = utbetalingsoppdrag1.somOppdragLager
         val oppdragLager2 = utbetalingsoppdrag2.somOppdragLager

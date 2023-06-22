@@ -1,9 +1,13 @@
 package no.nav.familie.oppdrag.grensesnittavstemming
 
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.SystemKode
+import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingConstants
+import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.somOppdragLager
-import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Aksjonsdata
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AvstemmingType
@@ -14,6 +18,8 @@ import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.KildeType
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Periodedata
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Totaldata
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -22,14 +28,15 @@ import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 class GrensesnittavstemmingMapperTest {
+
     val fagområde = "BA"
     val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     @Test
     fun testMappingAvTomListe() {
-        val mapper = GrensesnittavstemmingMapper(emptyList(), fagområde, LocalDateTime.now(), LocalDateTime.now())
-        val meldinger = mapper.lagAvstemmingsmeldinger()
-        assertEquals(0, meldinger.size)
+        val mapper = GrensesnittavstemmingMapper(fagområde, LocalDateTime.now(), LocalDateTime.now())
+        assertThatThrownBy { mapper.lagAvstemmingsmeldinger(emptyList()) }
+            .hasMessageContaining("Kan ikke lage avstemminger med tom liste")
     }
 
     @Test
@@ -37,20 +44,61 @@ class GrensesnittavstemmingMapperTest {
         val avstemmingstidspunkt = LocalDateTime.now().minusDays(1).withHour(13)
         val avstemmingFom = avstemmingstidspunkt.toLocalDate().atStartOfDay()
         val avstemmingTom = avstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
-        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingstidspunkt, fagområde)
+        val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(avstemmingstidspunkt, fagområde)
         val oppdragLager = utbetalingsoppdrag.somOppdragLager
-        val mapper = GrensesnittavstemmingMapper(listOf(oppdragLager), fagområde, avstemmingFom, avstemmingTom)
-        val meldinger = mapper.lagAvstemmingsmeldinger()
-        assertEquals(3, meldinger.size)
-        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.START, meldinger.first().aksjon)
+        val mapper = GrensesnittavstemmingMapper(fagområde, avstemmingFom, avstemmingTom)
+        val meldinger = mapper.lagAlleMeldinger(listOf(oppdragLager))
+        assertEquals(4, meldinger.size)
+        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.START, meldinger[0].aksjon)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, meldinger[1].aksjon)
+        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, meldinger[2].aksjon)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.AVSL, meldinger.last().aksjon)
+        assertThat(meldinger[0].detalj).isEmpty()
+        assertThat(meldinger[1].detalj).hasSize(1)
+        assertThat(meldinger[2].detalj).isEmpty()
+        assertThat(meldinger[3].detalj).isEmpty()
 
-        assertDetaljData(utbetalingsoppdrag, meldinger[1].detalj.first())
-        assertTotalData(utbetalingsoppdrag, meldinger[1].total)
-        assertPeriodeData(utbetalingsoppdrag, meldinger[1].periode)
-        assertGrunnlagsdata(utbetalingsoppdrag, meldinger[1].grunnlag)
+        val totalmelding = meldinger[2]
+        assertDetaljData(utbetalingsoppdrag, totalmelding.detalj.first())
+        assertTotalData(utbetalingsoppdrag, totalmelding.total)
+        assertPeriodeData(utbetalingsoppdrag, totalmelding.periode)
+        assertGrunnlagsdata(utbetalingsoppdrag, totalmelding.grunnlag)
     }
+
+    @Test
+    fun `skal summere flere batcher med oppdrag`() {
+        val now = LocalDateTime.now()
+        val periode = lagUtbetalingsperiode()
+        val utbetalingsperiode = arrayOf(periode)
+        val oppdrag = lagTestUtbetalingsoppdrag(now.minusDays(1), fagområde, utbetalingsperiode = utbetalingsperiode)
+        val oppdrag2 = lagTestUtbetalingsoppdrag(now.plusDays(1), fagområde, utbetalingsperiode = utbetalingsperiode)
+        val oppdrag3 = lagTestUtbetalingsoppdrag(now, fagområde, utbetalingsperiode = arrayOf(periode, periode))
+
+        val mapper = GrensesnittavstemmingMapper(fagområde, now.withHour(0), now.withHour(23))
+        listOf(oppdrag, oppdrag2, oppdrag3)
+            .forEach { mapper.lagAvstemmingsmeldinger(listOf(it.somOppdragLager.copy(status = OppdragStatus.KVITTERT_OK))) }
+
+        val totalmelding = mapper.lagTotalMelding()
+        assertThat(totalmelding.total.totalAntall).isEqualTo(3)
+        assertThat(totalmelding.total.totalBelop.toInt()).isEqualTo(400)
+        assertThat(totalmelding.total.fortegn).isEqualTo(Fortegn.T)
+
+        val avstemtFormatter = DateTimeFormatter.ofPattern("yyyyMMddHH")
+        assertThat(totalmelding.periode.datoAvstemtFom).isEqualTo(now.minusDays(1).format(avstemtFormatter))
+        assertThat(totalmelding.periode.datoAvstemtTom).isEqualTo(now.plusDays(1).format(avstemtFormatter))
+
+        assertThat(totalmelding.grunnlag.godkjentAntall).isEqualTo(3)
+        assertThat(totalmelding.grunnlag.godkjentBelop.toInt()).isEqualTo(400)
+        assertThat(totalmelding.grunnlag.varselAntall).isEqualTo(0)
+        assertThat(totalmelding.grunnlag.varselBelop.toInt()).isEqualTo(0)
+        assertThat(totalmelding.grunnlag.manglerAntall).isEqualTo(0)
+        assertThat(totalmelding.grunnlag.manglerBelop.toInt()).isEqualTo(0)
+        assertThat(totalmelding.grunnlag.avvistAntall).isEqualTo(0)
+        assertThat(totalmelding.grunnlag.avvistBelop.toInt()).isEqualTo(0)
+    }
+
+    fun GrensesnittavstemmingMapper.lagAlleMeldinger(oppdragsliste: List<OppdragLager>) =
+        listOf(lagStartmelding()) + lagAvstemmingsmeldinger(oppdragsliste) + lagTotalMelding() + lagSluttmelding()
 
     @Test
     fun testerAtFomOgTomBlirSattRiktigVedGrensesnittavstemming() {
@@ -59,15 +107,15 @@ class GrensesnittavstemmingMapperTest {
         val avstemmingFom = førsteAvstemmingstidspunkt.toLocalDate().atStartOfDay()
         val avstemmingTom = andreAvstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
         val baOppdragLager1 =
-            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somOppdragLager
+            lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somOppdragLager
         val baOppdragLager2 =
-            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somOppdragLager
+            lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somOppdragLager
         val mapper =
-            GrensesnittavstemmingMapper(listOf(baOppdragLager1, baOppdragLager2), fagområde, avstemmingFom, avstemmingTom)
-        val meldinger = mapper.lagAvstemmingsmeldinger()
-        assertEquals(3, meldinger.size)
-        assertEquals(avstemmingFom.format(tidspunktFormatter), meldinger.first().aksjon.nokkelFom)
-        assertEquals(avstemmingTom.format(tidspunktFormatter), meldinger.first().aksjon.nokkelTom)
+            GrensesnittavstemmingMapper(fagområde, avstemmingFom, avstemmingTom)
+        val meldinger = mapper.lagAlleMeldinger(listOf(baOppdragLager1, baOppdragLager2))
+        assertEquals(4, meldinger.size)
+        assertEquals(avstemmingFom.format(tidspunktFormatter), meldinger[2].aksjon.nokkelFom)
+        assertEquals(avstemmingTom.format(tidspunktFormatter), meldinger[2].aksjon.nokkelTom)
     }
 
     fun assertAksjon(

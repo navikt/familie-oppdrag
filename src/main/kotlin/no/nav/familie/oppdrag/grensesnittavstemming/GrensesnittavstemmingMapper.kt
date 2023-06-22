@@ -22,38 +22,33 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class GrensesnittavstemmingMapper(
-    private val oppdragsliste: List<OppdragLager>,
     private val fagområde: String,
     private val fom: LocalDateTime,
     private val tom: LocalDateTime,
 ) {
+
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
 
-    fun lagAvstemmingsmeldinger(): List<Avstemmingsdata> {
-        if (oppdragsliste.isEmpty()) {
-            return emptyList()
-        } else {
-            return (listOf(lagStartmelding()) + lagDatameldinger() + listOf(lagSluttmelding()))
-        }
+    private val grunnlagsdata = Grunnlag()
+    private val total = Total()
+    private val avstemmingstidspunkt = Avstemmingstidspunkt()
+
+    fun lagStartmelding() = lagMelding(AksjonType.START)
+
+    fun lagTotalMelding() = lagMelding(AksjonType.DATA).apply {
+        this.total = opprettTotalData()
+        this.periode = opprettPeriodeData()
+        this.grunnlag = opprettGrunnlagsData()
     }
 
-    private fun lagStartmelding() = lagMelding(AksjonType.START)
+    fun lagSluttmelding() = lagMelding(AksjonType.AVSL)
 
-    private fun lagSluttmelding() = lagMelding(AksjonType.AVSL)
+    fun lagAvstemmingsmeldinger(oppdragsliste: List<OppdragLager>): List<Avstemmingsdata> {
+        if (oppdragsliste.isEmpty()) error("Kan ikke lage avstemminger med tom liste")
 
-    private fun lagDatameldinger(): List<Avstemmingsdata> {
-        val detaljMeldinger = opprettAvstemmingsdataLister()
-
-        val avstemmingsDataLister = if (detaljMeldinger.isNotEmpty()) detaljMeldinger else listOf(lagMelding(AksjonType.DATA))
-        avstemmingsDataLister.first().apply {
-            this.total = opprettTotalData()
-            this.periode = opprettPeriodeData()
-            this.grunnlag = opprettGrunnlagsData()
-        }
-
-        return avstemmingsDataLister
+        return opprettAvstemmingsdataLister(oppdragsliste)
     }
 
     private fun lagMelding(aksjonType: AksjonType): Avstemmingsdata =
@@ -76,16 +71,21 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun opprettAvstemmingsdataLister(): List<Avstemmingsdata> {
-        return opprettDetaljdata().chunked(ANTALL_DETALJER_PER_MELDING).map {
+    private fun opprettAvstemmingsdataLister(oppdragsliste: List<OppdragLager>): List<Avstemmingsdata> {
+        return opprettDetaljdata(oppdragsliste).chunked(ANTALL_DETALJER_PER_MELDING).map {
             lagMelding(AksjonType.DATA).apply {
                 this.detalj.addAll(it)
             }
         }
     }
 
-    private fun opprettDetaljdata(): List<Detaljdata> {
+    private fun opprettDetaljdata(oppdragsliste: List<OppdragLager>): List<Detaljdata> {
         return oppdragsliste.mapNotNull { oppdrag ->
+
+            leggTilGrunnlagsinformasjon(oppdrag)
+            leggTilTotalData(oppdrag)
+            håndterAvstemmingstidspunkt(oppdrag)
+
             val detaljType = opprettDetaljType(oppdrag)
             if (detaljType != null) {
                 val utbetalingsoppdrag = oppdrag.utbetalingsoppdrag
@@ -107,6 +107,47 @@ class GrensesnittavstemmingMapper(
         }
     }
 
+    private fun håndterAvstemmingstidspunkt(oppdrag: OppdragLager) {
+        val fom = avstemmingstidspunkt.fom
+        val tom = avstemmingstidspunkt.tom
+        if (fom == null || fom > oppdrag.avstemmingTidspunkt) {
+            avstemmingstidspunkt.fom = oppdrag.avstemmingTidspunkt
+        }
+        if (tom == null || tom > oppdrag.avstemmingTidspunkt) {
+            avstemmingstidspunkt.tom = oppdrag.avstemmingTidspunkt
+        }
+    }
+
+    private fun leggTilGrunnlagsinformasjon(oppdrag: OppdragLager) {
+        val satsbeløp = getSatsBeløp(oppdrag)
+        when (oppdrag.status) {
+            OppdragStatus.LAGT_PÅ_KØ -> {
+                grunnlagsdata.manglerBelop += satsbeløp
+                grunnlagsdata.manglerAntall++
+            }
+
+            OppdragStatus.KVITTERT_OK -> {
+                grunnlagsdata.godkjentBelop += satsbeløp
+                grunnlagsdata.godkjentAntall++
+            }
+
+            OppdragStatus.KVITTERT_MED_MANGLER -> {
+                grunnlagsdata.varselBelop += satsbeløp
+                grunnlagsdata.varselAntall++
+            }
+
+            else -> {
+                grunnlagsdata.avvistBelop += satsbeløp
+                grunnlagsdata.avvistAntall++
+            }
+        }
+    }
+
+    private fun leggTilTotalData(oppdrag: OppdragLager) {
+        total.antall++
+        total.beløp += getSatsBeløp(oppdrag)
+    }
+
     private fun opprettDetaljType(oppdrag: OppdragLager): DetaljType? =
         when (oppdrag.status) {
             OppdragStatus.LAGT_PÅ_KØ -> DetaljType.MANG
@@ -118,69 +159,41 @@ class GrensesnittavstemmingMapper(
         }
 
     private fun opprettTotalData(): Totaldata {
-        val totalBeløp = oppdragsliste.map { getSatsBeløp(it) }.sum()
         return Totaldata().apply {
-            this.totalAntall = oppdragsliste.size
-            this.totalBelop = BigDecimal.valueOf(totalBeløp)
-            this.fortegn = getFortegn(totalBeløp)
+            this.totalAntall = total.antall
+            this.totalBelop = BigDecimal.valueOf(total.beløp)
+            this.fortegn = getFortegn(total.beløp)
         }
     }
 
     private fun opprettPeriodeData(): Periodedata {
+        val fom = avstemmingstidspunkt.fom
+            ?: error("Mangler avstemmingstidspunkt::fom, vi skal ikke opprette meldinger hvis listen med oppdrag er tom")
+        val tom = avstemmingstidspunkt.tom
+            ?: error("Mangler avstemmingstidspunkt::tom, vi skal ikke opprette meldinger hvis listen med oppdrag er tom")
         return Periodedata().apply {
-            this.datoAvstemtFom = formaterTilPeriodedataFormat(getLavesteAvstemmingstidspunkt().format(tidspunktFormatter))
-            this.datoAvstemtTom = formaterTilPeriodedataFormat(getHøyesteAvstemmingstidspunkt().format(tidspunktFormatter))
+            this.datoAvstemtFom = formaterTilPeriodedataFormat(fom.format(tidspunktFormatter))
+            this.datoAvstemtTom = formaterTilPeriodedataFormat(tom.format(tidspunktFormatter))
         }
     }
 
     private fun opprettGrunnlagsData(): Grunnlagsdata {
-        var godkjentAntall = 0
-        var godkjentBelop = 0L
-        var varselAntall = 0
-        var varselBelop = 0L
-        var avvistAntall = 0
-        var avvistBelop = 0L
-        var manglerAntall = 0
-        var manglerBelop = 0L
-
-        for (oppdrag in oppdragsliste) {
-            val satsbeløp = getSatsBeløp(oppdrag)
-            when (oppdrag.status) {
-                OppdragStatus.LAGT_PÅ_KØ -> {
-                    manglerBelop += satsbeløp
-                    manglerAntall++
-                }
-                OppdragStatus.KVITTERT_OK -> {
-                    godkjentBelop += satsbeløp
-                    godkjentAntall++
-                }
-                OppdragStatus.KVITTERT_MED_MANGLER -> {
-                    varselBelop += satsbeløp
-                    varselAntall++
-                }
-                else -> {
-                    avvistBelop += satsbeløp
-                    avvistAntall++
-                }
-            }
-        }
-
         return Grunnlagsdata().apply {
-            this.godkjentAntall = godkjentAntall
-            this.godkjentBelop = BigDecimal.valueOf(godkjentBelop)
-            this.godkjentFortegn = getFortegn(godkjentBelop)
+            this.godkjentAntall = grunnlagsdata.godkjentAntall
+            this.godkjentBelop = BigDecimal.valueOf(grunnlagsdata.godkjentBelop)
+            this.godkjentFortegn = getFortegn(grunnlagsdata.godkjentBelop)
 
             this.varselAntall = varselAntall
-            this.varselBelop = BigDecimal.valueOf(varselBelop)
-            this.varselFortegn = getFortegn(varselBelop)
+            this.varselBelop = BigDecimal.valueOf(grunnlagsdata.varselBelop)
+            this.varselFortegn = getFortegn(grunnlagsdata.varselBelop)
 
             this.manglerAntall = manglerAntall
-            this.manglerBelop = BigDecimal.valueOf(manglerBelop)
-            this.manglerFortegn = getFortegn(manglerBelop)
+            this.manglerBelop = BigDecimal.valueOf(grunnlagsdata.manglerBelop)
+            this.manglerFortegn = getFortegn(grunnlagsdata.manglerBelop)
 
             this.avvistAntall = avvistAntall
-            this.avvistBelop = BigDecimal.valueOf(avvistBelop)
-            this.avvistFortegn = getFortegn(avvistBelop)
+            this.avvistBelop = BigDecimal.valueOf(grunnlagsdata.avvistBelop)
+            this.avvistFortegn = getFortegn(grunnlagsdata.avvistBelop)
         }
     }
 
@@ -191,18 +204,28 @@ class GrensesnittavstemmingMapper(
         return if (satsbeløp >= 0) Fortegn.T else Fortegn.F
     }
 
-    private fun getHøyesteAvstemmingstidspunkt(): LocalDateTime {
-        return sortertAvstemmingstidspunkt().first()
-    }
-
-    private fun getLavesteAvstemmingstidspunkt(): LocalDateTime {
-        return sortertAvstemmingstidspunkt().last()
-    }
-
-    private fun sortertAvstemmingstidspunkt() =
-        oppdragsliste.map(OppdragLager::avstemmingTidspunkt).sortedDescending()
-
     private fun formaterTilPeriodedataFormat(stringTimestamp: String): String =
         LocalDateTime.parse(stringTimestamp, tidspunktFormatter)
             .format(DateTimeFormatter.ofPattern("yyyyMMddHH"))
 }
+
+private data class Grunnlag(
+    var godkjentAntall: Int = 0,
+    var godkjentBelop: Long = 0L,
+    var varselAntall: Int = 0,
+    var varselBelop: Long = 0L,
+    var avvistAntall: Int = 0,
+    var avvistBelop: Long = 0L,
+    var manglerAntall: Int = 0,
+    var manglerBelop: Long = 0L,
+)
+
+data class Total(
+    var antall: Int = 0,
+    var beløp: Long = 0L,
+)
+
+data class Avstemmingstidspunkt(
+    var fom: LocalDateTime? = null,
+    var tom: LocalDateTime? = null,
+)

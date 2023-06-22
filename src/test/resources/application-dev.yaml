@@ -11,6 +11,9 @@ oppdrag.mq:
   password: passw0rd
   enabled: true
 
+grensesnitt:
+  antall: 2
+
 no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}

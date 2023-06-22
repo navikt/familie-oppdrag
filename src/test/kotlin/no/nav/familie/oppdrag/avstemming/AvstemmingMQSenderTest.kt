@@ -89,7 +89,7 @@ class AvstemmingMQSenderTest {
 
     private fun lagTestGrensesnittavstemming(): List<Avstemmingsdata> {
         val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(IDAG, FAGOMRÅDE)
-        val mapper = GrensesnittavstemmingMapper(listOf(utbetalingsoppdrag.somOppdragLager), FAGOMRÅDE, IDAG.minusDays(1), IDAG)
-        return mapper.lagAvstemmingsmeldinger()
+        val mapper = GrensesnittavstemmingMapper(FAGOMRÅDE, IDAG.minusDays(1), IDAG)
+        return mapper.lagAvstemmingsmeldinger(listOf(utbetalingsoppdrag.somOppdragLager))
     }
 }
