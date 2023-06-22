@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 class GrensesnittavstemmingService(
     private val avstemmingSender: AvstemmingSender,
     private val oppdragLagerRepository: OppdragLagerRepository,
-    @Value("\${grensesnitt.antall:1000}") private val antall: Int,
+    @Value("\${grensesnitt.antall:7000}") private val antall: Int,
 ) {
 
     private var countere: MutableMap<String, Map<String, Counter>> = HashMap()
