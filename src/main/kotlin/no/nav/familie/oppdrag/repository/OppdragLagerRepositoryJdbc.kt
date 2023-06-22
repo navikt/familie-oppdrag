@@ -76,21 +76,23 @@ class OppdragLagerRepositoryJdbc(
     }
 
     override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int) {
-        val update = "UPDATE oppdrag_lager SET status = '${oppdragStatus.name}' " +
-            "WHERE person_ident = '${oppdragId.personIdent}' " +
-            "AND fagsystem = '${oppdragId.fagsystem}' " +
-            "AND behandling_id = '${oppdragId.behandlingsId}'" +
-            "AND versjon = $versjon"
+        val update = "UPDATE oppdrag_lager SET status = ? " +
+            "WHERE person_ident = ? " +
+            "AND fagsystem = ? " +
+            "AND behandling_id = ?" +
+            "AND versjon = ?"
 
-        jdbcTemplate.execute(update)
+        jdbcTemplate.update(update, *arrayOf(oppdragStatus.name, oppdragId.personIdent, oppdragId.fagsystem, oppdragId.behandlingsId, versjon))
     }
 
-    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel, versjon: Int) {
+    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, oppdragStatus: OppdragStatus, kvittering: Mmel?, versjon: Int) {
         val updateStatement =
-            "UPDATE oppdrag_lager SET kvitteringsmelding = ? WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ? AND versjon = ?"
+            "UPDATE oppdrag_lager SET status = ?, kvitteringsmelding = ?" +
+                " WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ? AND versjon = ?"
 
         jdbcTemplate.update(
             updateStatement,
+            oppdragStatus.name,
             objectMapper.writeValueAsString(kvittering),
             oppdragId.personIdent,
             oppdragId.fagsystem,
@@ -127,13 +129,16 @@ class OppdragLagerRepositoryJdbc(
         return objectMapper.readValue(jsonUtbetalingsoppdrag)
     }
 
-    override fun hentAlleVersjonerAvOppdrag(oppdragId: OppdragId): List<OppdragLager> {
-        val hentStatement = "SELECT * FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
+    override fun hentKvitteringsinformasjon(oppdragId: OppdragId): List<Kvitteringsinformasjon> {
+        val hentStatement = """
+            SELECT 
+            fagsystem, person_ident, fagsak_id, behandling_id, status, avstemming_tidspunkt, opprettet_tidspunkt, kvitteringsmelding, versjon 
+            FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"""
 
         return jdbcTemplate.query(
             hentStatement,
-            arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
-            OppdragLagerRowMapper(),
+            KvitteringsinformasjonRowMapper,
+            *arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
         )
     }
 

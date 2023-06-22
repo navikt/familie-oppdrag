@@ -9,8 +9,7 @@ import jakarta.jms.TextMessage
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.somOppdragLager
-import no.nav.familie.oppdrag.repository.somOppdragLagerMedVersjon
+import no.nav.familie.oppdrag.repository.somKvitteringsinformasjon
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,53 +53,50 @@ class OppdragMQMottakTest {
 
     @Test
     fun skal_lagre_status_og_mmel_fra_kvittering() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+        val kvitteringsinformasjon = utbetalingsoppdragMedTilfeldigAktoer().somKvitteringsinformasjon
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
-            listOf(oppdragLager)
+        every { oppdragLagerRepository.hentKvitteringsinformasjon(any()) } returns
+            listOf(kvitteringsinformasjon)
 
         every { oppdragLagerRepository.oppdaterStatus(any(), any()) } just Runs
-        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
-        verify(exactly = 1) { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) }
-        verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(), any()) }
-        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) }
+        verify(exactly = 1) { oppdragLagerRepository.hentKvitteringsinformasjon(any()) }
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), any()) }
     }
 
     @Test
     fun skal_lagre_kvittering_på_riktig_versjon() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager.apply { status = OppdragStatus.KVITTERT_OK }
-        val oppdragLagerV1 = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLagerMedVersjon(1)
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somKvitteringsinformasjon.copy(status = OppdragStatus.KVITTERT_OK)
+        val oppdragLagerV1 = utbetalingsoppdragMedTilfeldigAktoer().somKvitteringsinformasjon.copy(versjon = 1)
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
+        every { oppdragLagerRepository.hentKvitteringsinformasjon(any()) } returns
             listOf(oppdragLager, oppdragLagerV1)
 
         every { oppdragLagerRepository.oppdaterStatus(any(), any(), any()) } just Runs
-        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any()) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
-        verify(exactly = 0) { oppdragLagerRepository.oppdaterStatus(any(), any(), 0) }
-        verify(exactly = 1) { oppdragLagerRepository.oppdaterStatus(any(), any(), 1) }
-        verify(exactly = 0) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), 0) }
-        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), 1) }
+        verify(exactly = 0) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), 0) }
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), 1) }
     }
 
     @Test
     fun skal_logge_error_hvis_det_finnes_to_identiske_oppdrag_i_databasen() {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } throws Exception()
+        every { oppdragLagerRepository.hentKvitteringsinformasjon(any()) } throws Exception()
 
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
@@ -118,7 +114,7 @@ class OppdragMQMottakTest {
     fun skal_logge_error_hvis_oppdraget_mangler_i_databasen() {
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } throws Exception()
+        every { oppdragLagerRepository.hentKvitteringsinformasjon(any()) } throws Exception()
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
@@ -133,15 +129,15 @@ class OppdragMQMottakTest {
 
     @Test
     fun skal_logge_warn_hvis_oppdrag_i_databasen_har_uventet_status() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somKvitteringsinformasjon
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
 
-        every { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) } returns
+        every { oppdragLagerRepository.hentKvitteringsinformasjon(any()) } returns
             listOf(oppdragLager.copy(status = OppdragStatus.KVITTERT_OK))
 
         every { oppdragLagerRepository.oppdaterStatus(any(), OppdragStatus.KVITTERT_OK) } just Runs
-        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any()) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
         oppdragMottaker.LOG = mockk()
@@ -152,7 +148,7 @@ class OppdragMQMottakTest {
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
-        verify(exactly = 1) { oppdragLagerRepository.hentAlleVersjonerAvOppdrag(any()) }
+        verify(exactly = 1) { oppdragLagerRepository.hentKvitteringsinformasjon(any()) }
         verify(exactly = 1) { oppdragMottaker.LOG.warn(any()) }
     }
 

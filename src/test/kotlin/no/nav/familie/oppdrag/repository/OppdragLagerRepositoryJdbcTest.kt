@@ -69,13 +69,31 @@ internal class OppdragLagerRepositoryJdbcTest {
             .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
-        val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        val hentetOppdrag = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragLager.id).single()
         val kvitteringsmelding = kvitteringsmelding()
 
-        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, kvitteringsmelding)
+        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, OppdragStatus.KVITTERT_OK, kvitteringsmelding, 0)
 
         val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
-        assertThat(kvitteringsmelding).isEqualToComparingFieldByField(hentetOppdatertOppdrag.kvitteringsmelding)
+        assertThat(hentetOppdatertOppdrag.status).isEqualTo(OppdragStatus.KVITTERT_OK)
+        assertThat(hentetOppdatertOppdrag.kvitteringsmelding)
+            .usingRecursiveComparison()
+            .isEqualTo(kvitteringsmelding)
+    }
+
+    @Test
+    fun `skal kun sette kvitteringsmeldingen til null`() {
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+            .copy(status = OppdragStatus.LAGT_PÅ_KØ, kvitteringsmelding = kvitteringsmelding())
+
+        oppdragLagerRepository.opprettOppdrag(oppdragLager)
+        val hentetOppdrag = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragLager.id).single()
+
+        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, OppdragStatus.KVITTERT_UKJENT, null, 0)
+
+        val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        assertThat(hentetOppdatertOppdrag.status).isEqualTo(OppdragStatus.KVITTERT_UKJENT)
+        assertThat(hentetOppdatertOppdrag.kvitteringsmelding).isNull()
     }
 
     private fun kvitteringsmelding(): Mmel {
