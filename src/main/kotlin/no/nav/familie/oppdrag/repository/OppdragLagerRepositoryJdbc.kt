@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.util.UUID
-import kotlin.NoSuchElementException
 
 @Repository
 class OppdragLagerRepositoryJdbc(
@@ -203,21 +202,20 @@ class OppdragLagerRepositoryJdbc(
 
 class OppdragLagerRowMapper : RowMapper<OppdragLager> {
 
-    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragLager? {
-        val kvittering = resultSet.getString(10)
+    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragLager {
         return OppdragLager(
-            UUID.fromString(resultSet.getString(12) ?: UUID.randomUUID().toString()),
-            resultSet.getString(7),
-            resultSet.getString(4),
-            resultSet.getString(5),
-            resultSet.getString(6),
-            objectMapper.readValue(resultSet.getString(9)),
-            resultSet.getString(1),
-            OppdragStatus.valueOf(resultSet.getString(2)),
-            resultSet.getTimestamp(8).toLocalDateTime(),
-            resultSet.getTimestamp(3).toLocalDateTime(),
-            if (kvittering == null) null else objectMapper.readValue(kvittering),
-            resultSet.getInt(11),
+            uuid = UUID.fromString(resultSet.getString("id") ?: UUID.randomUUID().toString()),
+            fagsystem = resultSet.getString("fagsystem"),
+            personIdent = resultSet.getString("person_ident"),
+            fagsakId = resultSet.getString("fagsak_id"),
+            behandlingId = resultSet.getString("behandling_id"),
+            utbetalingsoppdrag = objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
+            utgåendeOppdrag = resultSet.getString("utgaaende_oppdrag"),
+            status = OppdragStatus.valueOf(resultSet.getString("status")),
+            avstemmingTidspunkt = resultSet.getTimestamp("avstemming_tidspunkt").toLocalDateTime(),
+            opprettetTidspunkt = resultSet.getTimestamp("opprettet_tidspunkt").toLocalDateTime(),
+            kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
+            versjon = resultSet.getInt("versjon"),
         )
     }
 }
