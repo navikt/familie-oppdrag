@@ -10,11 +10,13 @@ import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedT
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DuplicateKeyException
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Container
@@ -34,9 +36,16 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
+    @Autowired lateinit var jdbcTemplate: JdbcTemplate
+
     companion object {
 
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
+    }
+
+    @BeforeEach
+    fun setUp() {
+        jdbcTemplate.execute("TRUNCATE TABLE oppdrag_lager")
     }
 
     @Test
@@ -124,7 +133,7 @@ internal class OppdragLagerRepositoryJdbcTest {
         fun hentOppdragForGrensesnittsavstemming(page: Int) =
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
                 dag.atStartOfDay(),
-                dag.atTime(24, 59),
+                dag.atTime(23, 59),
                 "BA",
                 2,
                 page,
@@ -155,7 +164,7 @@ internal class OppdragLagerRepositoryJdbcTest {
         assertThat(
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
                 dag.minusDays(1).atStartOfDay(),
-                dag.minusDays(1).atTime(24, 59),
+                dag.minusDays(1).atTime(23, 59),
                 "BA",
                 2,
                 0,

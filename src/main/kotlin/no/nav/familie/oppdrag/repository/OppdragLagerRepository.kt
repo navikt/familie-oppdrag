@@ -20,7 +20,7 @@ interface OppdragLagerRepository {
         fagOmråde: String,
         antall: Int,
         page: Int,
-    ): List<OppdragLager>
+    ): List<OppdragTilAvstemming>
 
     fun hentUtbetalingsoppdragForKonsistensavstemming(
         fagsystem: String,

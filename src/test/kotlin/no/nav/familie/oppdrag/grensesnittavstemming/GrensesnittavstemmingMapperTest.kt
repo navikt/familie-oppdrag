@@ -3,8 +3,8 @@ package no.nav.familie.oppdrag.grensesnittavstemming
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.avstemming.SystemKode
-import no.nav.familie.oppdrag.repository.OppdragLager
-import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.repository.OppdragTilAvstemming
+import no.nav.familie.oppdrag.repository.somAvstemming
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
@@ -44,7 +44,7 @@ class GrensesnittavstemmingMapperTest {
         val avstemmingFom = avstemmingstidspunkt.toLocalDate().atStartOfDay()
         val avstemmingTom = avstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
         val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(avstemmingstidspunkt, fagområde)
-        val oppdragLager = utbetalingsoppdrag.somOppdragLager
+        val oppdragLager = utbetalingsoppdrag.somAvstemming
         val mapper = GrensesnittavstemmingMapper(fagområde, avstemmingFom, avstemmingTom)
         val meldinger = mapper.lagAlleMeldinger(listOf(oppdragLager))
         assertEquals(4, meldinger.size)
@@ -78,7 +78,7 @@ class GrensesnittavstemmingMapperTest {
 
         val mapper = GrensesnittavstemmingMapper(fagområde, now.withHour(0), now.withHour(23))
         listOf(oppdrag, oppdrag2, oppdrag3)
-            .forEach { mapper.lagAvstemmingsmeldinger(listOf(it.somOppdragLager.copy(status = OppdragStatus.KVITTERT_OK))) }
+            .forEach { mapper.lagAvstemmingsmeldinger(listOf(it.somAvstemming.copy(status = OppdragStatus.KVITTERT_OK))) }
 
         val totalmelding = mapper.lagTotalMelding()
         assertThat(totalmelding.total.totalAntall).isEqualTo(3)
@@ -99,7 +99,7 @@ class GrensesnittavstemmingMapperTest {
         assertThat(totalmelding.grunnlag.avvistBelop.toInt()).isEqualTo(0)
     }
 
-    fun GrensesnittavstemmingMapper.lagAlleMeldinger(oppdragsliste: List<OppdragLager>) =
+    fun GrensesnittavstemmingMapper.lagAlleMeldinger(oppdragsliste: List<OppdragTilAvstemming>) =
         listOf(lagStartmelding()) + lagAvstemmingsmeldinger(oppdragsliste) + lagTotalMelding() + lagSluttmelding()
 
     @Test
@@ -109,9 +109,9 @@ class GrensesnittavstemmingMapperTest {
         val avstemmingFom = førsteAvstemmingstidspunkt.toLocalDate().atStartOfDay()
         val avstemmingTom = andreAvstemmingstidspunkt.toLocalDate().atTime(LocalTime.MAX)
         val baOppdragLager1 =
-            lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somOppdragLager
+            lagTestUtbetalingsoppdrag(førsteAvstemmingstidspunkt, fagområde).somAvstemming
         val baOppdragLager2 =
-            lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somOppdragLager
+            lagTestUtbetalingsoppdrag(andreAvstemmingstidspunkt, fagområde).somAvstemming
         val mapper =
             GrensesnittavstemmingMapper(fagområde, avstemmingFom, avstemmingTom)
         val meldinger = mapper.lagAlleMeldinger(listOf(baOppdragLager1, baOppdragLager2))

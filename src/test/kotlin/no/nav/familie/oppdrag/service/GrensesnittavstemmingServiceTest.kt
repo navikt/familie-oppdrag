@@ -7,7 +7,7 @@ import io.mockk.verify
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.repository.somAvstemming
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Avstemmingsdata
@@ -41,11 +41,11 @@ class GrensesnittavstemmingServiceTest {
     fun `skal sende en melding på mq per batch`() {
         every { oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, 0) } returns
             listOf(
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somOppdragLager,
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somOppdragLager,
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somAvstemming,
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somAvstemming,
             )
         every { oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, 1) } returns
-            listOf(TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somOppdragLager)
+            listOf(TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somAvstemming)
 
         grensesnittavstemmingService.utførGrensesnittavstemming(
             GrensesnittavstemmingRequest(fagområde, LocalDateTime.now(), LocalDateTime.now()),

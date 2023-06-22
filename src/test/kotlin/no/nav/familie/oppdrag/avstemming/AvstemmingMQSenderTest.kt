@@ -7,7 +7,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
 import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingMapper
-import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.repository.somAvstemming
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.informasjon.konsistensavstemmingsdata.v1.Konsistensavstemmingsdata
@@ -90,6 +90,6 @@ class AvstemmingMQSenderTest {
     private fun lagTestGrensesnittavstemming(): List<Avstemmingsdata> {
         val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(IDAG, FAGOMRÅDE)
         val mapper = GrensesnittavstemmingMapper(FAGOMRÅDE, IDAG.minusDays(1), IDAG)
-        return mapper.lagAvstemmingsmeldinger(listOf(utbetalingsoppdrag.somOppdragLager))
+        return mapper.lagAvstemmingsmeldinger(listOf(utbetalingsoppdrag.somAvstemming))
     }
 }

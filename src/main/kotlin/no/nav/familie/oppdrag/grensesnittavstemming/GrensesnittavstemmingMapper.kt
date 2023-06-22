@@ -4,7 +4,7 @@ import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.avstemming.AvstemmingMapper
 import no.nav.familie.oppdrag.avstemming.AvstemmingMapper.fagområdeTilAvleverendeKomponentKode
 import no.nav.familie.oppdrag.avstemming.SystemKode
-import no.nav.familie.oppdrag.repository.OppdragLager
+import no.nav.familie.oppdrag.repository.OppdragTilAvstemming
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Aksjonsdata
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AvstemmingType
@@ -45,7 +45,7 @@ class GrensesnittavstemmingMapper(
 
     fun lagSluttmelding() = lagMelding(AksjonType.AVSL)
 
-    fun lagAvstemmingsmeldinger(oppdragsliste: List<OppdragLager>): List<Avstemmingsdata> {
+    fun lagAvstemmingsmeldinger(oppdragsliste: List<OppdragTilAvstemming>): List<Avstemmingsdata> {
         if (oppdragsliste.isEmpty()) error("Kan ikke lage avstemminger med tom liste")
 
         return opprettAvstemmingsdataLister(oppdragsliste)
@@ -71,7 +71,7 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun opprettAvstemmingsdataLister(oppdragsliste: List<OppdragLager>): List<Avstemmingsdata> {
+    private fun opprettAvstemmingsdataLister(oppdragsliste: List<OppdragTilAvstemming>): List<Avstemmingsdata> {
         return opprettDetaljdata(oppdragsliste).chunked(ANTALL_DETALJER_PER_MELDING).map {
             lagMelding(AksjonType.DATA).apply {
                 this.detalj.addAll(it)
@@ -79,7 +79,7 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun opprettDetaljdata(oppdragsliste: List<OppdragLager>): List<Detaljdata> {
+    private fun opprettDetaljdata(oppdragsliste: List<OppdragTilAvstemming>): List<Detaljdata> {
         return oppdragsliste.mapNotNull { oppdrag ->
 
             leggTilGrunnlagsinformasjon(oppdrag)
@@ -107,7 +107,7 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun håndterAvstemmingstidspunkt(oppdrag: OppdragLager) {
+    private fun håndterAvstemmingstidspunkt(oppdrag: OppdragTilAvstemming) {
         val fom = avstemmingstidspunkt.fom
         val tom = avstemmingstidspunkt.tom
         if (fom == null || fom > oppdrag.avstemmingTidspunkt) {
@@ -118,7 +118,7 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun leggTilGrunnlagsinformasjon(oppdrag: OppdragLager) {
+    private fun leggTilGrunnlagsinformasjon(oppdrag: OppdragTilAvstemming) {
         val satsbeløp = getSatsBeløp(oppdrag)
         when (oppdrag.status) {
             OppdragStatus.LAGT_PÅ_KØ -> {
@@ -143,12 +143,12 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun leggTilTotalData(oppdrag: OppdragLager) {
+    private fun leggTilTotalData(oppdrag: OppdragTilAvstemming) {
         total.antall++
         total.beløp += getSatsBeløp(oppdrag)
     }
 
-    private fun opprettDetaljType(oppdrag: OppdragLager): DetaljType? =
+    private fun opprettDetaljType(oppdrag: OppdragTilAvstemming): DetaljType? =
         when (oppdrag.status) {
             OppdragStatus.LAGT_PÅ_KØ -> DetaljType.MANG
             OppdragStatus.KVITTERT_MED_MANGLER -> DetaljType.VARS
@@ -197,7 +197,7 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun getSatsBeløp(oppdrag: OppdragLager): Long =
+    private fun getSatsBeløp(oppdrag: OppdragTilAvstemming): Long =
         oppdrag.utbetalingsoppdrag.utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
 
     private fun getFortegn(satsbeløp: Long): Fortegn {
