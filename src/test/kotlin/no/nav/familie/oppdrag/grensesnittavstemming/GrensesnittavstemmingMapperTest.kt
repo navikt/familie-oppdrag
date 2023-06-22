@@ -48,10 +48,11 @@ class GrensesnittavstemmingMapperTest {
         val mapper = GrensesnittavstemmingMapper(fagområde, avstemmingFom, avstemmingTom)
         val meldinger = mapper.lagAlleMeldinger(listOf(oppdragLager))
         assertEquals(4, meldinger.size)
-        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.START, meldinger[0].aksjon)
         val datamelding = meldinger[1]
-        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, datamelding.aksjon)
         val totalmelding = meldinger[2]
+
+        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.START, meldinger[0].aksjon)
+        assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, datamelding.aksjon)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.DATA, totalmelding.aksjon)
         assertAksjon(avstemmingFom, avstemmingTom, AksjonType.AVSL, meldinger.last().aksjon)
 

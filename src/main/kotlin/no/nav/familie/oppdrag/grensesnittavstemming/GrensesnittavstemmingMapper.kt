@@ -179,21 +179,21 @@ class GrensesnittavstemmingMapper(
 
     private fun opprettGrunnlagsData(): Grunnlagsdata {
         return Grunnlagsdata().apply {
-            this.godkjentAntall = grunnlagsdata.godkjentAntall
-            this.godkjentBelop = BigDecimal.valueOf(grunnlagsdata.godkjentBelop)
-            this.godkjentFortegn = getFortegn(grunnlagsdata.godkjentBelop)
+            godkjentAntall = grunnlagsdata.godkjentAntall
+            godkjentBelop = BigDecimal.valueOf(grunnlagsdata.godkjentBelop)
+            godkjentFortegn = getFortegn(grunnlagsdata.godkjentBelop)
 
-            this.varselAntall = varselAntall
-            this.varselBelop = BigDecimal.valueOf(grunnlagsdata.varselBelop)
-            this.varselFortegn = getFortegn(grunnlagsdata.varselBelop)
+            varselAntall = grunnlagsdata.varselAntall
+            varselBelop = BigDecimal.valueOf(grunnlagsdata.varselBelop)
+            varselFortegn = getFortegn(grunnlagsdata.varselBelop)
 
-            this.manglerAntall = manglerAntall
-            this.manglerBelop = BigDecimal.valueOf(grunnlagsdata.manglerBelop)
-            this.manglerFortegn = getFortegn(grunnlagsdata.manglerBelop)
+            manglerAntall = grunnlagsdata.manglerAntall
+            manglerBelop = BigDecimal.valueOf(grunnlagsdata.manglerBelop)
+            manglerFortegn = getFortegn(grunnlagsdata.manglerBelop)
 
-            this.avvistAntall = avvistAntall
-            this.avvistBelop = BigDecimal.valueOf(grunnlagsdata.avvistBelop)
-            this.avvistFortegn = getFortegn(grunnlagsdata.avvistBelop)
+            avvistAntall = grunnlagsdata.avvistAntall
+            avvistBelop = BigDecimal.valueOf(grunnlagsdata.avvistBelop)
+            avvistFortegn = getFortegn(grunnlagsdata.avvistBelop)
         }
     }
 

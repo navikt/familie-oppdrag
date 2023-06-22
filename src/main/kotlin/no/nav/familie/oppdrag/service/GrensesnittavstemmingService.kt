@@ -43,9 +43,8 @@ class GrensesnittavstemmingService(
         avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagStartmelding())
         while (oppdragSomSkalAvstemmes.isNotEmpty()) {
             val meldinger = avstemmingMapper.lagAvstemmingsmeldinger(oppdragSomSkalAvstemmes)
-            meldinger.forEach {
-                avstemmingSender.sendGrensesnittAvstemming(it)
-            }
+            meldinger.forEach { avstemmingSender.sendGrensesnittAvstemming(it) }
+
             antallMeldinger += meldinger.size
             oppdragSomSkalAvstemmes =
                 oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem, antall, page++)

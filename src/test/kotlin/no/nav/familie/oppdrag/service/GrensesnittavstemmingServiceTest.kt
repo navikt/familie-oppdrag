@@ -1,42 +1,71 @@
 package no.nav.familie.oppdrag.service
 
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.verify
+import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
+import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
-import no.nav.familie.oppdrag.util.Containers
-import no.nav.familie.oppdrag.util.TestConfig
-import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag
-import org.junit.jupiter.api.Assertions.*
+import no.nav.familie.oppdrag.repository.somOppdragLager
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
+import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Avstemmingsdata
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.jms.annotation.EnableJms
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
 
-@ActiveProfiles("dev")
-@ContextConfiguration(initializers = [Containers.PostgresSQLInitializer::class, Containers.MQInitializer::class])
-@SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
-@EnableJms
-@DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
-@Testcontainers
 class GrensesnittavstemmingServiceTest {
 
-    @Autowired lateinit var grensesnittavstemmingService: GrensesnittavstemmingService
+    val fagområde = "EFOG"
+    val antall = 2
 
-    @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
+    val avstemmingSender = mockk<AvstemmingSender>()
+    val oppdragLagerRepository = mockk<OppdragLagerRepository>()
+    val grensesnittavstemmingService = GrensesnittavstemmingService(avstemmingSender, oppdragLagerRepository, antall)
 
-    companion object {
+    val slot = mutableListOf<Avstemmingsdata>()
 
-        @Container var postgreSQLContainer = Containers.postgreSQLContainer
+    @BeforeEach
+    fun setUp() {
+        slot.clear()
+        every {
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, any())
+        } returns emptyList()
 
-        @Container var ibmMQContainer = Containers.ibmMQContainer
+        justRun { avstemmingSender.sendGrensesnittAvstemming(capture(slot)) }
     }
 
     @Test
-    fun `skal sende grensesnitt`() {
-        val oppdrag1 = TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer()
-        //  oppdragLagerRepository.opprettOppdrag()
+    fun `skal sende en melding på mq per batch`() {
+        every { oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, 0) } returns
+            listOf(
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somOppdragLager,
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somOppdragLager,
+            )
+        every { oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, 1) } returns
+            listOf(TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somOppdragLager)
+
+        grensesnittavstemmingService.utførGrensesnittavstemming(
+            GrensesnittavstemmingRequest(fagområde, LocalDateTime.now(), LocalDateTime.now()),
+        )
+
+        verify(exactly = 3) {
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, any())
+        }
+        assertThat(slot).hasSize(5)
+        assertThat(slot[0].aksjon.aksjonType).isEqualTo(AksjonType.START)
+        assertThat(slot[1].aksjon.aksjonType).isEqualTo(AksjonType.DATA)
+        assertThat(slot[2].aksjon.aksjonType).isEqualTo(AksjonType.DATA)
+        assertThat(slot[3].aksjon.aksjonType).isEqualTo(AksjonType.DATA)
+        assertThat(slot[4].aksjon.aksjonType).isEqualTo(AksjonType.AVSL)
+
+        // Kun datameldinger skal ha detaljer
+        assertThat(slot[1].detalj).hasSize(2)
+        assertThat(slot[2].detalj).hasSize(1)
+        assertThat(slot[3].detalj).isEmpty() // totaldata
+
+        assertThat(slot[3].total.totalAntall).isEqualTo(3)
     }
 }
