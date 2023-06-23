@@ -108,15 +108,18 @@ class OppdragLagerRepositoryJdbc(
         val hentStatement = """
             SELECT 
             status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, kvitteringsmelding
-            FROM oppdrag_lager WHERE avstemming_tidspunkt >= ? AND avstemming_tidspunkt < ? AND fagsystem = ? 
-            ORDER BY behandling_id ASC OFFSET ? LIMIT ?
+            FROM oppdrag_lager 
+            WHERE avstemming_tidspunkt >= :fomTidspunkt AND avstemming_tidspunkt < :tomTidspunkt AND fagsystem = :fagsystem 
+            ORDER BY behandling_id ASC OFFSET :offset LIMIT :limit
             """
+        val values = MapSqlParameterSource()
+            .addValue("fomTidspunkt", fomTidspunkt)
+            .addValue("tomTidspunkt", tomTidspunkt)
+            .addValue("fagsystem", fagOmråde)
+            .addValue("offset", page * antall)
+            .addValue("limit", antall)
 
-        return jdbcTemplate.query(
-            hentStatement,
-            OppdragTilAvstemmingRowMapper,
-            *arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde, page * antall, antall),
-        )
+        return namedParameterJdbcTemplate.query(hentStatement, values, OppdragTilAvstemmingRowMapper)
     }
 
     override fun hentUtbetalingsoppdrag(oppdragId: OppdragId, versjon: Int): Utbetalingsoppdrag {
