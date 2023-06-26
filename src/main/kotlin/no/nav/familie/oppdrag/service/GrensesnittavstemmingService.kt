@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.service
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
@@ -20,6 +21,7 @@ class GrensesnittavstemmingService(
     @Value("\${grensesnitt.antall:7000}") private val antall: Int,
 ) {
 
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
     private var countere: MutableMap<String, Map<String, Counter>> = HashMap()
 
     init {
@@ -31,7 +33,7 @@ class GrensesnittavstemmingService(
     fun utførGrensesnittavstemming(request: GrensesnittavstemmingRequest) {
         val (fagsystem: String, fra: LocalDateTime, til: LocalDateTime) = request
         var page = 0
-        var antallMeldinger = 0
+        var antallOppdragSomSkalAvstemmes = 0
         var oppdragSomSkalAvstemmes =
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem, antall, page++)
         if (oppdragSomSkalAvstemmes.isEmpty()) {
@@ -45,7 +47,7 @@ class GrensesnittavstemmingService(
             val meldinger = avstemmingMapper.lagAvstemmingsmeldinger(oppdragSomSkalAvstemmes)
             meldinger.forEach { avstemmingSender.sendGrensesnittAvstemming(it) }
 
-            antallMeldinger += meldinger.size
+            antallOppdragSomSkalAvstemmes += oppdragSomSkalAvstemmes.size
             oppdragSomSkalAvstemmes =
                 oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem, antall, page++)
         }
@@ -53,7 +55,14 @@ class GrensesnittavstemmingService(
         avstemmingSender.sendGrensesnittAvstemming(totalmelding)
         avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagSluttmelding())
 
-        LOG.info("Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId} antallMeldinger=$antallMeldinger")
+        LOG.info(
+            "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}" +
+                " antallOppdragSomSkalAvstemmes=$antallOppdragSomSkalAvstemmes",
+        )
+        secureLogger.info(
+            "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId} " +
+                "totalmelding=${objectMapper.writeValueAsString(totalmelding)}",
+        )
 
         oppdaterMetrikker(fagsystem, totalmelding.grunnlag)
     }
