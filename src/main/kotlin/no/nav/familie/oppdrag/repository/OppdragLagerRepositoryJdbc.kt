@@ -75,13 +75,20 @@ class OppdragLagerRepositoryJdbc(
     }
 
     override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int) {
-        val update = "UPDATE oppdrag_lager SET status = ? " +
-            "WHERE person_ident = ? " +
-            "AND fagsystem = ? " +
-            "AND behandling_id = ?" +
-            "AND versjon = ?"
+        val update = "UPDATE oppdrag_lager SET status = :status " +
+            "WHERE person_ident = :personIdent " +
+            "AND fagsystem = :fagsystem " +
+            "AND behandling_id = :behandlingId " +
+            "AND versjon = :versjon"
 
-        jdbcTemplate.update(update, *arrayOf(oppdragStatus.name, oppdragId.personIdent, oppdragId.fagsystem, oppdragId.behandlingsId, versjon))
+        val values = MapSqlParameterSource()
+            .addValue("status", oppdragStatus.name)
+            .addValue("personIdent", oppdragId.personIdent)
+            .addValue("fagsystem", oppdragId.fagsystem)
+            .addValue("behandlingId", oppdragId.behandlingsId)
+            .addValue("versjon", versjon)
+
+        namedParameterJdbcTemplate.update(update, values)
     }
 
     override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, oppdragStatus: OppdragStatus, kvittering: Mmel?, versjon: Int) {
@@ -141,13 +148,14 @@ class OppdragLagerRepositoryJdbc(
         val hentStatement = """
             SELECT 
             fagsystem, person_ident, fagsak_id, behandling_id, status, avstemming_tidspunkt, opprettet_tidspunkt, kvitteringsmelding, versjon 
-            FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"""
+            FROM oppdrag_lager WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem"""
 
-        return jdbcTemplate.query(
-            hentStatement,
-            KvitteringsinformasjonRowMapper,
-            *arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
-        )
+        val values = MapSqlParameterSource()
+            .addValue("behandlingId", oppdragId.behandlingsId)
+            .addValue("personIdent", oppdragId.personIdent)
+            .addValue("fagsystem", oppdragId.fagsystem)
+
+        return namedParameterJdbcTemplate.query(hentStatement, values, KvitteringsinformasjonRowMapper)
     }
 
     override fun hentUtbetalingsoppdragForKonsistensavstemming(
