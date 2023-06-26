@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.service
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
+import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
@@ -9,6 +10,7 @@ import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -16,8 +18,10 @@ import java.time.LocalDateTime
 class GrensesnittavstemmingService(
     private val avstemmingSender: AvstemmingSender,
     private val oppdragLagerRepository: OppdragLagerRepository,
+    @Value("\${grensesnitt.antall:7000}") private val antall: Int,
 ) {
 
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
     private var countere: MutableMap<String, Map<String, Counter>> = HashMap()
 
     init {
@@ -28,24 +32,39 @@ class GrensesnittavstemmingService(
 
     fun utførGrensesnittavstemming(request: GrensesnittavstemmingRequest) {
         val (fagsystem: String, fra: LocalDateTime, til: LocalDateTime) = request
-        val oppdragSomSkalAvstemmes = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem)
-        val avstemmingMapper = GrensesnittavstemmingMapper(oppdragSomSkalAvstemmes, fagsystem, fra, til)
-        val meldinger = avstemmingMapper.lagAvstemmingsmeldinger()
-
-        if (meldinger.isEmpty()) {
+        var page = 0
+        var antallOppdragSomSkalAvstemmes = 0
+        var oppdragSomSkalAvstemmes =
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem, antall, page++)
+        if (oppdragSomSkalAvstemmes.isEmpty()) {
             LOG.info("Ingen oppdrag å gjennomføre grensesnittavstemming for.")
             return
         }
+        val avstemmingMapper = GrensesnittavstemmingMapper(fagsystem, fra, til)
+        LOG.info("Utfører grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}")
+        avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagStartmelding())
+        while (oppdragSomSkalAvstemmes.isNotEmpty()) {
+            val meldinger = avstemmingMapper.lagAvstemmingsmeldinger(oppdragSomSkalAvstemmes)
+            meldinger.forEach { avstemmingSender.sendGrensesnittAvstemming(it) }
 
-        LOG.info("Utfører grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}, ${meldinger.size} antall meldinger.")
-
-        meldinger.forEach {
-            avstemmingSender.sendGrensesnittAvstemming(it)
+            antallOppdragSomSkalAvstemmes += oppdragSomSkalAvstemmes.size
+            oppdragSomSkalAvstemmes =
+                oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem, antall, page++)
         }
+        val totalmelding = avstemmingMapper.lagTotalMelding()
+        avstemmingSender.sendGrensesnittAvstemming(totalmelding)
+        avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagSluttmelding())
 
-        LOG.info("Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}")
+        LOG.info(
+            "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}" +
+                " antallOppdragSomSkalAvstemmes=$antallOppdragSomSkalAvstemmes",
+        )
+        secureLogger.info(
+            "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId} " +
+                "totalmelding=${objectMapper.writeValueAsString(totalmelding)}",
+        )
 
-        oppdaterMetrikker(fagsystem, meldinger[1].grunnlag)
+        oppdaterMetrikker(fagsystem, totalmelding.grunnlag)
     }
 
     private fun oppdaterMetrikker(fagsystem: String, grunnlag: Grunnlagsdata) {

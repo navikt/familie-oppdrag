@@ -33,6 +33,7 @@ object TestOppdragMedAvstemmingsdato {
         beløp: Int = 100,
         fom: LocalDate = LocalDate.now().withDayOfMonth(1),
         tom: LocalDate = LocalDate.now().plusYears(6),
+        behandlingId: Long? = null,
     ) =
         Utbetalingsperiode(
             erEndringPåEksisterendePeriode = false,
@@ -46,7 +47,7 @@ object TestOppdragMedAvstemmingsdato {
             sats = beløp.toBigDecimal(),
             satsType = Utbetalingsperiode.SatsType.MND,
             utbetalesTil = AKTOER,
-            behandlingId = Random.nextLong(),
+            behandlingId = behandlingId ?: Random.nextLong(),
             utbetalingsgrad = 50,
         )
 }
