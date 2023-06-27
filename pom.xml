@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.1.1</version>
     </parent>
 
     <properties>
@@ -19,16 +19,16 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.8.10</kotlin.version>
+        <kotlin.version>1.8.20</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
-        <kontrakter.version>3.0_20230404163639_edb8619-JAKARTA</kontrakter.version>
-        <token-validation-spring.version>3.0.10</token-validation-spring.version>
-        <common-java-modules.version>3.2023.02.16_14.15-895462f3dde1</common-java-modules.version>
+        <felles.version>2.20230508082643_6b28bd8</felles.version>
+        <kontrakter.version>3.0_20230626115537_2a79e1a</kontrakter.version>
+        <token-validation-spring.version>3.1.0</token-validation-spring.version>
+        <common-java-modules.version>2023.03.21_13.06-9a5b1febdbde</common-java-modules.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
-        <jaxb-core.version>4.0.2</jaxb-core.version>
-        <jaxb-impl.version>4.0.2</jaxb-impl.version>
-        <cxf.version>4.0.0</cxf.version>
+        <jaxb-core.version>4.0.3</jaxb-core.version>
+        <jaxb-impl.version>4.0.3</jaxb-impl.version>
+        <cxf.version>4.0.2</cxf.version>
 
         <mockk.version>1.13.5</mockk.version>
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
@@ -39,8 +39,8 @@
         </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring-cloud.version>2022.0.2</spring-cloud.version>
-        <testcontainers.version>1.18.0</testcontainers.version>
+        <spring-cloud.version>2022.0.3</spring-cloud.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20230320122056_cbf7dad</tjenestespesifikasjoner.version>
         <springdoc.version>2.1.0</springdoc.version>
 
@@ -138,7 +138,7 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.jakarta.client</artifactId>
-            <version>9.3.2.0</version>
+            <version>9.3.3.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
@@ -451,7 +451,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.9</version>
+                    <version>0.8.10</version>
                     <configuration>
                         <excludes>
                             <exclude>**/config/FlywayConfig.kt</exclude>
