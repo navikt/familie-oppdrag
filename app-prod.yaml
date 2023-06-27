@@ -5,6 +5,9 @@ metadata:
   namespace: teamfamilie
   labels:
     team: teamfamilie
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
 
 spec:
   image: {{ image }}
@@ -31,8 +34,7 @@ spec:
     cpuThresholdPercentage: 50
   resources:
     limits:
-      memory: 4096Mi
-      cpu: "2"
+      memory: 6096Mi
     requests:
       memory: 1Gi
       cpu: 500m

@@ -1,6 +1,7 @@
 package no.nav.familie.oppdrag.rest
 
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.oppdragId
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
@@ -9,6 +10,7 @@ import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.shaded.org.awaitility.Awaitility.await
+import java.time.Duration
 import kotlin.test.assertEquals
 
 @ActiveProfiles("dev")
@@ -34,6 +38,7 @@ internal class OppdragControllerIntegrationTest {
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
     companion object {
+
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
 
         @Container var ibmMQContainer = Containers.ibmMQContainer
@@ -47,15 +52,7 @@ internal class OppdragControllerIntegrationTest {
         val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer()
         oppdragController.sendOppdrag(utbetalingsoppdrag)
 
-        var oppdragStatus: OppdragStatus
-
-        do {
-            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.oppdragId)
-
-            oppdragStatus = oppdrag.status
-        } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
-
-        assertEquals(OppdragStatus.KVITTERT_OK, oppdragStatus)
+        assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
     }
 
     @Test
@@ -74,14 +71,27 @@ internal class OppdragControllerIntegrationTest {
         assertEquals(HttpStatus.CONFLICT, responseAndreSending.statusCode)
         assertEquals(Ressurs.Status.FEILET, responseAndreSending.body?.status)
 
-        var oppdragStatus: OppdragStatus
+        assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
+    }
 
-        do {
-            val oppdrag = oppdragLagerRepository.hentOppdrag(utbetalingsoppdrag.oppdragId)
+    @Test
+    fun `skal kunne resende et oppdrag hvis statusen er funksjonell feil`() {
+        val mapper = OppdragMapper()
+        val oppdragController = OppdragController(oppdragService, mapper)
 
-            oppdragStatus = oppdrag.status
-        } while (oppdragStatus == OppdragStatus.LAGT_PÅ_KØ)
+        val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer()
+        oppdragController.sendOppdrag(utbetalingsoppdrag)
+        oppdragLagerRepository.oppdaterStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_FUNKSJONELL_FEIL)
 
-        assertEquals(OppdragStatus.KVITTERT_OK, oppdragStatus)
+        oppdragController.resentOppdrag(utbetalingsoppdrag.oppdragId)
+        assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
+    }
+
+    private fun assertOppdragStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus) {
+        await()
+            .pollInterval(Duration.ofMillis(200))
+            .atMost(Duration.ofSeconds(10)).untilAsserted {
+                assertThat(oppdragLagerRepository.hentOppdrag(oppdragId).status).isEqualTo(oppdragStatus)
+            }
     }
 }

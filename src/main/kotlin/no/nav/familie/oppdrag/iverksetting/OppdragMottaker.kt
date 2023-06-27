@@ -55,24 +55,33 @@ class OppdragMottaker(
 
         LOG.debug("Henter oppdrag $oppdragId fra databasen")
 
-        val førsteOppdragUtenKvittering = oppdragLagerRepository.hentAlleVersjonerAvOppdrag(oppdragId)
+        val førsteOppdragUtenKvittering = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragId)
             .find { oppdrag -> oppdrag.status == OppdragStatus.LAGT_PÅ_KØ }
         if (førsteOppdragUtenKvittering == null) {
             LOG.warn("Oppdraget tilknyttet mottatt kvittering har uventet status i databasen. Oppdraget er: $oppdragId")
             return
         }
 
-        if (kvittering.mmel != null) {
-            oppdragLagerRepository.oppdaterKvitteringsmelding(oppdragId, kvittering.mmel, førsteOppdragUtenKvittering.versjon)
-        }
-
-        if (!env.activeProfiles.contains("dev") && !env.activeProfiles.contains("e2e")) {
-            LOG.debug("Lagrer oppdatert oppdrag $oppdragId i databasen med ny status ${kvittering.oppdragStatus}")
-            oppdragLagerRepository.oppdaterStatus(oppdragId, kvittering.oppdragStatus, førsteOppdragUtenKvittering.versjon)
-        } else {
-            oppdragLagerRepository.oppdaterStatus(oppdragId, OppdragStatus.KVITTERT_OK, førsteOppdragUtenKvittering.versjon)
-        }
+        val oppdatertkvitteringsmelding = kvittering.mmel ?: førsteOppdragUtenKvittering.kvitteringsmelding
+        val status = hentStatus(kvittering)
+        LOG.debug("Lagrer oppdatert oppdrag $oppdragId i databasen med ny status $status")
+        oppdragLagerRepository.oppdaterKvitteringsmelding(
+            oppdragId = oppdragId,
+            oppdragStatus = status,
+            kvittering = oppdatertkvitteringsmelding,
+            versjon = førsteOppdragUtenKvittering.versjon,
+        )
     }
+
+    /**
+     * I dev og e2e settes status alltid til KVITTER_OK
+     */
+    private fun hentStatus(kvittering: Oppdrag) =
+        if (!env.activeProfiles.contains("dev") && !env.activeProfiles.contains("e2e")) {
+            kvittering.oppdragStatus
+        } else {
+            OppdragStatus.KVITTERT_OK
+        }
 
     fun lesKvittering(svarFraOppdrag: String): Oppdrag {
         return Jaxb.tilOppdrag(svarFraOppdrag)

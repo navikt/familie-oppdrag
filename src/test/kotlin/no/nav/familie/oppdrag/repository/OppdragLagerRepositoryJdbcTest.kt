@@ -4,20 +4,24 @@ import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
-import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag
+import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode
 import no.nav.familie.oppdrag.util.TestUtbetalingsoppdrag.utbetalingsoppdragMedTilfeldigAktoer
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DuplicateKeyException
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -32,8 +36,16 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
+    @Autowired lateinit var jdbcTemplate: JdbcTemplate
+
     companion object {
+
         @Container var postgreSQLContainer = Containers.postgreSQLContainer
+    }
+
+    @BeforeEach
+    fun setUp() {
+        jdbcTemplate.execute("TRUNCATE TABLE oppdrag_lager")
     }
 
     @Test
@@ -69,13 +81,31 @@ internal class OppdragLagerRepositoryJdbcTest {
             .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
-        val hentetOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        val hentetOppdrag = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragLager.id).single()
         val kvitteringsmelding = kvitteringsmelding()
 
-        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, kvitteringsmelding)
+        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, OppdragStatus.KVITTERT_OK, kvitteringsmelding, 0)
 
         val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
-        assertThat(kvitteringsmelding).isEqualToComparingFieldByField(hentetOppdatertOppdrag.kvitteringsmelding)
+        assertThat(hentetOppdatertOppdrag.status).isEqualTo(OppdragStatus.KVITTERT_OK)
+        assertThat(hentetOppdatertOppdrag.kvitteringsmelding)
+            .usingRecursiveComparison()
+            .isEqualTo(kvitteringsmelding)
+    }
+
+    @Test
+    fun `skal kun sette kvitteringsmeldingen til null`() {
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+            .copy(status = OppdragStatus.LAGT_PÅ_KØ, kvitteringsmelding = kvitteringsmelding())
+
+        oppdragLagerRepository.opprettOppdrag(oppdragLager)
+        val hentetOppdrag = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragLager.id).single()
+
+        oppdragLagerRepository.oppdaterKvitteringsmelding(hentetOppdrag.id, OppdragStatus.KVITTERT_UKJENT, null, 0)
+
+        val hentetOppdatertOppdrag = oppdragLagerRepository.hentOppdrag(oppdragLager.id)
+        assertThat(hentetOppdatertOppdrag.status).isEqualTo(OppdragStatus.KVITTERT_UKJENT)
+        assertThat(hentetOppdatertOppdrag.kvitteringsmelding).isNull()
     }
 
     private fun kvitteringsmelding(): Mmel {
@@ -94,15 +124,17 @@ internal class OppdragLagerRepositoryJdbcTest {
 
         val avstemmingsTidspunktetSomSkalKjøres = dag
 
-        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
-        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag.minusDays(1), "BA").somOppdragLager
-        val efOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(dag, "EFOG").somOppdragLager
+        val baOppdragLager =
+            lagTestUtbetalingsoppdrag(avstemmingsTidspunktetSomSkalKjøres, "BA").somOppdragLager
+        val baOppdragLager2 = lagTestUtbetalingsoppdrag(dag.minusDays(1), "BA").somOppdragLager
+        val efOppdragLager = lagTestUtbetalingsoppdrag(dag, "EFOG").somOppdragLager
 
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
         oppdragLagerRepository.opprettOppdrag(efOppdragLager)
 
-        val oppdrageneTilGrensesnittavstemming = oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA")
+        val oppdrageneTilGrensesnittavstemming =
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(startenPåDagen, sluttenAvDagen, "BA", 1, 0)
 
         assertEquals(1, oppdrageneTilGrensesnittavstemming.size)
         assertEquals("BA", oppdrageneTilGrensesnittavstemming.first().fagsystem)
@@ -113,10 +145,57 @@ internal class OppdragLagerRepositoryJdbcTest {
     }
 
     @Test
+    fun `skal kunne hente ut deler av grensesnittsavstemminger`() {
+        val dag = LocalDate.now()
+
+        fun hentOppdragForGrensesnittsavstemming(page: Int) =
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
+                dag.atStartOfDay(),
+                dag.atTime(23, 59),
+                "BA",
+                2,
+                page,
+            ).map { it.behandlingId.toInt() }
+
+        val oppdrag1 = lagTestUtbetalingsoppdrag(
+            dag.atTime(4, 0),
+            "BA",
+            utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 3)),
+        )
+        val oppdrag2 = lagTestUtbetalingsoppdrag(
+            dag.atTime(12, 0),
+            "BA",
+            utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 1)),
+        )
+        val oppdrag3 = lagTestUtbetalingsoppdrag(
+            dag.atTime(16, 0),
+            "BA",
+            utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 2)),
+        )
+        listOf(oppdrag1, oppdrag2, oppdrag3).forEach { oppdragLagerRepository.opprettOppdrag(it.somOppdragLager) }
+
+        assertThat(hentOppdragForGrensesnittsavstemming(page = 0)).containsExactly(1, 2)
+        assertThat(hentOppdragForGrensesnittsavstemming(page = 1)).containsOnly(3)
+        assertThat(hentOppdragForGrensesnittsavstemming(page = 2)).isEmpty()
+        assertThat(hentOppdragForGrensesnittsavstemming(page = 4)).isEmpty()
+
+        assertThat(
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
+                dag.minusDays(1).atStartOfDay(),
+                dag.minusDays(1).atTime(23, 59),
+                "BA",
+                2,
+                0,
+            ),
+        ).isEmpty()
+    }
+
+    @Test
     fun skal_hente_ut_oppdrag_for_konsistensavstemming() {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
-        val baOppdragLager = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA").somOppdragLager
-        val baOppdragLager2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA").somOppdragLager
+        val baOppdragLager = lagTestUtbetalingsoppdrag(forrigeMåned, "BA").somOppdragLager
+        val baOppdragLager2 =
+            lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA").somOppdragLager
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager2)
 
@@ -130,7 +209,7 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Test
     fun `hentUtbetalingsoppdragForKonsistensavstemming går fint`() {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
-        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA")
+        val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(forrigeMåned, "BA")
         val baOppdragLager = utbetalingsoppdrag.somOppdragLager.copy(status = OppdragStatus.KVITTERT_OK)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
         oppdragLagerRepository.opprettOppdrag(baOppdragLager, 1)
@@ -175,7 +254,7 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Test
     fun `hentUtbetalingsoppdragForKonsistensavstemming test at oppdeling av spørring går fint`() {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
-        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA")
+        val utbetalingsoppdrag = lagTestUtbetalingsoppdrag(forrigeMåned, "BA")
         val baOppdragLager = utbetalingsoppdrag.somOppdragLager.copy(status = OppdragStatus.KVITTERT_OK)
 
         oppdragLagerRepository.opprettOppdrag(baOppdragLager)
@@ -193,8 +272,9 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Test
     fun `hentSisteUtbetalingsoppdragForFagsaker test spørring går fint`() {
         val forrigeMåned = LocalDateTime.now().minusMonths(1)
-        val utbetalingsoppdrag1 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned, "BA", fagsak = "1")
-        val utbetalingsoppdrag2 = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA", fagsak = "2")
+        val utbetalingsoppdrag1 = lagTestUtbetalingsoppdrag(forrigeMåned, "BA", fagsak = "1")
+        val utbetalingsoppdrag2 =
+            lagTestUtbetalingsoppdrag(forrigeMåned.minusDays(1), "BA", fagsak = "2")
 
         val oppdragLager1 = utbetalingsoppdrag1.somOppdragLager
         val oppdragLager2 = utbetalingsoppdrag2.somOppdragLager

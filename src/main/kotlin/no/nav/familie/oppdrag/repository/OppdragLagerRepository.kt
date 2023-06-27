@@ -10,15 +10,17 @@ interface OppdragLagerRepository {
 
     fun hentOppdrag(oppdragId: OppdragId, versjon: Int = 0): OppdragLager
     fun hentUtbetalingsoppdrag(oppdragId: OppdragId, versjon: Int = 0): Utbetalingsoppdrag
-    fun hentAlleVersjonerAvOppdrag(oppdragId: OppdragId): List<OppdragLager>
     fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int = 0)
     fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int = 0)
-    fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel, versjon: Int = 0)
+    fun hentKvitteringsinformasjon(oppdragId: OppdragId): List<Kvitteringsinformasjon>
+    fun oppdaterKvitteringsmelding(oppdragId: OppdragId, oppdragStatus: OppdragStatus, kvittering: Mmel?, versjon: Int = 0)
     fun hentIverksettingerForGrensesnittavstemming(
         fomTidspunkt: LocalDateTime,
         tomTidspunkt: LocalDateTime,
         fagOmråde: String,
-    ): List<OppdragLager>
+        antall: Int,
+        page: Int,
+    ): List<OppdragTilAvstemming>
 
     fun hentUtbetalingsoppdragForKonsistensavstemming(
         fagsystem: String,

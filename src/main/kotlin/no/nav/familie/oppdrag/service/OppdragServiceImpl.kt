@@ -1,8 +1,10 @@
 package no.nav.familie.oppdrag.service
 
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
+import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.oppdrag.domene.id
+import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
@@ -38,7 +40,20 @@ class OppdragServiceImpl(
         return oppdragLagerRepository.hentOppdrag(oppdragId)
     }
 
+    @Transactional(rollbackFor = [Throwable::class])
+    override fun resendOppdrag(oppdragId: OppdragId) {
+        val oppdrag = oppdragLagerRepository.hentOppdrag(oppdragId)
+        if (oppdrag.status != OppdragStatus.KVITTERT_FUNKSJONELL_FEIL) {
+            throw UnsupportedOperationException("Kan ikke resende $oppdragId då status=${oppdrag.status}")
+        }
+        LOG.info("Resender $oppdragId")
+        val oppdragXml = Jaxb.tilOppdrag(oppdrag.utgåendeOppdrag)
+        oppdragLagerRepository.oppdaterStatus(oppdragId, OppdragStatus.LAGT_PÅ_KØ)
+        oppdragSender.sendOppdrag(oppdragXml)
+    }
+
     companion object {
+
         val LOG = LoggerFactory.getLogger(OppdragServiceImpl::class.java)
     }
 }

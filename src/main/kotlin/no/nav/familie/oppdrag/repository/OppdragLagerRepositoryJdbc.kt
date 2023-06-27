@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.util.UUID
-import kotlin.NoSuchElementException
 
 @Repository
 class OppdragLagerRepositoryJdbc(
@@ -76,21 +75,30 @@ class OppdragLagerRepositoryJdbc(
     }
 
     override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int) {
-        val update = "UPDATE oppdrag_lager SET status = '${oppdragStatus.name}' " +
-            "WHERE person_ident = '${oppdragId.personIdent}' " +
-            "AND fagsystem = '${oppdragId.fagsystem}' " +
-            "AND behandling_id = '${oppdragId.behandlingsId}'" +
-            "AND versjon = $versjon"
+        val update = "UPDATE oppdrag_lager SET status = :status " +
+            "WHERE person_ident = :personIdent " +
+            "AND fagsystem = :fagsystem " +
+            "AND behandling_id = :behandlingId " +
+            "AND versjon = :versjon"
 
-        jdbcTemplate.execute(update)
+        val values = MapSqlParameterSource()
+            .addValue("status", oppdragStatus.name)
+            .addValue("personIdent", oppdragId.personIdent)
+            .addValue("fagsystem", oppdragId.fagsystem)
+            .addValue("behandlingId", oppdragId.behandlingsId)
+            .addValue("versjon", versjon)
+
+        namedParameterJdbcTemplate.update(update, values)
     }
 
-    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, kvittering: Mmel, versjon: Int) {
+    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, oppdragStatus: OppdragStatus, kvittering: Mmel?, versjon: Int) {
         val updateStatement =
-            "UPDATE oppdrag_lager SET kvitteringsmelding = ? WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ? AND versjon = ?"
+            "UPDATE oppdrag_lager SET status = ?, kvitteringsmelding = ?" +
+                " WHERE person_ident = ? AND fagsystem = ? AND behandling_id = ? AND versjon = ?"
 
         jdbcTemplate.update(
             updateStatement,
+            oppdragStatus.name,
             objectMapper.writeValueAsString(kvittering),
             oppdragId.personIdent,
             oppdragId.fagsystem,
@@ -103,15 +111,24 @@ class OppdragLagerRepositoryJdbc(
         fomTidspunkt: LocalDateTime,
         tomTidspunkt: LocalDateTime,
         fagOmråde: String,
-    ): List<OppdragLager> {
-        val hentStatement =
-            "SELECT * FROM oppdrag_lager WHERE avstemming_tidspunkt >= ? AND avstemming_tidspunkt < ? AND fagsystem = ?"
+        antall: Int,
+        page: Int,
+    ): List<OppdragTilAvstemming> {
+        val hentStatement = """
+            SELECT 
+            status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, kvitteringsmelding
+            FROM oppdrag_lager 
+            WHERE avstemming_tidspunkt >= :fomTidspunkt AND avstemming_tidspunkt < :tomTidspunkt AND fagsystem = :fagsystem 
+            ORDER BY behandling_id ASC OFFSET :offset LIMIT :limit
+            """
+        val values = MapSqlParameterSource()
+            .addValue("fomTidspunkt", fomTidspunkt)
+            .addValue("tomTidspunkt", tomTidspunkt)
+            .addValue("fagsystem", fagOmråde)
+            .addValue("offset", page * antall)
+            .addValue("limit", antall)
 
-        return jdbcTemplate.query(
-            hentStatement,
-            arrayOf(fomTidspunkt, tomTidspunkt, fagOmråde),
-            OppdragLagerRowMapper(),
-        )
+        return namedParameterJdbcTemplate.query(hentStatement, values, OppdragTilAvstemmingRowMapper)
     }
 
     override fun hentUtbetalingsoppdrag(oppdragId: OppdragId, versjon: Int): Utbetalingsoppdrag {
@@ -127,14 +144,18 @@ class OppdragLagerRepositoryJdbc(
         return objectMapper.readValue(jsonUtbetalingsoppdrag)
     }
 
-    override fun hentAlleVersjonerAvOppdrag(oppdragId: OppdragId): List<OppdragLager> {
-        val hentStatement = "SELECT * FROM oppdrag_lager WHERE behandling_id = ? AND person_ident = ? AND fagsystem = ?"
+    override fun hentKvitteringsinformasjon(oppdragId: OppdragId): List<Kvitteringsinformasjon> {
+        val hentStatement = """
+            SELECT 
+            fagsystem, person_ident, fagsak_id, behandling_id, status, avstemming_tidspunkt, opprettet_tidspunkt, kvitteringsmelding, versjon 
+            FROM oppdrag_lager WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem"""
 
-        return jdbcTemplate.query(
-            hentStatement,
-            arrayOf(oppdragId.behandlingsId, oppdragId.personIdent, oppdragId.fagsystem),
-            OppdragLagerRowMapper(),
-        )
+        val values = MapSqlParameterSource()
+            .addValue("behandlingId", oppdragId.behandlingsId)
+            .addValue("personIdent", oppdragId.personIdent)
+            .addValue("fagsystem", oppdragId.fagsystem)
+
+        return namedParameterJdbcTemplate.query(hentStatement, values, KvitteringsinformasjonRowMapper)
     }
 
     override fun hentUtbetalingsoppdragForKonsistensavstemming(
@@ -200,21 +221,20 @@ class OppdragLagerRepositoryJdbc(
 
 class OppdragLagerRowMapper : RowMapper<OppdragLager> {
 
-    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragLager? {
-        val kvittering = resultSet.getString(10)
+    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragLager {
         return OppdragLager(
-            UUID.fromString(resultSet.getString(12) ?: UUID.randomUUID().toString()),
-            resultSet.getString(7),
-            resultSet.getString(4),
-            resultSet.getString(5),
-            resultSet.getString(6),
-            objectMapper.readValue(resultSet.getString(9)),
-            resultSet.getString(1),
-            OppdragStatus.valueOf(resultSet.getString(2)),
-            resultSet.getTimestamp(8).toLocalDateTime(),
-            resultSet.getTimestamp(3).toLocalDateTime(),
-            if (kvittering == null) null else objectMapper.readValue(kvittering),
-            resultSet.getInt(11),
+            uuid = UUID.fromString(resultSet.getString("id") ?: UUID.randomUUID().toString()),
+            fagsystem = resultSet.getString("fagsystem"),
+            personIdent = resultSet.getString("person_ident"),
+            fagsakId = resultSet.getString("fagsak_id"),
+            behandlingId = resultSet.getString("behandling_id"),
+            utbetalingsoppdrag = objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
+            utgåendeOppdrag = resultSet.getString("utgaaende_oppdrag"),
+            status = OppdragStatus.valueOf(resultSet.getString("status")),
+            avstemmingTidspunkt = resultSet.getTimestamp("avstemming_tidspunkt").toLocalDateTime(),
+            opprettetTidspunkt = resultSet.getTimestamp("opprettet_tidspunkt").toLocalDateTime(),
+            kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
+            versjon = resultSet.getInt("versjon"),
         )
     }
 }

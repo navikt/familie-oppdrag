@@ -75,6 +75,14 @@ class OppdragController(
         )
     }
 
+    @PostMapping("resend")
+    fun resentOppdrag(
+        @Valid @RequestBody
+        oppdragId: OppdragId,
+    ) {
+        oppdragService.resendOppdrag(oppdragId)
+    }
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])
     fun hentStatus(
         @Valid @RequestBody
