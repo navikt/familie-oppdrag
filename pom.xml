@@ -19,12 +19,12 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.8.20</kotlin.version>
+        <kotlin.version>1.8.22</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>2.20230508082643_6b28bd8</felles.version>
         <kontrakter.version>3.0_20230626115537_2a79e1a</kontrakter.version>
         <token-validation-spring.version>3.1.0</token-validation-spring.version>
-        <common-java-modules.version>3.2023.02.16_14.15-895462f3dde1</common-java-modules.version>
+        <common-java-modules.version>3.2023.05.25_12.58-6d52407f804a</common-java-modules.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
         <jaxb-core.version>4.0.3</jaxb-core.version>
         <jaxb-impl.version>4.0.3</jaxb-impl.version>
