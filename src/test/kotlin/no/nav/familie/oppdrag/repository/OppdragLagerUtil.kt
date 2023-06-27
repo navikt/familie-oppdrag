@@ -47,4 +47,3 @@ val Utbetalingsoppdrag.somKvitteringsinformasjon: Kvitteringsinformasjon
             versjon = 0,
         )
     }
-
