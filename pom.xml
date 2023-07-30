@@ -39,7 +39,7 @@
         </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring-cloud.version>2022.0.3</spring-cloud.version>
+        <spring-cloud.version>2022.0.4</spring-cloud.version>
         <testcontainers.version>1.18.3</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20230320122056_cbf7dad</tjenestespesifikasjoner.version>
         <springdoc.version>2.1.0</springdoc.version>
