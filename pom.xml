@@ -24,8 +24,7 @@
         <felles.version>2.20230508082643_6b28bd8</felles.version>
         <kontrakter.version>3.0_20230808083340_ced4750</kontrakter.version>
         <token-validation-spring.version>3.1.2</token-validation-spring.version>
-        <common-java-modules.version>2023.03.21_13.06-9a5b1febdbde</common-java-modules.version>
-        <jaxb-api.version>4.0.2</jaxb-api.version>
+        <common-java-modules.version>3.2023.07.07_09.10-85326e9557f0</common-java-modules.version>
         <jaxb-core.version>4.0.3</jaxb-core.version>
         <jaxb-impl.version>4.0.3</jaxb-impl.version>
         <cxf.version>4.0.2</cxf.version>
