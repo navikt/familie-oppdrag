@@ -9,7 +9,7 @@ import java.util.Properties
 object DevPsqlMqLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
-        val psql = KPostgreSQLContainer("postgres")
+        val psql = KPostgreSQLContainer("postgres:15.2")
             .withDatabaseName("familie-oppdrag")
             .withUsername("postgres")
             .withPassword("test")

@@ -12,7 +12,7 @@ spring:
           expiry-threshold: 2m
       database:
         enabled: true
-        role: familie-oppdrag-admin
+        role: familie-oppdrag-15-admin
         backend: postgresql/preprod-fss
       authentication: KUBERNETES
       kubernetes:
