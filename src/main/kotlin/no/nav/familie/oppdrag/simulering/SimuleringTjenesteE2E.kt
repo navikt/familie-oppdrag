@@ -1,6 +1,5 @@
 package no.nav.familie.oppdrag.simulering
 
-import no.nav.familie.kontrakter.felles.oppdrag.RestSimulerResultat
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
@@ -14,8 +13,6 @@ import org.springframework.web.context.annotation.ApplicationScope
 @ApplicationScope
 @Profile("e2e")
 class SimuleringTjenesteE2E : SimuleringTjeneste {
-
-    override fun utførSimulering(utbetalingsoppdrag: Utbetalingsoppdrag): RestSimulerResultat = RestSimulerResultat(0)
     override fun utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat =
         DetaljertSimuleringResultat(simuleringMottaker = emptyList())
 

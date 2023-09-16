@@ -3,7 +3,7 @@ package no.nav.familie.oppdrag.simulering.util
 import io.mockk.InternalPlatformDsl.toStr
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
-import no.nav.familie.oppdrag.simulering.TypeKlasse
+import no.nav.familie.kontrakter.felles.simulering.PosteringType
 import no.nav.system.os.entiteter.beregningskjema.Beregning
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaa
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaaDetaljer
@@ -92,20 +92,6 @@ fun lagTestSimuleringResponse(): SimulerBeregningResponse {
     return lagSimulerBeregningResponse(listOf(periodeNåværendeMåned, periodeTidligereMåned))
 }
 
-fun lagBeregningStoppnivaFeilUtbetaling(
-    date: LocalDate,
-    forfall: Long = 0,
-    fagOmrade: String = "BA",
-): BeregningStoppnivaa {
-    val beregningStoppnivaa = BeregningStoppnivaa()
-    beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
-    beregningStoppnivaa.kodeFagomraade = fagOmrade
-
-    beregningStoppnivaa.beregningStoppnivaaDetaljer.add(lagBeregningStoppnivaaDetaljer(TypeKlasse.FEIL.name))
-
-    return beregningStoppnivaa
-}
-
 fun lagBeregningStoppniva(
     date: LocalDate,
     forfall: Long = 0,
@@ -121,28 +107,13 @@ fun lagBeregningStoppniva(
     return beregningStoppnivaa
 }
 
-fun lagBeregningStoppnivaRevurdering(
-    date: LocalDate,
-    forfall: Long = 0,
-    fagOmrade: String = "BA",
-): BeregningStoppnivaa {
-    val beregningStoppnivaa = BeregningStoppnivaa()
-    beregningStoppnivaa.forfall = date.plusDays(forfall).toString()
-    beregningStoppnivaa.kodeFagomraade = fagOmrade
-
-    beregningStoppnivaa.beregningStoppnivaaDetaljer.add(lagBeregningStoppnivaaDetaljer(belop = BigDecimal(1000)))
-    beregningStoppnivaa.beregningStoppnivaaDetaljer.add(lagBeregningStoppnivaaDetaljer(belop = BigDecimal(-500)))
-
-    return beregningStoppnivaa
-}
-
 private fun lagBeregningStoppnivaaDetaljer(
-    typeKlasse: String = TypeKlasse.YTEL.name,
+    posteringType: PosteringType = PosteringType.YTELSE,
     belop: BigDecimal = BigDecimal(1000),
     dato: LocalDate? = null,
 ): BeregningStoppnivaaDetaljer {
     val beregningStoppnivaaDetaljer = BeregningStoppnivaaDetaljer()
-    beregningStoppnivaaDetaljer.typeKlasse = typeKlasse
+    beregningStoppnivaaDetaljer.typeKlasse = posteringType.kode
     beregningStoppnivaaDetaljer.belop = belop
     beregningStoppnivaaDetaljer.faktiskFom = dato?.toStr()
     beregningStoppnivaaDetaljer.faktiskTom = dato?.plusMonths(1).toStr()

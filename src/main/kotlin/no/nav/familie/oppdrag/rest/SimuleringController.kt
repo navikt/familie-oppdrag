@@ -2,7 +2,6 @@ package no.nav.familie.oppdrag.rest
 
 import jakarta.validation.Valid
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.oppdrag.RestSimulerResultat
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
@@ -22,20 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/simulering", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(
+    "/api/simulering",
+    consumes = [MediaType.APPLICATION_JSON_VALUE],
+    produces = [MediaType.APPLICATION_JSON_VALUE],
+)
 @ProtectedWithClaims(issuer = "azuread")
 class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste) {
 
     val logger: Logger = LoggerFactory.getLogger(SimuleringController::class.java)
-
-    @PostMapping(path = ["/etterbetalingsbelop"])
-    fun hentEtterbetalingsbeløp(
-        @Valid @RequestBody
-        utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): ResponseEntity<Ressurs<RestSimulerResultat>> {
-        logger.info("Hente simulert etterbetaling for saksnr ${utbetalingsoppdrag.saksnummer}")
-        return ok(simuleringTjeneste.utførSimulering(utbetalingsoppdrag))
-    }
 
     @PostMapping(path = ["/v1"])
     fun utførSimuleringOgHentResultat(

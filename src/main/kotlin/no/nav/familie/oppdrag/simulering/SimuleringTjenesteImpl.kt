@@ -1,12 +1,12 @@
 package no.nav.familie.oppdrag.simulering
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.familie.kontrakter.felles.oppdrag.RestSimulerResultat
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetaltPeriode
 import no.nav.familie.kontrakter.felles.simulering.HentFeilutbetalingerFraSimuleringRequest
+import no.nav.familie.kontrakter.felles.simulering.PosteringType
 import no.nav.familie.oppdrag.common.logSoapFaultException
 import no.nav.familie.oppdrag.config.FinnesIkkeITps
 import no.nav.familie.oppdrag.config.IntegrasjonException
@@ -40,10 +40,6 @@ class SimuleringTjenesteImpl(
 
     val mapper = jacksonObjectMapper()
     val simuleringResultatTransformer = SimuleringResultatTransformer()
-
-    override fun utførSimulering(utbetalingsoppdrag: Utbetalingsoppdrag): RestSimulerResultat {
-        return hentSimulerBeregningResponse(utbetalingsoppdrag).toRestSimulerResult()
-    }
 
     override fun hentSimulerBeregningResponse(utbetalingsoppdrag: Utbetalingsoppdrag): SimulerBeregningResponse {
         val simulerBeregningRequest = simulerBeregningRequestMapper.tilSimulerBeregningRequest(utbetalingsoppdrag)
@@ -130,7 +126,7 @@ class SimuleringTjenesteImpl(
         return simulering.beregningsPeriode.map { beregningsperiode ->
             beregningsperiode to beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
                 stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
-                    detalj.typeKlasse == TypeKlasse.FEIL.name &&
+                    detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
                         detalj.belop > BigDecimal.ZERO
                 }
             }.flatten()
@@ -141,7 +137,7 @@ class SimuleringTjenesteImpl(
         return simulering.beregningsPeriode.associateWith { beregningsperiode ->
             beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
                 stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
-                    detalj.typeKlasse == TypeKlasse.YTEL.name
+                    detalj.typeKlasse == PosteringType.YTELSE.kode
                 }
             }.flatten()
         }
