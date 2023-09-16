@@ -9,7 +9,6 @@ import no.nav.familie.kontrakter.felles.simulering.HentFeilutbetalingerFraSimule
 import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.simulering.SimuleringTjeneste
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,15 +37,6 @@ class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste
     ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
         return ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
     }
-
-    // Temporær funksjon som skal brukes for å teste responser fra oppdrag.
-    // TODO: skal fjernes når den ikke mer er i bruk.
-    @PostMapping(path = ["/direktesimulering"])
-    fun direkteSimulering(
-        @Valid @RequestBody
-        utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): ResponseEntity<Ressurs<SimulerBeregningResponse>> =
-        ok(simuleringTjeneste.hentSimulerBeregningResponse(utbetalingsoppdrag))
 
     @PostMapping(path = ["/feilutbetalinger"])
     fun hentFeilutbetalinger(

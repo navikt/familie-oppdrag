@@ -41,17 +41,6 @@ class SimuleringTjenesteImpl(
     val mapper = jacksonObjectMapper()
     val simuleringResultatTransformer = SimuleringResultatTransformer()
 
-    override fun hentSimulerBeregningResponse(utbetalingsoppdrag: Utbetalingsoppdrag): SimulerBeregningResponse {
-        val simulerBeregningRequest = simulerBeregningRequestMapper.tilSimulerBeregningRequest(utbetalingsoppdrag)
-
-        secureLogger.info(
-            "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest),
-        )
-
-        return hentSimulerBeregningResponse(simulerBeregningRequest, utbetalingsoppdrag)
-    }
-
     private fun hentSimulerBeregningResponse(
         simulerBeregningRequest: SimulerBeregningRequest,
         utbetalingsoppdrag: Utbetalingsoppdrag,
@@ -92,7 +81,10 @@ class SimuleringTjenesteImpl(
         simuleringLagerTjeneste.oppdater(simuleringsLager)
 
         val beregning = respons.response?.simulering ?: return DetaljertSimuleringResultat(emptyList())
-        return simuleringResultatTransformer.mapSimulering(beregning = beregning, utbetalingsoppdrag = utbetalingsoppdrag)
+        return simuleringResultatTransformer.mapSimulering(
+            beregning = beregning,
+            utbetalingsoppdrag = utbetalingsoppdrag,
+        )
     }
 
     override fun hentFeilutbetalinger(request: HentFeilutbetalingerFraSimuleringRequest): FeilutbetalingerFraSimulering {
@@ -115,8 +107,14 @@ class SimuleringTjenesteImpl(
                 fom = LocalDate.parse(periode.periodeFom),
                 tom = LocalDate.parse(periode.periodeTom),
                 feilutbetaltBeløp = feilutbetaltBeløp,
-                tidligereUtbetaltBeløp = summerNegativeYtelPosteringer(ytelPosteringerForPeriode, alleYtelPosteringer).abs(),
-                nyttBeløp = summerPostiveYtelPosteringer(ytelPosteringerForPeriode, alleYtelPosteringer) - feilutbetaltBeløp,
+                tidligereUtbetaltBeløp = summerNegativeYtelPosteringer(
+                    ytelPosteringerForPeriode,
+                    alleYtelPosteringer,
+                ).abs(),
+                nyttBeløp = summerPostiveYtelPosteringer(
+                    ytelPosteringerForPeriode,
+                    alleYtelPosteringer,
+                ) - feilutbetaltBeløp,
             )
         }
         return FeilutbetalingerFraSimulering(feilutbetaltePerioder = feilutbetaltPerioder)
