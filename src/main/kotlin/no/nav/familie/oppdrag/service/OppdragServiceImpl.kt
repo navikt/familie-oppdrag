@@ -53,6 +53,7 @@ class OppdragServiceImpl(
         oppdragSender.sendOppdrag(oppdragXml)
     }
 
+    @Transactional
     override fun opprettManuellKvitteringPåOppdrag(oppdragId: OppdragId): OppdragLager {
         val oppdrag = oppdragLagerRepository.hentOppdrag(oppdragId)
 
