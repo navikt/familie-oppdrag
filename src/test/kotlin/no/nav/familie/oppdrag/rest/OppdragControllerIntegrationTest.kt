@@ -83,7 +83,7 @@ internal class OppdragControllerIntegrationTest {
         oppdragController.sendOppdrag(utbetalingsoppdrag)
         oppdragLagerRepository.oppdaterStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_FUNKSJONELL_FEIL)
 
-        oppdragController.resentOppdrag(utbetalingsoppdrag.oppdragId)
+        oppdragController.resendOppdrag(utbetalingsoppdrag.oppdragId)
         assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
     }
 

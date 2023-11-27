@@ -36,6 +36,10 @@ class OppdragServiceE2E(
         throw NotImplementedError("Ikke implementert")
     }
 
+    override fun opprettManuellKvitteringPåOppdrag(oppdragId: OppdragId): OppdragLager {
+        throw NotImplementedError("Ikke implementert")
+    }
+
     companion object {
 
         val LOG = LoggerFactory.getLogger(OppdragServiceE2E::class.java)
