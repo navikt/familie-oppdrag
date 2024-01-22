@@ -7,7 +7,4 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TidligereKjørteGrensesnittavstemmingerRepository : InsertUpdateRepository<TidligereKjørtGrensesnittavstemming>,
-    CrudRepository<TidligereKjørtGrensesnittavstemming, UUID> {
-
-    override fun findById(id: UUID): Optional<TidligereKjørtGrensesnittavstemming>
-}
+    CrudRepository<TidligereKjørtGrensesnittavstemming, UUID>
