@@ -5,6 +5,6 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
 @Table("tidligere_kjoerte_grensesnittavstemminger")
-class TidligereKjørteGrensesnittavstemminger(
+class TidligereKjørtGrensesnittavstemming(
     @Id val id: UUID
 )

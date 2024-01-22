@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemminger
+import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
 import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 import kotlin.jvm.optionals.getOrNull
 
@@ -68,7 +68,7 @@ class GrensesnittavstemmingService(
         avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagSluttmelding())
 
         if (avstemmingId != null) {
-            tidligereKjørteGrensesnittavstemmingerRepository.insert(TidligereKjørteGrensesnittavstemminger(avstemmingId))
+            tidligereKjørteGrensesnittavstemmingerRepository.insert(TidligereKjørtGrensesnittavstemming(avstemmingId))
         }
 
         LOG.info(

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.Optional
-import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemminger
+import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
 import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 
 class GrensesnittavstemmingServiceTest {
@@ -44,7 +44,7 @@ class GrensesnittavstemmingServiceTest {
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, any())
         } returns emptyList()
 
-        every { tidligereKjørteGrensesnittavstemmingerRepository.findById(any()) } returns Optional.empty<TidligereKjørteGrensesnittavstemminger>()
+        every { tidligereKjørteGrensesnittavstemmingerRepository.findById(any()) } returns Optional.empty<TidligereKjørtGrensesnittavstemming>()
 
         justRun { avstemmingSender.sendGrensesnittAvstemming(capture(slot)) }
     }

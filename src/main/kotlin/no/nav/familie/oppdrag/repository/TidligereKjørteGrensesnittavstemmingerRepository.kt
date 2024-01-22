@@ -6,8 +6,8 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface TidligereKjørteGrensesnittavstemmingerRepository : InsertUpdateRepository<TidligereKjørteGrensesnittavstemminger>,
-    CrudRepository<TidligereKjørteGrensesnittavstemminger, UUID> {
+interface TidligereKjørteGrensesnittavstemmingerRepository : InsertUpdateRepository<TidligereKjørtGrensesnittavstemming>,
+    CrudRepository<TidligereKjørtGrensesnittavstemming, UUID> {
 
-    override fun findById(id: UUID): Optional<TidligereKjørteGrensesnittavstemminger>
+    override fun findById(id: UUID): Optional<TidligereKjørtGrensesnittavstemming>
 }
