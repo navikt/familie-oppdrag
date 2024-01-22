@@ -166,7 +166,7 @@ class GrensesnittavstemmingIdTest(
     }
 
     @Test
-    fun `Skal være mulig å kjøre grensesnittavstemming flere ganger når om man bruker forskjellig avstemmingId`() {
+    fun `Skal være mulig å kjøre grensesnittavstemming flere ganger om man bruker forskjellig avstemmingId`() {
         val logger: Logger = LoggerFactory.getLogger(GrensesnittavstemmingService::class.java) as Logger
         logger.addAppender(listAppender)
 
