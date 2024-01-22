@@ -15,6 +15,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import java.util.Optional
+import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemminger
+import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 
 class GrensesnittavstemmingServiceTest {
 
@@ -23,9 +26,16 @@ class GrensesnittavstemmingServiceTest {
 
     val avstemmingSender = mockk<AvstemmingSender>()
     val oppdragLagerRepository = mockk<OppdragLagerRepository>()
-    val grensesnittavstemmingService = GrensesnittavstemmingService(avstemmingSender, oppdragLagerRepository, antall)
+    val tidligereKjørteGrensesnittavstemmingerRepository = mockk<TidligereKjørteGrensesnittavstemmingerRepository>()
+    val grensesnittavstemmingService = GrensesnittavstemmingService(
+        avstemmingSender = avstemmingSender,
+        oppdragLagerRepository = oppdragLagerRepository,
+        tidligereKjørteGrensesnittavstemmingerRepository = tidligereKjørteGrensesnittavstemmingerRepository,
+        antall = antall
+    )
 
     val slot = mutableListOf<Avstemmingsdata>()
+
 
     @BeforeEach
     fun setUp() {
@@ -34,21 +44,55 @@ class GrensesnittavstemmingServiceTest {
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, any())
         } returns emptyList()
 
+        every { tidligereKjørteGrensesnittavstemmingerRepository.findById(any()) } returns Optional.empty<TidligereKjørteGrensesnittavstemminger>()
+
         justRun { avstemmingSender.sendGrensesnittAvstemming(capture(slot)) }
     }
 
     @Test
     fun `skal sende en melding på mq per batch`() {
-        every { oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, 0) } returns
-            listOf(
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somAvstemming,
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somAvstemming,
+        every {
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
+                any(),
+                any(),
+                any(),
+                antall,
+                0
             )
-        every { oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, 1) } returns
-            listOf(TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(LocalDateTime.now(), fagområde).somAvstemming)
+        } returns
+                listOf(
+                    TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                        LocalDateTime.now(),
+                        fagområde
+                    ).somAvstemming,
+                    TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                        LocalDateTime.now(),
+                        fagområde
+                    ).somAvstemming,
+                )
+        every {
+            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
+                any(),
+                any(),
+                any(),
+                antall,
+                1
+            )
+        } returns
+                listOf(
+                    TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                        LocalDateTime.now(),
+                        fagområde
+                    ).somAvstemming
+                )
 
         grensesnittavstemmingService.utførGrensesnittavstemming(
-            GrensesnittavstemmingRequest(fagområde, LocalDateTime.now(), LocalDateTime.now()),
+            GrensesnittavstemmingRequest(
+                fagsystem = fagområde,
+                fra = LocalDateTime.now(),
+                til = LocalDateTime.now(),
+                avstemmingId = null
+            ),
         )
 
         verify(exactly = 3) {
