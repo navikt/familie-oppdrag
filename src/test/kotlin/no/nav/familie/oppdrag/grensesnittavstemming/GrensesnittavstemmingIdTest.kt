@@ -15,7 +15,6 @@ import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
 import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
-import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import org.junit.jupiter.api.Assertions
@@ -23,16 +22,19 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 
 @ActiveProfiles("dev")
-@ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
 @Testcontainers
 class GrensesnittavstemmingIdTest(
@@ -47,12 +49,11 @@ class GrensesnittavstemmingIdTest(
 
     val avstemmingSender: AvstemmingSender = mockk()
 
-
     val grensesnittavstemmingService = GrensesnittavstemmingService(
         avstemmingSender = avstemmingSender,
         oppdragLagerRepository = oppdragLagerRepository,
         tidligereKjørteGrensesnittavstemmingerRepository = tidligereKjørteGrensesnittavstemmingerRepository,
-        antall = 2
+        antall = 2,
     )
 
     companion object {
@@ -64,7 +65,15 @@ class GrensesnittavstemmingIdTest(
 
 
         @Container
-        var postgreSQLContainer = Containers.postgreSQLContainer
+        private val postgreSQLContainer = PostgreSQLContainer<Nothing>("postgres:latest")
+
+        @DynamicPropertySource
+        @JvmStatic
+        fun registerDynamicProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl)
+            registry.add("spring.datasource.username", postgreSQLContainer::getUsername)
+            registry.add("spring.datasource.password", postgreSQLContainer::getPassword)
+        }
     }
 
     private val listAppender = initLoggingEventListAppender()
@@ -97,8 +106,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = avstemmingId
-            )
+                avstemmingId = avstemmingId,
+            ),
         )
 
         grensesnittavstemmingService.utførGrensesnittavstemming(
@@ -106,8 +115,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = avstemmingId
-            )
+                avstemmingId = avstemmingId,
+            ),
         )
 
         val fullførtMeldinger = listAppender.list.filter { "Fullført grensesnittavstemming" in it.message }
@@ -127,8 +136,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = null
-            )
+                avstemmingId = null,
+            ),
         )
 
         val fullførtMeldinger = listAppender.list.filter { "Fullført grensesnittavstemming" in it.message }
@@ -148,8 +157,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = null
-            )
+                avstemmingId = null,
+            ),
         )
 
         grensesnittavstemmingService.utførGrensesnittavstemming(
@@ -157,8 +166,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = null
-            )
+                avstemmingId = null,
+            ),
         )
 
         val fullførtMeldinger = listAppender.list.filter { "Fullført grensesnittavstemming" in it.message }
@@ -178,8 +187,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = UUID.randomUUID()
-            )
+                avstemmingId = UUID.randomUUID(),
+            ),
         )
 
         grensesnittavstemmingService.utførGrensesnittavstemming(
@@ -187,8 +196,8 @@ class GrensesnittavstemmingIdTest(
                 fagsystem = "BA",
                 fra = LocalDateTime.now().minusDays(2),
                 til = LocalDateTime.now(),
-                avstemmingId = UUID.randomUUID()
-            )
+                avstemmingId = UUID.randomUUID(),
+            ),
         )
 
         val fullførtMeldinger = listAppender.list.filter { "Fullført grensesnittavstemming" in it.message }
@@ -199,7 +208,7 @@ class GrensesnittavstemmingIdTest(
         val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
             LocalDateTime.now().minusDays(1),
             "BA",
-            utbetalingsperiode = arrayOf(TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode())
+            utbetalingsperiode = arrayOf(TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode()),
         )
         val oppdrag = oppdragMapper.tilOppdrag(oppdragMapper.tilOppdrag110(utbetalingsoppdrag))
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), 0)
