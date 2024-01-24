@@ -13,32 +13,13 @@ import org.testcontainers.containers.PostgreSQLContainer
 class TestConfig
 
 object Containers {
-
-    var postgreSQLContainer = MyPostgreSQLContainer("postgres:latest")
-        .withDatabaseName("familie-oppdrag")
-        .withUsername("postgres")
-        .withPassword("test")
-        .withExposedPorts(5432)
-
     var ibmMQContainer = MyGeneralContainer("ibmcom/mq")
         .withEnv("LICENSE", "accept")
         .withEnv("MQ_QMGR_NAME", "QM1")
         .withEnv("persistance.enabled", "true")
         .withExposedPorts(1414)
 
-    class MyPostgreSQLContainer(imageName: String) : PostgreSQLContainer<MyPostgreSQLContainer>(imageName)
     class MyGeneralContainer(imageName: String) : GenericContainer<MyGeneralContainer>(imageName)
-
-    class PostgresSQLInitializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-        override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
-            TestPropertyValues.of(
-                "spring.datasource.url=" + postgreSQLContainer.jdbcUrl,
-                "spring.datasource.username=" + postgreSQLContainer.username,
-                "spring.datasource.password=" + postgreSQLContainer.password,
-            ).applyTo(configurableApplicationContext.environment)
-        }
-    }
 
     class MQInitializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
 
