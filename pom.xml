@@ -19,7 +19,7 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.9.0</kotlin.version>
+        <kotlin.version>1.9.22</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>2.20230508082643_6b28bd8</felles.version>
         <kontrakter.version>3.0_20240122110213_5591a29</kontrakter.version>
