@@ -100,10 +100,10 @@ class OppdragMQMottakTest {
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
-        oppdragMottaker.LOG = mockk()
+        oppdragMottaker.log = mockk()
 
-        every { oppdragMottaker.LOG.info(any()) } just Runs
-        every { oppdragMottaker.LOG.error(any()) } just Runs
+        every { oppdragMottaker.log.info(any()) } just Runs
+        every { oppdragMottaker.log.error(any()) } just Runs
 
         assertThrows<Exception> { oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage) }
         verify(exactly = 0) { oppdragLagerRepository.opprettOppdrag(any<OppdragLager>()) }
@@ -117,10 +117,10 @@ class OppdragMQMottakTest {
         every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
-        oppdragMottaker.LOG = mockk()
+        oppdragMottaker.log = mockk()
 
-        every { oppdragMottaker.LOG.info(any()) } just Runs
-        every { oppdragMottaker.LOG.error(any()) } just Runs
+        every { oppdragMottaker.log.info(any()) } just Runs
+        every { oppdragMottaker.log.error(any()) } just Runs
 
         assertThrows<Exception> { oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage) }
         verify(exactly = 0) { oppdragLagerRepository.opprettOppdrag(any<OppdragLager>()) }
@@ -139,16 +139,16 @@ class OppdragMQMottakTest {
         every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), any()) } just Runs
 
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
-        oppdragMottaker.LOG = mockk()
+        oppdragMottaker.log = mockk()
 
-        every { oppdragMottaker.LOG.info(any()) } just Runs
-        every { oppdragMottaker.LOG.warn(any()) } just Runs
-        every { oppdragMottaker.LOG.debug(any()) } just Runs
+        every { oppdragMottaker.log.info(any()) } just Runs
+        every { oppdragMottaker.log.warn(any()) } just Runs
+        every { oppdragMottaker.log.debug(any()) } just Runs
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
 
         verify(exactly = 1) { oppdragLagerRepository.hentKvitteringsinformasjon(any()) }
-        verify(exactly = 1) { oppdragMottaker.LOG.warn(any()) }
+        verify(exactly = 1) { oppdragMottaker.log.warn(any()) }
     }
 
     private fun lesKvittering(filnavn: String): String {

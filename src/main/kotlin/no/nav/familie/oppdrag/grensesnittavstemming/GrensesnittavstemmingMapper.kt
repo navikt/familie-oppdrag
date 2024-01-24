@@ -21,12 +21,13 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
+private const val ANTALL_DETALJER_PER_MELDING = 70
+
 class GrensesnittavstemmingMapper(
     private val fagområde: String,
     private val fom: LocalDateTime,
     private val tom: LocalDateTime,
 ) {
-    private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
 

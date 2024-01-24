@@ -16,22 +16,23 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import javax.xml.namespace.QName
 
+private const val WSDL = "wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl"
+private const val NAMESPACE = "http://okonomi.nav.no/tilbakekrevingService/"
+
 @Configuration
 class ØkonomiClientConfig(
     @Value("\${TILBAKEKREVING_V1_URL}") private val tilbakekrevingUrl: String,
 ) {
-    private val WSDL = "wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl"
-    private val NAMESPACE = "http://okonomi.nav.no/tilbakekrevingService/"
-    private val SERVICE = QName(NAMESPACE, "TilbakekrevingService")
-    private val PORT = QName(NAMESPACE, "TilbakekrevingServicePort")
+    private val service = QName(NAMESPACE, "TilbakekrevingService")
+    private val port = QName(NAMESPACE, "TilbakekrevingServicePort")
 
     @Bean
     fun økonomiService(stsConfig: StsConfig): TilbakekrevingPortType {
         val factoryBean =
             JaxWsProxyFactoryBean().apply {
                 wsdlURL = WSDL
-                serviceName = SERVICE
-                endpointName = PORT
+                serviceName = service
+                endpointName = port
                 serviceClass = TilbakekrevingPortType::class.java
                 address = tilbakekrevingUrl
                 features.add(WSAddressingFeature())

@@ -43,7 +43,7 @@ class KonsistensavstemmingServiceTest {
 
     private val aktiveFødselsnummere = listOf("12345678910", "11111111111")
 
-    private val utbetalingsoppdrag1_1 =
+    private val utbetalingsoppdrag1Init =
         lagUtbetalingsoppdrag(
             saksnummer,
             "1",
@@ -52,14 +52,14 @@ class KonsistensavstemmingServiceTest {
         )
 
     // Opphør på periode 2, ny periode med annet beløp
-    private val utbetalingsoppdrag1_2 =
+    private val utbetalingsoppdrag1Periode2Opphørt =
         lagUtbetalingsoppdrag(
             saksnummer,
             "2",
             lagUtbetalingsperiode(periodeId = 2, beløp = 100, behandlingsId = 1, opphør = true),
             lagUtbetalingsperiode(periodeId = 3, beløp = 211, behandlingsId = 2),
         )
-    private val utbetalingsoppdrag2_1 =
+    private val utbetalingsoppdrag2Init =
         lagUtbetalingsoppdrag(
             saksnummer2,
             "3",
@@ -88,7 +88,7 @@ class KonsistensavstemmingServiceTest {
     @Test
     internal fun `plukker ut perioder fra 2 utbetalingsoppdrag fra samme fagsak til en melding`() {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "2"))) } returns
-            listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag1_2)
+            listOf(utbetalingsoppdrag1Init, utbetalingsoppdrag1Periode2Opphørt)
 
         val perioder =
             listOf(
@@ -123,7 +123,7 @@ class KonsistensavstemmingServiceTest {
     @Test
     internal fun `Bruk verdi fra input til å sette utbetalTilId`() {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "2"))) } returns
-            listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag1_2)
+            listOf(utbetalingsoppdrag1Init, utbetalingsoppdrag1Periode2Opphørt)
 
         val perioder =
             listOf(
@@ -156,7 +156,7 @@ class KonsistensavstemmingServiceTest {
     @Test
     internal fun `sender hver fagsak i ulike meldinger`() {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "3"))) } returns
-            listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag2_1)
+            listOf(utbetalingsoppdrag1Init, utbetalingsoppdrag2Init)
 
         val perioder =
             listOf(
@@ -262,7 +262,7 @@ class KonsistensavstemmingServiceTest {
     @Test
     internal fun `Sender oppdragsmeldinger uten start eller avslutt melding`() {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "3"))) } returns
-            listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag2_1)
+            listOf(utbetalingsoppdrag1Init, utbetalingsoppdrag2Init)
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(emptySet())) } returns
             emptyList()
         every { mellomlagringKonsistensavstemmingRepository.insert(any()) } returns mockk()

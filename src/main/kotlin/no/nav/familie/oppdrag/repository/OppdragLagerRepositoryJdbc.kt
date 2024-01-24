@@ -17,7 +17,7 @@ import java.util.UUID
 
 @Repository
 class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) : OppdragLagerRepository {
-    internal var LOG = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
+    internal val log = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
 
     override fun hentOppdrag(
         oppdragId: OppdragId,
@@ -39,13 +39,13 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
 
         return when (listeAvOppdrag.size) {
             0 -> {
-                LOG.error("Feil ved henting av oppdrag. Fant ingen oppdrag med id $oppdragId")
+                log.error("Feil ved henting av oppdrag. Fant ingen oppdrag med id $oppdragId")
                 throw NoSuchElementException("Feil ved henting av oppdrag. Fant ingen oppdrag med id $oppdragId")
             }
 
             1 -> listeAvOppdrag[0]
             else -> {
-                LOG.error("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
+                log.error("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
                 throw Exception("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
             }
         }

@@ -39,7 +39,7 @@ class GrensesnittavstemmingService(
         val erGrensesnittavstemmingKjørtPåSammeAvstemmingId =
             avstemmingId?.let { tidligereKjørteGrensesnittavstemmingerRepository.findById(it).getOrNull() } != null
         if (erGrensesnittavstemmingKjørtPåSammeAvstemmingId) {
-            LOG.info("Grensesnittavstemming er allerede fullført for $avstemmingId og vil ikke bli kjørt på nytt")
+            log.info("Grensesnittavstemming er allerede fullført for $avstemmingId og vil ikke bli kjørt på nytt")
             return
         }
 
@@ -48,11 +48,11 @@ class GrensesnittavstemmingService(
         var oppdragSomSkalAvstemmes =
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(fra, til, fagsystem, antall, page++)
         if (oppdragSomSkalAvstemmes.isEmpty()) {
-            LOG.info("Ingen oppdrag å gjennomføre grensesnittavstemming for.")
+            log.info("Ingen oppdrag å gjennomføre grensesnittavstemming for.")
             return
         }
         val avstemmingMapper = GrensesnittavstemmingMapper(fagsystem, fra, til)
-        LOG.info("Utfører grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}")
+        log.info("Utfører grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}")
         avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagStartmelding())
         while (oppdragSomSkalAvstemmes.isNotEmpty()) {
             val meldinger = avstemmingMapper.lagAvstemmingsmeldinger(oppdragSomSkalAvstemmes)
@@ -70,7 +70,7 @@ class GrensesnittavstemmingService(
             tidligereKjørteGrensesnittavstemmingerRepository.insert(TidligereKjørtGrensesnittavstemming(avstemmingId))
         }
 
-        LOG.info(
+        log.info(
             "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}" +
                 " antallOppdragSomSkalAvstemmes=$antallOppdragSomSkalAvstemmes",
         )
@@ -95,10 +95,10 @@ class GrensesnittavstemmingService(
     }
 
     private fun opprettMetrikkerForFagsystem(fagsystem: Fagsystem): Map<String, Counter> {
-        val PACKAGE_NAME = "familie.oppdrag.grensesnittavstemming"
+        val packageName = "familie.oppdrag.grensesnittavstemming"
         val godkjentCounter =
             Metrics.counter(
-                PACKAGE_NAME,
+                packageName,
                 "fagsystem",
                 fagsystem.name,
                 "status",
@@ -108,7 +108,7 @@ class GrensesnittavstemmingService(
             )
         val avvistCounter =
             Metrics.counter(
-                PACKAGE_NAME,
+                packageName,
                 "fagsystem",
                 fagsystem.name,
                 "status",
@@ -118,7 +118,7 @@ class GrensesnittavstemmingService(
             )
         val manglerCounter =
             Metrics.counter(
-                PACKAGE_NAME,
+                packageName,
                 "fagsystem",
                 fagsystem.name,
                 "status",
@@ -128,7 +128,7 @@ class GrensesnittavstemmingService(
             )
         val varselCounter =
             Metrics.counter(
-                PACKAGE_NAME,
+                packageName,
                 "fagsystem",
                 fagsystem.name,
                 "status",
@@ -146,7 +146,7 @@ class GrensesnittavstemmingService(
     }
 
     companion object {
-        val LOG: Logger = LoggerFactory.getLogger(GrensesnittavstemmingService::class.java)
+        val log: Logger = LoggerFactory.getLogger(GrensesnittavstemmingService::class.java)
     }
 }
 
