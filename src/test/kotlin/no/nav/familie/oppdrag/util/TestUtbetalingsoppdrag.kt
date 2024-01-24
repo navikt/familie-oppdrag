@@ -17,7 +17,8 @@ object TestUtbetalingsoppdrag {
             Utbetalingsoppdrag.KodeEndring.NY,
             "EFOG",
             "SAKSNR",
-            UUID.randomUUID().toString(), // Foreløpig plass til en 50-tegn string og ingen gyldighetssjekk
+            // Foreløpig plass til en 50-tegn string og ingen gyldighetssjekk
+            UUID.randomUUID().toString(),
             "SAKSBEHANDLERID",
             localDateTimeNow,
             listOf(
