@@ -30,7 +30,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ActiveProfiles("dev")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
