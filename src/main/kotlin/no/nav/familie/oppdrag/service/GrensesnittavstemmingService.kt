@@ -7,14 +7,14 @@ import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
+import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.Grunnlagsdata
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
-import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -24,7 +24,6 @@ class GrensesnittavstemmingService(
     private val tidligereKjørteGrensesnittavstemmingerRepository: TidligereKjørteGrensesnittavstemmingerRepository,
     @Value("\${grensesnitt.antall:7000}") private val antall: Int,
 ) {
-
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
     private var countere: MutableMap<String, Map<String, Counter>> = HashMap()
 
@@ -83,7 +82,10 @@ class GrensesnittavstemmingService(
         oppdaterMetrikker(fagsystem, totalmelding.grunnlag)
     }
 
-    private fun oppdaterMetrikker(fagsystem: String, grunnlag: Grunnlagsdata) {
+    private fun oppdaterMetrikker(
+        fagsystem: String,
+        grunnlag: Grunnlagsdata,
+    ) {
         val metrikkerForFagsystem = countere.getValue(fagsystem)
 
         metrikkerForFagsystem.getValue(Status.GODKJENT.status).increment(grunnlag.godkjentAntall.toDouble())
@@ -94,42 +96,46 @@ class GrensesnittavstemmingService(
 
     private fun opprettMetrikkerForFagsystem(fagsystem: Fagsystem): Map<String, Counter> {
         val PACKAGE_NAME = "familie.oppdrag.grensesnittavstemming"
-        val godkjentCounter = Metrics.counter(
-            PACKAGE_NAME,
-            "fagsystem",
-            fagsystem.name,
-            "status",
-            Status.GODKJENT.status,
-            "beskrivelse",
-            Status.GODKJENT.beskrivelse,
-        )
-        val avvistCounter = Metrics.counter(
-            PACKAGE_NAME,
-            "fagsystem",
-            fagsystem.name,
-            "status",
-            Status.AVVIST.status,
-            "beskrivelse",
-            Status.AVVIST.beskrivelse,
-        )
-        val manglerCounter = Metrics.counter(
-            PACKAGE_NAME,
-            "fagsystem",
-            fagsystem.name,
-            "status",
-            Status.MANGLER.status,
-            "beskrivelse",
-            Status.MANGLER.beskrivelse,
-        )
-        val varselCounter = Metrics.counter(
-            PACKAGE_NAME,
-            "fagsystem",
-            fagsystem.name,
-            "status",
-            Status.VARSEL.status,
-            "beskrivelse",
-            Status.VARSEL.beskrivelse,
-        )
+        val godkjentCounter =
+            Metrics.counter(
+                PACKAGE_NAME,
+                "fagsystem",
+                fagsystem.name,
+                "status",
+                Status.GODKJENT.status,
+                "beskrivelse",
+                Status.GODKJENT.beskrivelse,
+            )
+        val avvistCounter =
+            Metrics.counter(
+                PACKAGE_NAME,
+                "fagsystem",
+                fagsystem.name,
+                "status",
+                Status.AVVIST.status,
+                "beskrivelse",
+                Status.AVVIST.beskrivelse,
+            )
+        val manglerCounter =
+            Metrics.counter(
+                PACKAGE_NAME,
+                "fagsystem",
+                fagsystem.name,
+                "status",
+                Status.MANGLER.status,
+                "beskrivelse",
+                Status.MANGLER.beskrivelse,
+            )
+        val varselCounter =
+            Metrics.counter(
+                PACKAGE_NAME,
+                "fagsystem",
+                fagsystem.name,
+                "status",
+                Status.VARSEL.status,
+                "beskrivelse",
+                Status.VARSEL.beskrivelse,
+            )
 
         return hashMapOf(
             Status.GODKJENT.status to godkjentCounter,
@@ -140,7 +146,6 @@ class GrensesnittavstemmingService(
     }
 
     companion object {
-
         val LOG: Logger = LoggerFactory.getLogger(GrensesnittavstemmingService::class.java)
     }
 }

@@ -17,19 +17,23 @@ import java.util.UUID
 
 @Repository
 class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) : OppdragLagerRepository {
-
     internal var LOG = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
 
-    override fun hentOppdrag(oppdragId: OppdragId, versjon: Int): OppdragLager {
-        val hentStatement = "SELECT * FROM oppdrag_lager " +
-            "WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem " +
-            "AND versjon = :versjon"
+    override fun hentOppdrag(
+        oppdragId: OppdragId,
+        versjon: Int,
+    ): OppdragLager {
+        val hentStatement =
+            "SELECT * FROM oppdrag_lager " +
+                "WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem " +
+                "AND versjon = :versjon"
 
-        val values = MapSqlParameterSource()
-            .addValue("behandlingId", oppdragId.behandlingsId)
-            .addValue("personIdent", oppdragId.personIdent)
-            .addValue("fagsystem", oppdragId.fagsystem)
-            .addValue("versjon", versjon)
+        val values =
+            MapSqlParameterSource()
+                .addValue("behandlingId", oppdragId.behandlingsId)
+                .addValue("personIdent", oppdragId.personIdent)
+                .addValue("fagsystem", oppdragId.fagsystem)
+                .addValue("versjon", versjon)
 
         val listeAvOppdrag = jdbcTemplate.query(hentStatement, values, OppdragLagerRowMapper())
 
@@ -47,56 +51,73 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
         }
     }
 
-    override fun opprettOppdrag(oppdragLager: OppdragLager, versjon: Int) {
-        val insertStatement = "INSERT INTO oppdrag_lager " +
-            "(id, utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
-            " VALUES (:id,:utgåendeOppdrag,:status,:opprettetTid,:personIdent,:fagsakId,:behandlingId,:fagsystem,:avstemmingTid,:utbetalingsoppdrag,:versjon)"
+    override fun opprettOppdrag(
+        oppdragLager: OppdragLager,
+        versjon: Int,
+    ) {
+        val insertStatement =
+            "INSERT INTO oppdrag_lager " +
+                "(id, utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
+                " VALUES (:id,:utgåendeOppdrag,:status,:opprettetTid,:personIdent,:fagsakId,:behandlingId,:fagsystem,:avstemmingTid,:utbetalingsoppdrag,:versjon)"
 
-        val values = MapSqlParameterSource()
-            .addValue("id", UUID.randomUUID())
-            .addValue("utgåendeOppdrag", oppdragLager.utgåendeOppdrag)
-            .addValue("status", oppdragLager.status.name)
-            .addValue("opprettetTid", oppdragLager.opprettetTidspunkt)
-            .addValue("personIdent", oppdragLager.personIdent)
-            .addValue("fagsakId", oppdragLager.fagsakId)
-            .addValue("behandlingId", oppdragLager.behandlingId)
-            .addValue("fagsystem", oppdragLager.fagsystem)
-            .addValue("avstemmingTid", oppdragLager.avstemmingTidspunkt)
-            .addValue("utbetalingsoppdrag", objectMapper.writeValueAsString(oppdragLager.utbetalingsoppdrag))
-            .addValue("versjon", versjon)
+        val values =
+            MapSqlParameterSource()
+                .addValue("id", UUID.randomUUID())
+                .addValue("utgåendeOppdrag", oppdragLager.utgåendeOppdrag)
+                .addValue("status", oppdragLager.status.name)
+                .addValue("opprettetTid", oppdragLager.opprettetTidspunkt)
+                .addValue("personIdent", oppdragLager.personIdent)
+                .addValue("fagsakId", oppdragLager.fagsakId)
+                .addValue("behandlingId", oppdragLager.behandlingId)
+                .addValue("fagsystem", oppdragLager.fagsystem)
+                .addValue("avstemmingTid", oppdragLager.avstemmingTidspunkt)
+                .addValue("utbetalingsoppdrag", objectMapper.writeValueAsString(oppdragLager.utbetalingsoppdrag))
+                .addValue("versjon", versjon)
 
         jdbcTemplate.update(insertStatement, values)
     }
 
-    override fun oppdaterStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus, versjon: Int) {
-        val update = "UPDATE oppdrag_lager SET status = :status " +
-            "WHERE person_ident = :personIdent " +
-            "AND fagsystem = :fagsystem " +
-            "AND behandling_id = :behandlingId " +
-            "AND versjon = :versjon"
+    override fun oppdaterStatus(
+        oppdragId: OppdragId,
+        oppdragStatus: OppdragStatus,
+        versjon: Int,
+    ) {
+        val update =
+            "UPDATE oppdrag_lager SET status = :status " +
+                "WHERE person_ident = :personIdent " +
+                "AND fagsystem = :fagsystem " +
+                "AND behandling_id = :behandlingId " +
+                "AND versjon = :versjon"
 
-        val values = MapSqlParameterSource()
-            .addValue("status", oppdragStatus.name)
-            .addValue("personIdent", oppdragId.personIdent)
-            .addValue("fagsystem", oppdragId.fagsystem)
-            .addValue("behandlingId", oppdragId.behandlingsId)
-            .addValue("versjon", versjon)
+        val values =
+            MapSqlParameterSource()
+                .addValue("status", oppdragStatus.name)
+                .addValue("personIdent", oppdragId.personIdent)
+                .addValue("fagsystem", oppdragId.fagsystem)
+                .addValue("behandlingId", oppdragId.behandlingsId)
+                .addValue("versjon", versjon)
 
         jdbcTemplate.update(update, values)
     }
 
-    override fun oppdaterKvitteringsmelding(oppdragId: OppdragId, oppdragStatus: OppdragStatus, kvittering: Mmel?, versjon: Int) {
+    override fun oppdaterKvitteringsmelding(
+        oppdragId: OppdragId,
+        oppdragStatus: OppdragStatus,
+        kvittering: Mmel?,
+        versjon: Int,
+    ) {
         val updateStatement =
             "UPDATE oppdrag_lager SET status = :status, kvitteringsmelding = :kvitteringsmelding" +
                 " WHERE person_ident = :personIdent AND fagsystem = :fagsystem AND behandling_id = :behandlingId AND versjon = :versjon"
 
-        val values = MapSqlParameterSource()
-            .addValue("status", oppdragStatus.name)
-            .addValue("kvitteringsmelding", objectMapper.writeValueAsString(kvittering))
-            .addValue("personIdent", oppdragId.personIdent)
-            .addValue("fagsystem", oppdragId.fagsystem)
-            .addValue("behandlingId", oppdragId.behandlingsId)
-            .addValue("versjon", versjon)
+        val values =
+            MapSqlParameterSource()
+                .addValue("status", oppdragStatus.name)
+                .addValue("kvitteringsmelding", objectMapper.writeValueAsString(kvittering))
+                .addValue("personIdent", oppdragId.personIdent)
+                .addValue("fagsystem", oppdragId.fagsystem)
+                .addValue("behandlingId", oppdragId.behandlingsId)
+                .addValue("versjon", versjon)
 
         jdbcTemplate.update(updateStatement, values)
     }
@@ -115,28 +136,34 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
             WHERE avstemming_tidspunkt >= :fomTidspunkt AND avstemming_tidspunkt < :tomTidspunkt AND fagsystem = :fagsystem 
             ORDER BY behandling_id ASC OFFSET :offset LIMIT :limit
             """
-        val values = MapSqlParameterSource()
-            .addValue("fomTidspunkt", fomTidspunkt)
-            .addValue("tomTidspunkt", tomTidspunkt)
-            .addValue("fagsystem", fagOmråde)
-            .addValue("offset", page * antall)
-            .addValue("limit", antall)
+        val values =
+            MapSqlParameterSource()
+                .addValue("fomTidspunkt", fomTidspunkt)
+                .addValue("tomTidspunkt", tomTidspunkt)
+                .addValue("fagsystem", fagOmråde)
+                .addValue("offset", page * antall)
+                .addValue("limit", antall)
 
         return jdbcTemplate.query(hentStatement, values, OppdragTilAvstemmingRowMapper)
     }
 
-    override fun hentUtbetalingsoppdrag(oppdragId: OppdragId, versjon: Int): Utbetalingsoppdrag {
+    override fun hentUtbetalingsoppdrag(
+        oppdragId: OppdragId,
+        versjon: Int,
+    ): Utbetalingsoppdrag {
         val hentStatement =
             "SELECT utbetalingsoppdrag FROM oppdrag_lager WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem AND versjon = :versjon"
 
-        val values = MapSqlParameterSource()
-            .addValue("behandlingId", oppdragId.behandlingsId)
-            .addValue("personIdent", oppdragId.personIdent)
-            .addValue("fagsystem", oppdragId.fagsystem)
-            .addValue("versjon", versjon)
+        val values =
+            MapSqlParameterSource()
+                .addValue("behandlingId", oppdragId.behandlingsId)
+                .addValue("personIdent", oppdragId.personIdent)
+                .addValue("fagsystem", oppdragId.fagsystem)
+                .addValue("versjon", versjon)
 
-        val jsonUtbetalingsoppdrag = jdbcTemplate.queryForObject(hentStatement, values, String::class.java)
-            ?: error("Fant ikke utbetalingsoppdrag for $oppdragId versjon=$versjon")
+        val jsonUtbetalingsoppdrag =
+            jdbcTemplate.queryForObject(hentStatement, values, String::class.java)
+                ?: error("Fant ikke utbetalingsoppdrag for $oppdragId versjon=$versjon")
 
         return objectMapper.readValue(jsonUtbetalingsoppdrag)
     }
@@ -147,10 +174,11 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
             fagsystem, person_ident, fagsak_id, behandling_id, status, avstemming_tidspunkt, opprettet_tidspunkt, kvitteringsmelding, versjon 
             FROM oppdrag_lager WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem"""
 
-        val values = MapSqlParameterSource()
-            .addValue("behandlingId", oppdragId.behandlingsId)
-            .addValue("personIdent", oppdragId.personIdent)
-            .addValue("fagsystem", oppdragId.fagsystem)
+        val values =
+            MapSqlParameterSource()
+                .addValue("behandlingId", oppdragId.behandlingsId)
+                .addValue("personIdent", oppdragId.personIdent)
+                .addValue("fagsystem", oppdragId.fagsystem)
 
         return jdbcTemplate.query(hentStatement, values, KvitteringsinformasjonRowMapper)
     }
@@ -169,10 +197,11 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
         val status = setOf(OppdragStatus.KVITTERT_OK, OppdragStatus.KVITTERT_MED_MANGLER).map { it.name }
 
         return behandlingIder.chunked(3000).map { behandlingIderChunked ->
-            val values = MapSqlParameterSource()
-                .addValue("fagsystem", fagsystem)
-                .addValue("behandlingIder", behandlingIderChunked)
-                .addValue("status", status)
+            val values =
+                MapSqlParameterSource()
+                    .addValue("fagsystem", fagsystem)
+                    .addValue("behandlingIder", behandlingIderChunked)
+                    .addValue("status", status)
 
             jdbcTemplate.query(query, values) { resultSet, _ ->
                 UtbetalingsoppdragForKonsistensavstemming(
@@ -188,7 +217,8 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
         fagsystem: String,
         fagsakIder: Set<String>,
     ): List<UtbetalingsoppdragForKonsistensavstemming> {
-        val sqlSpørring = """
+        val sqlSpørring =
+            """
             SELECT fagsak_id, behandling_id, utbetalingsoppdrag
             FROM oppdrag_lager
             WHERE (fagsak_id, opprettet_tidspunkt) IN (
@@ -197,7 +227,7 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
                 WHERE fagsystem=:fagsystem and fagsak_id IN (:fagsakIder)
                 GROUP BY fagsak_id
             )
-        """.trimIndent()
+            """.trimIndent()
 
         return fagsakIder
             .chunked(3000)
@@ -217,8 +247,10 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
 }
 
 class OppdragLagerRowMapper : RowMapper<OppdragLager> {
-
-    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragLager {
+    override fun mapRow(
+        resultSet: ResultSet,
+        rowNumbers: Int,
+    ): OppdragLager {
         return OppdragLager(
             uuid = UUID.fromString(resultSet.getString("id") ?: UUID.randomUUID().toString()),
             fagsystem = resultSet.getString("fagsystem"),

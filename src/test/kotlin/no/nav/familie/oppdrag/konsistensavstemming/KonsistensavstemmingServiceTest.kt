@@ -32,7 +32,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class KonsistensavstemmingServiceTest {
-
     private lateinit var konsistensavstemmingService: KonsistensavstemmingService
     private lateinit var oppdragLagerRepository: OppdragLagerRepository
     private lateinit var avstemmingSender: AvstemmingSender
@@ -91,10 +90,11 @@ class KonsistensavstemmingServiceTest {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "2"))) } returns
             listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag1_2)
 
-        val perioder = listOf(
-            PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
-            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]),
-        )
+        val perioder =
+            listOf(
+                PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
+                PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]),
+            )
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
         konsistensavstemmingService.utførKonsistensavstemming(request, true, true, null)
@@ -125,10 +125,11 @@ class KonsistensavstemmingServiceTest {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "2"))) } returns
             listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag1_2)
 
-        val perioder = listOf(
-            PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0], "tss-id"),
-            PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]),
-        )
+        val perioder =
+            listOf(
+                PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0], "tss-id"),
+                PerioderForBehandling("2", setOf(3), aktiveFødselsnummere[0]),
+            )
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
         konsistensavstemmingService.utførKonsistensavstemming(request, true, true, null)
@@ -157,10 +158,11 @@ class KonsistensavstemmingServiceTest {
         every { oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(any(), eq(setOf("1", "3"))) } returns
             listOf(utbetalingsoppdrag1_1, utbetalingsoppdrag2_1)
 
-        val perioder = listOf(
-            PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
-            PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]),
-        )
+        val perioder =
+            listOf(
+                PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
+                PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]),
+            )
 
         val request = KonsistensavstemmingRequestV2("BA", perioder, LocalDateTime.now())
 
@@ -266,10 +268,11 @@ class KonsistensavstemmingServiceTest {
         every { mellomlagringKonsistensavstemmingRepository.insert(any()) } returns mockk()
 
         val avstemmingstidspunkt = LocalDateTime.now()
-        val perioder = listOf(
-            PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
-            PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]),
-        )
+        val perioder =
+            listOf(
+                PerioderForBehandling("1", setOf(1), aktiveFødselsnummere[0]),
+                PerioderForBehandling("3", setOf(1, 2), aktiveFødselsnummere[1]),
+            )
 
         val request = KonsistensavstemmingRequestV2("BA", perioder, avstemmingstidspunkt)
         val transaksjonsId = UUID.randomUUID()
@@ -303,33 +306,35 @@ class KonsistensavstemmingServiceTest {
         beløp: Int,
         behandlingsId: Long,
         opphør: Boolean = false,
-    ) =
-        Utbetalingsperiode(
-            erEndringPåEksisterendePeriode = false,
-            opphør = if (opphør) Opphør(LocalDate.now()) else null,
-            periodeId = periodeId,
-            forrigePeriodeId = forrigePeriodeId,
-            datoForVedtak = LocalDate.now(),
-            klassifisering = "EF",
-            vedtakdatoFom = LocalDate.now().minusYears(1),
-            vedtakdatoTom = LocalDate.now().plusYears(1),
-            sats = BigDecimal(beløp),
-            satsType = Utbetalingsperiode.SatsType.MND,
-            utbetalesTil = "meg",
-            behandlingId = behandlingsId,
-        )
+    ) = Utbetalingsperiode(
+        erEndringPåEksisterendePeriode = false,
+        opphør = if (opphør) Opphør(LocalDate.now()) else null,
+        periodeId = periodeId,
+        forrigePeriodeId = forrigePeriodeId,
+        datoForVedtak = LocalDate.now(),
+        klassifisering = "EF",
+        vedtakdatoFom = LocalDate.now().minusYears(1),
+        vedtakdatoTom = LocalDate.now().plusYears(1),
+        sats = BigDecimal(beløp),
+        satsType = Utbetalingsperiode.SatsType.MND,
+        utbetalesTil = "meg",
+        behandlingId = behandlingsId,
+    )
 
-    private fun lagUtbetalingsoppdrag(saksnummer: String, behandlingId: String, vararg utbetalingsperiode: Utbetalingsperiode) =
-        UtbetalingsoppdragForKonsistensavstemming(
-            saksnummer,
-            behandlingId,
-            Utbetalingsoppdrag(
-                kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
-                fagSystem = "BA",
-                saksnummer = saksnummer,
-                aktoer = "aktoer",
-                saksbehandlerId = "saksbehandler",
-                utbetalingsperiode = utbetalingsperiode.toList(),
-            ),
-        )
+    private fun lagUtbetalingsoppdrag(
+        saksnummer: String,
+        behandlingId: String,
+        vararg utbetalingsperiode: Utbetalingsperiode,
+    ) = UtbetalingsoppdragForKonsistensavstemming(
+        saksnummer,
+        behandlingId,
+        Utbetalingsoppdrag(
+            kodeEndring = Utbetalingsoppdrag.KodeEndring.NY,
+            fagSystem = "BA",
+            saksnummer = saksnummer,
+            aktoer = "aktoer",
+            saksbehandlerId = "saksbehandler",
+            utbetalingsperiode = utbetalingsperiode.toList(),
+        ),
+    )
 }

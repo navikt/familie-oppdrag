@@ -39,7 +39,6 @@ class OppdragMQConfig(
     @Value("\${oppdrag.mq.user}") val user: String,
     @Value("\${oppdrag.mq.password}") val password: String,
 ) {
-
     private val logger = LoggerFactory.getLogger(javaClass)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 

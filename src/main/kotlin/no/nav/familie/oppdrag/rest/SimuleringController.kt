@@ -26,8 +26,9 @@ import org.springframework.web.bind.annotation.RestController
     produces = [MediaType.APPLICATION_JSON_VALUE],
 )
 @ProtectedWithClaims(issuer = "azuread")
-class SimuleringController(@Autowired val simuleringTjeneste: SimuleringTjeneste) {
-
+class SimuleringController(
+    @Autowired val simuleringTjeneste: SimuleringTjeneste,
+) {
     val logger: Logger = LoggerFactory.getLogger(SimuleringController::class.java)
 
     @PostMapping(path = ["/v1"])

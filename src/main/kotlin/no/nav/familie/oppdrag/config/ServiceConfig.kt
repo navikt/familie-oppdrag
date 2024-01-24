@@ -15,7 +15,6 @@ class ServiceConfig(
     @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
     @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String,
 ) {
-
     @Bean
     fun stsConfig(): StsConfig {
         return StsConfig.builder()

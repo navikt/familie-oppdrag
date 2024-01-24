@@ -18,7 +18,6 @@ import org.springframework.core.env.Environment
 import kotlin.test.assertEquals
 
 class OppdragMQMottakTest {
-
     lateinit var oppdragMottaker: OppdragMottaker
 
     val devEnv: Environment

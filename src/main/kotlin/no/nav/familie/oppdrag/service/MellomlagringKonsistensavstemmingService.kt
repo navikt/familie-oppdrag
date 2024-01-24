@@ -13,18 +13,14 @@ import java.util.UUID
 class MellomlagringKonsistensavstemmingService(
     private val mellomlagringKonsistensavstemmingRepository: MellomlagringKonsistensavstemmingRepository,
 ) {
-    fun hentAggregertBeløp(
-        metaInfo: KonsistensavstemmingMetaInfo,
-    ): Long =
+    fun hentAggregertBeløp(metaInfo: KonsistensavstemmingMetaInfo): Long =
         if (metaInfo.erSisteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingRepository.hentAggregertTotalBeløp(metaInfo.transaksjonsId!!)
         } else {
             0L
         }
 
-    fun hentAggregertAntallOppdrag(
-        metaInfo: KonsistensavstemmingMetaInfo,
-    ): Int {
+    fun hentAggregertAntallOppdrag(metaInfo: KonsistensavstemmingMetaInfo): Int {
         return if (metaInfo.erSisteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingRepository.hentAggregertAntallOppdrag(metaInfo.transaksjonsId!!)
         } else {
@@ -37,12 +33,13 @@ class MellomlagringKonsistensavstemmingService(
         antalOppdrag: Int,
         totalBeløp: Long,
     ) {
-        val mellomlagring = MellomlagringKonsistensavstemming(
-            fagsystem = metaInfo.fagsystem,
-            transaksjonsId = metaInfo.transaksjonsId!!,
-            antallOppdrag = antalOppdrag,
-            totalBeløp = totalBeløp,
-        )
+        val mellomlagring =
+            MellomlagringKonsistensavstemming(
+                fagsystem = metaInfo.fagsystem,
+                transaksjonsId = metaInfo.transaksjonsId!!,
+                antallOppdrag = antalOppdrag,
+                totalBeløp = totalBeløp,
+            )
         mellomlagringKonsistensavstemmingRepository.insert(mellomlagring)
         LOG.info("Opprettet mellomlagring for transaksjonsId ${metaInfo.transaksjonsId}")
     }
@@ -54,7 +51,6 @@ class MellomlagringKonsistensavstemmingService(
     }
 
     companion object {
-
         val LOG: Logger = LoggerFactory.getLogger(MellomlagringKonsistensavstemmingService::class.java)
     }
 }
@@ -67,9 +63,11 @@ data class KonsistensavstemmingMetaInfo(
     val sendAvsluttmelding: Boolean,
     val utbetalingsoppdrag: List<Utbetalingsoppdrag>,
 ) {
-
     fun erFørsteBatchIEnSplittetBatch(): Boolean = sendStartmelding && !sendAvsluttmelding
+
     fun erSisteBatchIEnSplittetBatch(): Boolean = !sendStartmelding && sendAvsluttmelding
+
     fun erSplittetBatchMenIkkeSisteBatch(): Boolean = erSplittetBatch() && !erSisteBatchIEnSplittetBatch()
+
     fun erSplittetBatch(): Boolean = !sendStartmelding || !sendAvsluttmelding
 }

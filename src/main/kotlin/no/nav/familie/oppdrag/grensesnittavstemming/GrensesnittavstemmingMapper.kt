@@ -26,7 +26,6 @@ class GrensesnittavstemmingMapper(
     private val fom: LocalDateTime,
     private val tom: LocalDateTime,
 ) {
-
     private val ANTALL_DETALJER_PER_MELDING = 70
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     val avstemmingId = AvstemmingMapper.encodeUUIDBase64(UUID.randomUUID())
@@ -37,11 +36,12 @@ class GrensesnittavstemmingMapper(
 
     fun lagStartmelding() = lagMelding(AksjonType.START)
 
-    fun lagTotalMelding() = lagMelding(AksjonType.DATA).apply {
-        this.total = opprettTotalData()
-        this.periode = opprettPeriodeData()
-        this.grunnlag = opprettGrunnlagsData()
-    }
+    fun lagTotalMelding() =
+        lagMelding(AksjonType.DATA).apply {
+            this.total = opprettTotalData()
+            this.periode = opprettPeriodeData()
+            this.grunnlag = opprettGrunnlagsData()
+        }
 
     fun lagSluttmelding() = lagMelding(AksjonType.AVSL)
 
@@ -167,10 +167,12 @@ class GrensesnittavstemmingMapper(
     }
 
     private fun opprettPeriodeData(): Periodedata {
-        val fom = avstemmingstidspunkt.fom
-            ?: error("Mangler avstemmingstidspunkt::fom, vi skal ikke opprette meldinger hvis listen med oppdrag er tom")
-        val tom = avstemmingstidspunkt.tom
-            ?: error("Mangler avstemmingstidspunkt::tom, vi skal ikke opprette meldinger hvis listen med oppdrag er tom")
+        val fom =
+            avstemmingstidspunkt.fom
+                ?: error("Mangler avstemmingstidspunkt::fom, vi skal ikke opprette meldinger hvis listen med oppdrag er tom")
+        val tom =
+            avstemmingstidspunkt.tom
+                ?: error("Mangler avstemmingstidspunkt::tom, vi skal ikke opprette meldinger hvis listen med oppdrag er tom")
         return Periodedata().apply {
             this.datoAvstemtFom = formaterTilPeriodedataFormat(fom.format(tidspunktFormatter))
             this.datoAvstemtTom = formaterTilPeriodedataFormat(tom.format(tidspunktFormatter))

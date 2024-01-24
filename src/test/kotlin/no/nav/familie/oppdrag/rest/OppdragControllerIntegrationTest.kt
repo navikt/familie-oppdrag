@@ -14,19 +14,19 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.jms.annotation.EnableJms
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.shaded.org.awaitility.Awaitility.await
 import java.time.Duration
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.PostgreSQLContainer
 import kotlin.test.assertEquals
 
 @ActiveProfiles("dev")
@@ -37,7 +37,6 @@ import kotlin.test.assertEquals
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
 internal class OppdragControllerIntegrationTest {
-
     @Autowired lateinit var oppdragService: OppdragService
 
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
@@ -100,7 +99,10 @@ internal class OppdragControllerIntegrationTest {
         assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
     }
 
-    private fun assertOppdragStatus(oppdragId: OppdragId, oppdragStatus: OppdragStatus) {
+    private fun assertOppdragStatus(
+        oppdragId: OppdragId,
+        oppdragStatus: OppdragStatus,
+    ) {
         await()
             .pollInterval(Duration.ofMillis(200))
             .atMost(Duration.ofSeconds(10)).untilAsserted {

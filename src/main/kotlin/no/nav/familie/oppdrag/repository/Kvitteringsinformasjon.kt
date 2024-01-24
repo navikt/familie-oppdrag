@@ -27,8 +27,10 @@ val Kvitteringsinformasjon.id: OppdragId
     }
 
 object KvitteringsinformasjonRowMapper : RowMapper<Kvitteringsinformasjon> {
-
-    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): Kvitteringsinformasjon {
+    override fun mapRow(
+        resultSet: ResultSet,
+        rowNumbers: Int,
+    ): Kvitteringsinformasjon {
         return Kvitteringsinformasjon(
             fagsystem = resultSet.getString("fagsystem"),
             personIdent = resultSet.getString("person_ident"),

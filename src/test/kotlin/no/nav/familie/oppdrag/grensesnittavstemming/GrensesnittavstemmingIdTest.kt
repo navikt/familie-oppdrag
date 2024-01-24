@@ -5,8 +5,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDateTime
-import java.util.*
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
@@ -31,7 +29,8 @@ import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-
+import java.time.LocalDateTime
+import java.util.*
 
 @ActiveProfiles("dev")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -46,15 +45,15 @@ class GrensesnittavstemmingIdTest(
     val oppdragLagerRepository: OppdragLagerRepository,
     @Autowired val oppdragMapper: OppdragMapper,
 ) {
-
     val avstemmingSender: AvstemmingSender = mockk()
 
-    val grensesnittavstemmingService = GrensesnittavstemmingService(
-        avstemmingSender = avstemmingSender,
-        oppdragLagerRepository = oppdragLagerRepository,
-        tidligereKjørteGrensesnittavstemmingerRepository = tidligereKjørteGrensesnittavstemmingerRepository,
-        antall = 2,
-    )
+    val grensesnittavstemmingService =
+        GrensesnittavstemmingService(
+            avstemmingSender = avstemmingSender,
+            oppdragLagerRepository = oppdragLagerRepository,
+            tidligereKjørteGrensesnittavstemmingerRepository = tidligereKjørteGrensesnittavstemmingerRepository,
+            antall = 2,
+        )
 
     companion object {
         protected fun initLoggingEventListAppender(): ListAppender<ILoggingEvent> {
@@ -62,7 +61,6 @@ class GrensesnittavstemmingIdTest(
             listAppender.start()
             return listAppender
         }
-
 
         @Container
         private val postgreSQLContainer = PostgreSQLContainer<Nothing>("postgres:latest")
@@ -205,11 +203,12 @@ class GrensesnittavstemmingIdTest(
     }
 
     private fun opprettUtbetalingsoppdrag() {
-        val utbetalingsoppdrag = TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-            LocalDateTime.now().minusDays(1),
-            "BA",
-            utbetalingsperiode = arrayOf(TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode()),
-        )
+        val utbetalingsoppdrag =
+            TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                LocalDateTime.now().minusDays(1),
+                "BA",
+                utbetalingsperiode = arrayOf(TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode()),
+            )
         val oppdrag = oppdragMapper.tilOppdrag(oppdragMapper.tilOppdrag110(utbetalingsoppdrag))
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), 0)
     }

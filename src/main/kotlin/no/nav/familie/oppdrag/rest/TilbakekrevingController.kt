@@ -23,7 +23,6 @@ import java.util.UUID
 @RequestMapping("/api/tilbakekreving")
 @ProtectedWithClaims(issuer = "azuread")
 class TilbakekrevingController(private val økonomiClient: ØkonomiClient) {
-
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/iverksett/{behandlingId}"])
     fun iverksettVedtak(
         @PathVariable("behandlingId") behandlingId: UUID,
