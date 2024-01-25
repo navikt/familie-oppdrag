@@ -13,11 +13,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
+import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class GrensesnittavstemmingService(
     private val avstemmingSender: AvstemmingSender,
     private val oppdragLagerRepository: OppdragLagerRepository,
+    private val tidligereKjørteGrensesnittavstemmingerRepository: TidligereKjørteGrensesnittavstemmingerRepository,
     @Value("\${grensesnitt.antall:7000}") private val antall: Int,
 ) {
 
@@ -31,7 +35,15 @@ class GrensesnittavstemmingService(
     }
 
     fun utførGrensesnittavstemming(request: GrensesnittavstemmingRequest) {
-        val (fagsystem: String, fra: LocalDateTime, til: LocalDateTime) = request
+        val (fagsystem: String, fra: LocalDateTime, til: LocalDateTime, avstemmingId) = request
+
+        val erGrensesnittavstemmingKjørtPåSammeAvstemmingId =
+            avstemmingId?.let { tidligereKjørteGrensesnittavstemmingerRepository.findById(it).getOrNull() } != null
+        if (erGrensesnittavstemmingKjørtPåSammeAvstemmingId) {
+            LOG.info("Grensesnittavstemming er allerede fullført for $avstemmingId og vil ikke bli kjørt på nytt")
+            return
+        }
+
         var page = 0
         var antallOppdragSomSkalAvstemmes = 0
         var oppdragSomSkalAvstemmes =
@@ -54,6 +66,10 @@ class GrensesnittavstemmingService(
         val totalmelding = avstemmingMapper.lagTotalMelding()
         avstemmingSender.sendGrensesnittAvstemming(totalmelding)
         avstemmingSender.sendGrensesnittAvstemming(avstemmingMapper.lagSluttmelding())
+
+        if (avstemmingId != null) {
+            tidligereKjørteGrensesnittavstemmingerRepository.insert(TidligereKjørtGrensesnittavstemming(avstemmingId))
+        }
 
         LOG.info(
             "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId}" +
