@@ -17,7 +17,6 @@ class VaultHikariConfig(
     private val hikariDataSource: HikariDataSource,
     private val props: VaultDatabaseProperties,
 ) : InitializingBean {
-
     private val logger = LoggerFactory.getLogger(VaultHikariConfig::class.java)
 
     override fun afterPropertiesSet() {

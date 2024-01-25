@@ -18,9 +18,12 @@ import org.springframework.transaction.annotation.Transactional
 class OppdragServiceE2E(
     @Autowired private val oppdragLagerRepository: OppdragLagerRepository,
 ) : OppdragService {
-
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
+    override fun opprettOppdrag(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        oppdrag: Oppdrag,
+        versjon: Int,
+    ) {
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)
 
@@ -41,7 +44,6 @@ class OppdragServiceE2E(
     }
 
     companion object {
-
         val LOG = LoggerFactory.getLogger(OppdragServiceE2E::class.java)
     }
 }

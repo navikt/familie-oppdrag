@@ -37,7 +37,6 @@ class SimuleringTjenesteImpl(
     @Autowired val simulerBeregningRequestMapper: SimulerBeregningRequestMapper,
     @Autowired val simuleringLagerTjeneste: SimuleringLagerTjeneste,
 ) : SimuleringTjeneste {
-
     val mapper = jacksonObjectMapper()
     val simuleringResultatTransformer = SimuleringResultatTransformer()
 
@@ -88,46 +87,51 @@ class SimuleringTjenesteImpl(
     }
 
     override fun hentFeilutbetalinger(request: HentFeilutbetalingerFraSimuleringRequest): FeilutbetalingerFraSimulering {
-        val simuleringLager = simuleringLagerTjeneste.hentSisteSimuleringsresultat(
-            request.ytelsestype.kode,
-            request.eksternFagsakId,
-            request.fagsystemsbehandlingId,
-        )
+        val simuleringLager =
+            simuleringLagerTjeneste.hentSisteSimuleringsresultat(
+                request.ytelsestype.kode,
+                request.eksternFagsakId,
+                request.fagsystemsbehandlingId,
+            )
         val respons = Jaxb.tilSimuleringsrespons(simuleringLager.responseXml!!)
         val simulering = respons.response.simulering
 
         val feilPosteringerMedPositivBeløp = finnFeilPosteringer(simulering)
         val alleYtelPosteringer = finnYtelPosteringer(simulering)
 
-        val feilutbetaltPerioder = feilPosteringerMedPositivBeløp.map { feilPostering ->
-            val periode = feilPostering.key
-            val feilutbetaltBeløp = feilPostering.value.sumOf { it.belop }
-            val ytelPosteringerForPeriode = hentYtelPerioder(periode, alleYtelPosteringer)
-            FeilutbetaltPeriode(
-                fom = LocalDate.parse(periode.periodeFom),
-                tom = LocalDate.parse(periode.periodeTom),
-                feilutbetaltBeløp = feilutbetaltBeløp,
-                tidligereUtbetaltBeløp = summerNegativeYtelPosteringer(
-                    ytelPosteringerForPeriode,
-                    alleYtelPosteringer,
-                ).abs(),
-                nyttBeløp = summerPostiveYtelPosteringer(
-                    ytelPosteringerForPeriode,
-                    alleYtelPosteringer,
-                ) - feilutbetaltBeløp,
-            )
-        }
+        val feilutbetaltPerioder =
+            feilPosteringerMedPositivBeløp.map { feilPostering ->
+                val periode = feilPostering.key
+                val feilutbetaltBeløp = feilPostering.value.sumOf { it.belop }
+                val ytelPosteringerForPeriode = hentYtelPerioder(periode, alleYtelPosteringer)
+                FeilutbetaltPeriode(
+                    fom = LocalDate.parse(periode.periodeFom),
+                    tom = LocalDate.parse(periode.periodeTom),
+                    feilutbetaltBeløp = feilutbetaltBeløp,
+                    tidligereUtbetaltBeløp =
+                        summerNegativeYtelPosteringer(
+                            ytelPosteringerForPeriode,
+                            alleYtelPosteringer,
+                        ).abs(),
+                    nyttBeløp =
+                        summerPostiveYtelPosteringer(
+                            ytelPosteringerForPeriode,
+                            alleYtelPosteringer,
+                        ) - feilutbetaltBeløp,
+                )
+            }
         return FeilutbetalingerFraSimulering(feilutbetaltePerioder = feilutbetaltPerioder)
     }
 
     private fun finnFeilPosteringer(simulering: Beregning): Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>> {
         return simulering.beregningsPeriode.map { beregningsperiode ->
-            beregningsperiode to beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
-                stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
-                    detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
-                        detalj.belop > BigDecimal.ZERO
-                }
-            }.flatten()
+            beregningsperiode to
+                beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
+                    stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
+                        detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
+                            detalj.belop > BigDecimal.ZERO
+                    }
+                }.flatten()
         }.filter { it.second.isNotEmpty() }.toMap()
     }
 
@@ -154,20 +158,18 @@ class SimuleringTjenesteImpl(
     private fun summerNegativeYtelPosteringer(
         perioder: List<BeregningsPeriode>,
         ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
-    ) =
-        perioder.sumOf { beregningsperiode ->
-            ytelPerioder.getValue(beregningsperiode).filter { it.belop < BigDecimal.ZERO }
-                .sumOf { detalj -> detalj.belop }
-        }
+    ) = perioder.sumOf { beregningsperiode ->
+        ytelPerioder.getValue(beregningsperiode).filter { it.belop < BigDecimal.ZERO }
+            .sumOf { detalj -> detalj.belop }
+    }
 
     private fun summerPostiveYtelPosteringer(
         perioder: List<BeregningsPeriode>,
         ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
-    ) =
-        perioder.sumOf { beregningsperiode ->
-            ytelPerioder.getValue(beregningsperiode).filter { it.belop > BigDecimal.ZERO }
-                .sumOf { detalj -> detalj.belop }
-        }
+    ) = perioder.sumOf { beregningsperiode ->
+        ytelPerioder.getValue(beregningsperiode).filter { it.belop > BigDecimal.ZERO }
+            .sumOf { detalj -> detalj.belop }
+    }
 
     private fun genererFeilmelding(ex: SimulerBeregningFeilUnderBehandling): String =
         ex.faultInfo.let {
@@ -180,7 +182,6 @@ class SimuleringTjenesteImpl(
         }
 
     companion object {
-
         val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
     }
 }

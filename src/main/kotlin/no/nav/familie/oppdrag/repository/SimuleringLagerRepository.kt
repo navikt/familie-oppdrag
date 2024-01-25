@@ -6,7 +6,6 @@ import java.util.UUID
 
 @Repository
 interface SimuleringLagerRepository : RepositoryInterface<SimuleringLager, UUID>, InsertUpdateRepository<SimuleringLager> {
-
     // language=PostgreSQL
     @Query(
         """
@@ -16,5 +15,9 @@ interface SimuleringLagerRepository : RepositoryInterface<SimuleringLager, UUID>
              ORDER BY sim.opprettet_tidspunkt DESC LIMIT 1
     """,
     )
-    fun finnSisteSimuleringsresultat(fagsystem: String, fagsakId: String, behandlingId: String): SimuleringLager
+    fun finnSisteSimuleringsresultat(
+        fagsystem: String,
+        fagsakId: String,
+        behandlingId: String,
+    ): SimuleringLager
 }

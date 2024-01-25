@@ -12,11 +12,12 @@ import org.springframework.context.annotation.Profile
 @Profile("!dev & !dev_psql_mq")
 @ConditionalOnProperty("spring.flyway.enabled")
 class FlywayConfig {
-
     private val logger = LoggerFactory.getLogger(FlywayConfig::class.java)
 
     @Bean
-    fun setRole(@Value("\${spring.cloud.vault.database.role}") role: String): FlywayConfigurationCustomizer {
+    fun setRole(
+        @Value("\${spring.cloud.vault.database.role}") role: String,
+    ): FlywayConfigurationCustomizer {
         logger.info("Setter rolle " + role)
         return FlywayConfigurationCustomizer { c -> c.initSql(String.format("SET ROLE \"%s\"", role)) }
     }

@@ -7,9 +7,10 @@ private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
 fun logSoapFaultException(e: Exception) {
     if (e is SOAPFaultException) {
-        val details = e.fault.detail?.let { detail ->
-            detail.detailEntries.asSequence().mapNotNull { it.textContent }.joinToString(",")
-        }
+        val details =
+            e.fault.detail?.let { detail ->
+                detail.detailEntries.asSequence().mapNotNull { it.textContent }.joinToString(",")
+            }
         secureLogger.error(
             "SOAPFaultException -" +
                 " faultCode=${e.fault.faultCode}" +

@@ -13,18 +13,21 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate) {
+class TssMQClient(
+    @Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate,
+) {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     private val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
 
     private fun kallTss(rawRequest: String): String {
         val uuid = UUID.randomUUID().toString()
         try {
-            val response: Message? = jmsTemplateTss.sendAndReceive { session: Session ->
-                val requestMessage = session.createTextMessage(rawRequest)
-                requestMessage.jmsCorrelationID = uuid
-                requestMessage
-            }
+            val response: Message? =
+                jmsTemplateTss.sendAndReceive { session: Session ->
+                    val requestMessage = session.createTextMessage(rawRequest)
+                    requestMessage.jmsCorrelationID = uuid
+                    requestMessage
+                }
 
             return if (response == null) {
                 throw TssConnectionException("En feil oppsto i kallet til TSS. Response var null (timeout?)")
@@ -48,66 +51,82 @@ class TssMQClient(@Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTe
     fun getOrgInfo(tssSamhandlerIdent: TssSamhandlerIdent): TssSamhandlerData {
         val objectFactory = ObjectFactory()
 
-        val samhandlerIDataB910Data = when (tssSamhandlerIdent.type) {
-            TssSamhandlerIdentType.ORGNR -> {
-                val offIdData = objectFactory.createTidOFF1().apply {
-                    idOff = tssSamhandlerIdent.ident
-                    kodeIdType = "ORG"
-                    kodeSamhType = "INST"
+        val samhandlerIDataB910Data =
+            when (tssSamhandlerIdent.type) {
+                TssSamhandlerIdentType.ORGNR -> {
+                    val offIdData =
+                        objectFactory.createTidOFF1().apply {
+                            idOff = tssSamhandlerIdent.ident
+                            kodeIdType = "ORG"
+                            kodeSamhType = "INST"
+                        }
+                    val samhandlerIDataB910Data =
+                        objectFactory.createSamhandlerIDataB910Type().apply {
+                            brukerID = BRUKER_ID
+                            historikk = "N"
+                            ofFid = offIdData
+                        }
+                    samhandlerIDataB910Data
                 }
-                val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
-                    brukerID = BRUKER_ID
-                    historikk = "N"
-                    ofFid = offIdData
+
+                TssSamhandlerIdentType.TSS -> {
+                    val samhandlerIDataB910Data =
+                        objectFactory.createSamhandlerIDataB910Type().apply {
+                            idOffTSS = tssSamhandlerIdent.ident
+                            brukerID = BRUKER_ID
+                            historikk = "N"
+                        }
+                    samhandlerIDataB910Data
                 }
-                samhandlerIDataB910Data
             }
 
-            TssSamhandlerIdentType.TSS -> {
-                val samhandlerIDataB910Data = objectFactory.createSamhandlerIDataB910Type().apply {
-                    idOffTSS = tssSamhandlerIdent.ident
-                    brukerID = BRUKER_ID
-                    historikk = "N"
-                }
-                samhandlerIDataB910Data
+        val servicerutiner =
+            objectFactory.createTServicerutiner().apply {
+                samhandlerIDataB910 = samhandlerIDataB910Data
             }
-        }
-
-        val servicerutiner = objectFactory.createTServicerutiner().apply {
-            samhandlerIDataB910 = samhandlerIDataB910Data
-        }
-        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
-            tssServiceRutine = servicerutiner
-        }
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
-            tssInputData = tssSamhandlerDataTssInputData
-        }
+        val tssSamhandlerDataTssInputData =
+            objectFactory.createTssSamhandlerDataTssInputData().apply {
+                tssServiceRutine = servicerutiner
+            }
+        val tssSamhandlerData =
+            objectFactory.createTssSamhandlerData().apply {
+                tssInputData = tssSamhandlerDataTssInputData
+            }
         val xml = Jaxb.tilXml(tssSamhandlerData)
         val rawResponse = kallTss(xml)
         return Jaxb.tilTssSamhandlerData(rawResponse)
     }
 
-    fun søkOrgInfo(navn: String?, postNummer: String?, område: String?, side: Int): TssSamhandlerData {
+    fun søkOrgInfo(
+        navn: String?,
+        postNummer: String?,
+        område: String?,
+        side: Int,
+    ): TssSamhandlerData {
         val objectFactory = ObjectFactory()
-        val samhandlerIDataB940Data = objectFactory.createSamhandlerIDataB940Type().apply {
-            brukerID = BRUKER_ID
-            navnSamh = navn
-            kodeSamhType = "INST"
-            postNr = postNummer
-            omrade = område
-            buffnr = side.toString().padStart(3, '0')
-        }
+        val samhandlerIDataB940Data =
+            objectFactory.createSamhandlerIDataB940Type().apply {
+                brukerID = BRUKER_ID
+                navnSamh = navn
+                kodeSamhType = "INST"
+                postNr = postNummer
+                omrade = område
+                buffnr = side.toString().padStart(3, '0')
+            }
 
-        val servicerutiner = objectFactory.createTServicerutiner().apply {
-            samhandlerIDataB940 = samhandlerIDataB940Data
-        }
+        val servicerutiner =
+            objectFactory.createTServicerutiner().apply {
+                samhandlerIDataB940 = samhandlerIDataB940Data
+            }
 
-        val tssSamhandlerDataTssInputData = objectFactory.createTssSamhandlerDataTssInputData().apply {
-            tssServiceRutine = servicerutiner
-        }
-        val tssSamhandlerData = objectFactory.createTssSamhandlerData().apply {
-            tssInputData = tssSamhandlerDataTssInputData
-        }
+        val tssSamhandlerDataTssInputData =
+            objectFactory.createTssSamhandlerDataTssInputData().apply {
+                tssServiceRutine = servicerutiner
+            }
+        val tssSamhandlerData =
+            objectFactory.createTssSamhandlerData().apply {
+                tssInputData = tssSamhandlerDataTssInputData
+            }
 
         val rawResponse = kallTss(Jaxb.tilXml(tssSamhandlerData))
         return Jaxb.tilTssSamhandlerData(rawResponse)

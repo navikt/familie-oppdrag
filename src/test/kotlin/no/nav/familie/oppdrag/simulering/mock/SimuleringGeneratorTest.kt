@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
 internal class SimuleringGeneratorTest {
-
     private val simuleringGenerator = SimuleringGenerator()
 
     @Test
@@ -18,7 +17,9 @@ internal class SimuleringGeneratorTest {
         val oppdragGjelderId = "12345678901"
         val kodeEndring = "NY"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje("NY", null, 2339, oppdragGjelderId, "2020-06-01", "2020-11-30", null))
+        request.request.oppdrag.oppdragslinje.add(
+            opprettOppdragslinje("NY", null, 2339, oppdragGjelderId, "2020-06-01", "2020-11-30", null),
+        )
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
@@ -27,16 +28,24 @@ internal class SimuleringGeneratorTest {
             .withFailMessage("Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder")
         assertThat(response.response.simulering.beregningsPeriode.size)
             .isEqualTo(1)
-            .withFailMessage("Resultatperioden ble delt opp feil, ettersom alle periodene er sammenhengende skal de komme som en lang resultatperiode")
+            .withFailMessage(
+                "Resultatperioden ble delt opp feil, ettersom alle periodene er sammenhengende skal de komme som en lang resultatperiode",
+            )
         assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
             .isEqualTo(6)
-            .withFailMessage("Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
+            .withFailMessage(
+                "Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
+                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+            )
         val detaljer: List<BeregningStoppnivaaDetaljer> =
             response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
         detaljer.sortedBy { beregningStoppnivaaDetaljer -> beregningStoppnivaaDetaljer.behandlingskode }
         assertThat(detaljer.size)
             .isEqualTo(1)
-            .withFailMessage("En positiv respons skal bare ha en beregningStoppnivaaDetaljer. Det at den hadde flere enn 1 indikerer at det feilaktig er oppstått andre posteringer")
+            .withFailMessage(
+                "En positiv respons skal bare ha en beregningStoppnivaaDetaljer. Det at den hadde flere enn 1 indikerer at " +
+                    "det feilaktig er oppstått andre posteringer",
+            )
     }
 
     @Test
@@ -44,8 +53,12 @@ internal class SimuleringGeneratorTest {
         val oppdragGjelderId = "12345678902"
         val kodeEndring = "ENDR"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-11-30", "2020-07-01"))
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje("NY", null, 1200, oppdragGjelderId, "2020-07-01", "2020-11-30", null))
+        request.request.oppdrag.oppdragslinje.add(
+            opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-11-30", "2020-07-01"),
+        )
+        request.request.oppdrag.oppdragslinje.add(
+            opprettOppdragslinje("NY", null, 1200, oppdragGjelderId, "2020-07-01", "2020-11-30", null),
+        )
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
@@ -54,7 +67,10 @@ internal class SimuleringGeneratorTest {
             .withFailMessage("Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder")
         assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
             .isEqualTo(5)
-            .withFailMessage("Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
+            .withFailMessage(
+                "Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
+                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+            )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
             response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
@@ -87,7 +103,9 @@ internal class SimuleringGeneratorTest {
         val oppdragGjelderId = "12345678903"
         val kodeEndring = "ENDR"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
-        request.request.oppdrag.oppdragslinje.add(opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-10-31", "2020-07-01"))
+        request.request.oppdrag.oppdragslinje.add(
+            opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-10-31", "2020-07-01"),
+        )
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
@@ -96,7 +114,10 @@ internal class SimuleringGeneratorTest {
             .withFailMessage("Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder")
         assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
             .isEqualTo(4)
-            .withFailMessage("Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
+            .withFailMessage(
+                "Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " +
+                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+            )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
             response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
@@ -124,7 +145,10 @@ internal class SimuleringGeneratorTest {
             .withFailMessage("Beløp for gammel ytelse var feil, forventet månedsbeløp 1330 men fikk: " + detaljer[2].belop)
     }
 
-    private fun opprettSimulerBeregningRequest(oppdragGjelderId: String, kodeEndring: String): SimulerBeregningRequest {
+    private fun opprettSimulerBeregningRequest(
+        oppdragGjelderId: String,
+        kodeEndring: String,
+    ): SimulerBeregningRequest {
         val request = SimulerBeregningRequest()
         request.request =
             no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningRequest()

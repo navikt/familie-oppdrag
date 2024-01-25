@@ -34,7 +34,6 @@ class KonsistensavstemmingMapper(
     private val sendAvsluttmelding: Boolean,
     transaksjonsId: UUID? = UUID.randomUUID(),
 ) {
-
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
     private val datoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val avstemmingId = AvstemmingMapper.encodeUUIDBase64(transaksjonsId ?: UUID.randomUUID())
@@ -45,11 +44,12 @@ class KonsistensavstemmingMapper(
     fun lagAvstemmingsmeldinger(): List<Konsistensavstemmingsdata> =
         when {
             sendStartmelding && sendAvsluttmelding -> (
-                listOf(lagStartmelding()) + lagDatameldinger() + listOf(
-                    lagTotaldata(),
-                    lagSluttmelding(),
-                )
-                )
+                listOf(lagStartmelding()) + lagDatameldinger() +
+                    listOf(
+                        lagTotaldata(),
+                        lagSluttmelding(),
+                    )
+            )
             sendStartmelding -> (listOf(lagStartmelding()) + lagDatameldinger())
             sendAvsluttmelding -> (lagDatameldinger() + listOf(lagTotaldata(), lagSluttmelding()))
             else -> lagDatameldinger()
@@ -111,10 +111,11 @@ class KonsistensavstemmingMapper(
                 refDelytelseId = utbetalingsoppdrag.saksnummer + it
             }
             klassifikasjonKode = utbetalingsperiode.klassifisering
-            vedtakPeriode = Periode().apply {
-                fom = utbetalingsperiode.vedtakdatoFom.format(datoFormatter)
-                tom = utbetalingsperiode.vedtakdatoTom.format(datoFormatter)
-            }
+            vedtakPeriode =
+                Periode().apply {
+                    fom = utbetalingsperiode.vedtakdatoFom.format(datoFormatter)
+                    tom = utbetalingsperiode.vedtakdatoTom.format(datoFormatter)
+                }
             sats = utbetalingsperiode.sats
             satstypeKode = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
             brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
@@ -166,11 +167,12 @@ class KonsistensavstemmingMapper(
     private fun lagTotaldata(): Konsistensavstemmingsdata {
         val konsistensavstemmingsdata = lagAksjonsmelding(KonsistensavstemmingConstants.DATA)
         konsistensavstemmingsdata.apply {
-            totaldata = Totaldata().apply {
-                totalAntall = antallOppdrag.toBigInteger() + aggregertAntallOppdrag.toBigInteger()
-                totalBelop = BigDecimal.valueOf(totalBeløp) + BigDecimal.valueOf(aggregertTotalBeløp)
-                fortegn = getFortegn(totalBeløp + aggregertTotalBeløp)
-            }
+            totaldata =
+                Totaldata().apply {
+                    totalAntall = antallOppdrag.toBigInteger() + aggregertAntallOppdrag.toBigInteger()
+                    totalBelop = BigDecimal.valueOf(totalBeløp) + BigDecimal.valueOf(aggregertTotalBeløp)
+                    fortegn = getFortegn(totalBeløp + aggregertTotalBeløp)
+                }
         }
         return konsistensavstemmingsdata
     }
@@ -203,7 +205,6 @@ class KonsistensavstemmingMapper(
     }
 
     companion object {
-
         val LOG: Logger = LoggerFactory.getLogger(KonsistensavstemmingMapper::class.java)
     }
 }

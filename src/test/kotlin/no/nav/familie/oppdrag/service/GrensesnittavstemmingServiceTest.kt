@@ -7,6 +7,8 @@ import io.mockk.verify
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
+import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
+import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 import no.nav.familie.oppdrag.repository.somAvstemming
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato
 import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.AksjonType
@@ -16,26 +18,23 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.Optional
-import no.nav.familie.oppdrag.repository.TidligereKjørtGrensesnittavstemming
-import no.nav.familie.oppdrag.repository.TidligereKjørteGrensesnittavstemmingerRepository
 
 class GrensesnittavstemmingServiceTest {
-
     val fagområde = "EFOG"
     val antall = 2
 
     val avstemmingSender = mockk<AvstemmingSender>()
     val oppdragLagerRepository = mockk<OppdragLagerRepository>()
     val tidligereKjørteGrensesnittavstemmingerRepository = mockk<TidligereKjørteGrensesnittavstemmingerRepository>()
-    val grensesnittavstemmingService = GrensesnittavstemmingService(
-        avstemmingSender = avstemmingSender,
-        oppdragLagerRepository = oppdragLagerRepository,
-        tidligereKjørteGrensesnittavstemmingerRepository = tidligereKjørteGrensesnittavstemmingerRepository,
-        antall = antall
-    )
+    val grensesnittavstemmingService =
+        GrensesnittavstemmingService(
+            avstemmingSender = avstemmingSender,
+            oppdragLagerRepository = oppdragLagerRepository,
+            tidligereKjørteGrensesnittavstemmingerRepository = tidligereKjørteGrensesnittavstemmingerRepository,
+            antall = antall,
+        )
 
     val slot = mutableListOf<Avstemmingsdata>()
-
 
     @BeforeEach
     fun setUp() {
@@ -44,7 +43,11 @@ class GrensesnittavstemmingServiceTest {
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(any(), any(), any(), antall, any())
         } returns emptyList()
 
-        every { tidligereKjørteGrensesnittavstemmingerRepository.findById(any()) } returns Optional.empty<TidligereKjørtGrensesnittavstemming>()
+        every {
+            tidligereKjørteGrensesnittavstemmingerRepository.findById(
+                any(),
+            )
+        } returns Optional.empty<TidligereKjørtGrensesnittavstemming>()
 
         justRun { avstemmingSender.sendGrensesnittAvstemming(capture(slot)) }
     }
@@ -57,41 +60,41 @@ class GrensesnittavstemmingServiceTest {
                 any(),
                 any(),
                 antall,
-                0
+                0,
             )
         } returns
-                listOf(
-                    TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-                        LocalDateTime.now(),
-                        fagområde
-                    ).somAvstemming,
-                    TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-                        LocalDateTime.now(),
-                        fagområde
-                    ).somAvstemming,
-                )
+            listOf(
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                    LocalDateTime.now(),
+                    fagområde,
+                ).somAvstemming,
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                    LocalDateTime.now(),
+                    fagområde,
+                ).somAvstemming,
+            )
         every {
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
                 any(),
                 any(),
                 any(),
                 antall,
-                1
+                1,
             )
         } returns
-                listOf(
-                    TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-                        LocalDateTime.now(),
-                        fagområde
-                    ).somAvstemming
-                )
+            listOf(
+                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
+                    LocalDateTime.now(),
+                    fagområde,
+                ).somAvstemming,
+            )
 
         grensesnittavstemmingService.utførGrensesnittavstemming(
             GrensesnittavstemmingRequest(
                 fagsystem = fagområde,
                 fra = LocalDateTime.now(),
                 til = LocalDateTime.now(),
-                avstemmingId = null
+                avstemmingId = null,
             ),
         )
 

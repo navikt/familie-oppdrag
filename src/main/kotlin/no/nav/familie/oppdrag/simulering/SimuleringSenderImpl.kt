@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service
 @Profile("!dev & !dev_psql_mq")
 @Service
 class SimuleringSenderImpl(private val port: SimulerFpService) : SimuleringSender {
-
     @Override
     @Retryable(value = [SimulerBeregningFeilUnderBehandling::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
     override fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse {
