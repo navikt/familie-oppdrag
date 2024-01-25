@@ -44,7 +44,8 @@ class SimuleringGenerator {
         refunderesOrgNr = oppdragslinjer[0].refusjonsInfo.refunderesId
         for (oppdragslinje in oppdragslinjer) {
             require(!(oppdragslinje.refusjonsInfo.refunderesId.isEmpty() || oppdragslinje.refusjonsInfo.refunderesId != refunderesOrgNr)) {
-                "Ved refusjon må alle oppdragslinjer ha samme refusjonsInfo. Både orgnr " + refunderesOrgNr + " og " + oppdragslinje.refusjonsInfo.refunderesId + "ble funnet i samme request."
+                "Ved refusjon må alle oppdragslinjer ha samme refusjonsInfo. Både orgnr " + refunderesOrgNr + " og " +
+                    oppdragslinje.refusjonsInfo.refunderesId + "ble funnet i samme request."
             }
         }
         return true
@@ -87,11 +88,9 @@ class SimuleringGenerator {
             if (!YearMonth.from(oppdragsperiode.fom).isAfter(sisteMåned) && oppdragsperiode.antallVirkedager != 0) {
                 while (YearMonth.from(oppdragsperiode.tom).isAfter(sisteMåned)) {
                     oppdragsperiode.tom =
-                        oppdragsperiode.tom.minusMonths(1)
-                            .withDayOfMonth(oppdragsperiode.tom.minusMonths(1).lengthOfMonth())
+                        oppdragsperiode.tom.minusMonths(1).withDayOfMonth(oppdragsperiode.tom.minusMonths(1).lengthOfMonth())
                 }
-                val beregningsPeriode =
-                    opprettBeregningsperiode(oppdragsperiode, simulerBeregningRequest.request.oppdrag)
+                val beregningsPeriode = opprettBeregningsperiode(oppdragsperiode, simulerBeregningRequest.request.oppdrag)
                 if (!beregningsPeriode.beregningStoppnivaa.isEmpty()) {
                     beregningsPerioder.add(
                         opprettBeregningsperiode(

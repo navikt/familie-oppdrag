@@ -99,10 +99,15 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun commonResponseValidation(tssResponse: TssSamhandlerData) {
-        if (tssResponse.tssOutputData == null || tssResponse.tssOutputData.svarStatus == null || tssResponse.tssOutputData.svarStatus.alvorligGrad == null) {
+        if (erTomResponse(tssResponse)) {
             throw TssConnectionException("Ingen response. Mest sannsynlig timeout mot TSS")
         }
     }
+
+    private fun erTomResponse(tssResponse: TssSamhandlerData) =
+        tssResponse.tssOutputData == null ||
+            tssResponse.tssOutputData.svarStatus == null ||
+            tssResponse.tssOutputData.svarStatus.alvorligGrad == null
 
     private fun mapSamhandler(
         enkeltSamhandler: Samhandler,

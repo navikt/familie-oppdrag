@@ -57,8 +57,10 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
     ) {
         val insertStatement =
             "INSERT INTO oppdrag_lager " +
-                "(id, utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
-                " VALUES (:id,:utgåendeOppdrag,:status,:opprettetTid,:personIdent,:fagsakId,:behandlingId,:fagsystem,:avstemmingTid,:utbetalingsoppdrag,:versjon)"
+                "(id, utgaaende_oppdrag, status, opprettet_tidspunkt, person_ident, fagsak_id, " +
+                "behandling_id, fagsystem, avstemming_tidspunkt, utbetalingsoppdrag, versjon)" +
+                " VALUES (:id,:utgåendeOppdrag,:status,:opprettetTid,:personIdent,:fagsakId," +
+                ":behandlingId,:fagsystem,:avstemmingTid,:utbetalingsoppdrag,:versjon)"
 
         val values =
             MapSqlParameterSource()
@@ -152,7 +154,11 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
         versjon: Int,
     ): Utbetalingsoppdrag {
         val hentStatement =
-            "SELECT utbetalingsoppdrag FROM oppdrag_lager WHERE behandling_id = :behandlingId AND person_ident = :personIdent AND fagsystem = :fagsystem AND versjon = :versjon"
+            "SELECT utbetalingsoppdrag FROM oppdrag_lager " +
+                "WHERE behandling_id = :behandlingId " +
+                "AND person_ident = :personIdent " +
+                "AND fagsystem = :fagsystem " +
+                "AND versjon = :versjon"
 
         val values =
             MapSqlParameterSource()

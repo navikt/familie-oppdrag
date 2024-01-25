@@ -34,7 +34,8 @@ internal class SimuleringGeneratorTest {
         assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
             .isEqualTo(6)
             .withFailMessage(
-                "Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+                "Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
+                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
             )
         val detaljer: List<BeregningStoppnivaaDetaljer> =
             response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
@@ -42,7 +43,8 @@ internal class SimuleringGeneratorTest {
         assertThat(detaljer.size)
             .isEqualTo(1)
             .withFailMessage(
-                "En positiv respons skal bare ha en beregningStoppnivaaDetaljer. Det at den hadde flere enn 1 indikerer at det feilaktig er oppstått andre posteringer",
+                "En positiv respons skal bare ha en beregningStoppnivaaDetaljer. Det at den hadde flere enn 1 indikerer at " +
+                    "det feilaktig er oppstått andre posteringer",
             )
     }
 
@@ -66,7 +68,8 @@ internal class SimuleringGeneratorTest {
         assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
             .isEqualTo(5)
             .withFailMessage(
-                "Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+                "Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
+                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
             )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
@@ -112,7 +115,8 @@ internal class SimuleringGeneratorTest {
         assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
             .isEqualTo(4)
             .withFailMessage(
-                "Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " + response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+                "Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " +
+                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
             )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =

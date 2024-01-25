@@ -28,7 +28,9 @@ class TssController(private val tssOppslagService: TssOppslagService) {
     }
 
     @Operation(
-        summary = "Søk informasjon samhandlere av type INST ved bruk av navn og TSS-tjensten B940 og TSS-tjensten B940. Returnerer TSS-output data i rå format",
+        summary =
+            "Søk informasjon samhandlere av type INST ved bruk av navn og TSS-tjensten B940 og TSS-tjensten B940. " +
+                "Returnerer TSS-output data i rå format",
     )
     @PostMapping(path = ["/proxy/b940"])
     fun søkSamhnadlerinfoFraNavnProxy(
