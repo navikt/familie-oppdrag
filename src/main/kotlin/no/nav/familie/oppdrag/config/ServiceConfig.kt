@@ -25,7 +25,7 @@ class ServiceConfig(
     }
 
     @Bean
-    fun SimulerFpServicePort(): SimulerFpService =
+    fun simulerFpServicePort(): SimulerFpService =
         CXFClient(SimulerFpService::class.java)
             .address(simulerFpServiceUrl)
             .timeout(20000, 20000)
