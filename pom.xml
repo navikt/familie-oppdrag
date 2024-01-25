@@ -35,14 +35,6 @@
         <cxf.version>4.0.2</cxf.version>
 
         <mockk.version>1.13.5</mockk.version>
-        <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
-        <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
-        <sonar.organization>navit</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>**/config/FlywayConfig.kt,**/OppdragServiceE2E.kt
-        </sonar.coverage.exclusions>
-        <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
-        <sonar.login>${SONAR_LOGIN}</sonar.login>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20230718100517_1e1beb0</tjenestespesifikasjoner.version>
@@ -444,27 +436,6 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <finalName>${project.artifactId}</finalName>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.9.1.2184</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.10</version>
-                    <configuration>
-                        <excludes>
-                            <exclude>**/config/FlywayConfig.kt</exclude>
-                            <exclude>**/config/OppdragMQConfig.kt</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <plugins>
             <plugin>
