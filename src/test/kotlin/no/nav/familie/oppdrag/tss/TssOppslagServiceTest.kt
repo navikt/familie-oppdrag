@@ -13,7 +13,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class TssOppslagServiceTest {
-
     private val jmsTemplate: JmsTemplate = mockk(relaxed = false)
 
     private val mockedMessage: Message = mockk()
@@ -34,7 +33,10 @@ internal class TssOppslagServiceTest {
         val response = service.hentSamhandlerDataForOrganisasjonB910(TssSamhandlerIdent("ORGNR", ORGNR))
         assertEquals(1, response.enkeltSamhandler.size)
         assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
-        assertEquals("80000112244", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
+        assertEquals(
+            "80000112244",
+            response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS,
+        )
     }
 
     @Test
@@ -54,9 +56,10 @@ internal class TssOppslagServiceTest {
     fun `Skal få TssNoDataFoundException hvis man ikke finner samhandlerinfo for orgnr ved bruk av proxytjenesten`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-notfound-response.xml")
 
-        val tssNoDataFoundException = assertThrows(TssNoDataFoundException::class.java) {
-            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
-        }
+        val tssNoDataFoundException =
+            assertThrows(TssNoDataFoundException::class.java) {
+                service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
+            }
 
         assertEquals("Ingen treff med inputData=TssSamhandlerIdent(ident=ORGNR, type=ORGNR)", tssNoDataFoundException.message)
     }
@@ -65,9 +68,10 @@ internal class TssOppslagServiceTest {
     fun `Skal få TssConnectionException hvis jmstemplate returnerer er null pga timeout`() {
         every { jmsTemplate.sendAndReceive(any()) } returns null
 
-        val tssNoDataFoundException = assertThrows(TssConnectionException::class.java) {
-            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
-        }
+        val tssNoDataFoundException =
+            assertThrows(TssConnectionException::class.java) {
+                service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
+            }
 
         assertEquals("En feil oppsto i kallet til TSS. Response var null (timeout?)", tssNoDataFoundException.message)
     }
@@ -76,9 +80,10 @@ internal class TssOppslagServiceTest {
     fun `Skal få TssConnectionException hvis jmstemplate kaster JmsException pga ukjent feil`() {
         every { jmsTemplate.sendAndReceive(any()) } throws RuntimeException("Ukjent feil")
 
-        val tssNoDataFoundException = assertThrows(TssConnectionException::class.java) {
-            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
-        }
+        val tssNoDataFoundException =
+            assertThrows(TssConnectionException::class.java) {
+                service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
+            }
 
         assertEquals("En feil oppsto i kallet til TSS", tssNoDataFoundException.message)
     }
@@ -87,9 +92,10 @@ internal class TssOppslagServiceTest {
     fun `Skal få TssResponseException hvis b910 returerner feil med en annen feilkode enn Ingen treff`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-910-error-response.xml")
 
-        val tssResponseException = assertThrows(TssResponseException::class.java) {
-            service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
-        }
+        val tssResponseException =
+            assertThrows(TssResponseException::class.java) {
+                service.hentSamhandlerInformasjon(TssSamhandlerIdent("ORGNR", ORGNR))
+            }
 
         assertEquals("DET FINNES MER INFORMASJON-04-B9XX018I", tssResponseException.message)
     }
@@ -97,11 +103,23 @@ internal class TssOppslagServiceTest {
     @Test
     fun `Skal hente samhandlerinfo ved søk på navn ved bruk av proxytjenesten b940`() {
         every { mockedMessage.getBody(String::class.java) } returns lesFil("tss-940-response.xml")
-        val response = service.hentInformasjonOmSamhandlerInstB940(navn = "Inst", postNummer = null, område = null, side = 0).tssOutputData.samhandlerODataB940
+        val response =
+            service.hentInformasjonOmSamhandlerInstB940(
+                navn = "Inst",
+                postNummer = null,
+                område = null,
+                side = 0,
+            ).tssOutputData.samhandlerODataB940
         assertEquals(3, response.enkeltSamhandler.size)
         assertEquals("2", response.enkeltSamhandler.first().samhandlerAvd125.antSamhAvd)
-        assertEquals("80000442211", response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
-        assertEquals("80000112244", response.enkeltSamhandler.get(1).samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS)
+        assertEquals(
+            "80000442211",
+            response.enkeltSamhandler.first().samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS,
+        )
+        assertEquals(
+            "80000112244",
+            response.enkeltSamhandler.get(1).samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.first().idOffTSS,
+        )
         assertEquals(0, response.enkeltSamhandler.get(2).samhandlerAvd125.samhAvd.filter { it.kilde == "IT00" }.size)
     }
 

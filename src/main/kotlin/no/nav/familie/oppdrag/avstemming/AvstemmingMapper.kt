@@ -5,7 +5,6 @@ import java.util.Base64
 import java.util.UUID
 
 object AvstemmingMapper {
-
     fun encodeUUIDBase64(uuid: UUID): String {
         val bb = ByteBuffer.wrap(ByteArray(16))
         bb.putLong(uuid.mostSignificantBits)

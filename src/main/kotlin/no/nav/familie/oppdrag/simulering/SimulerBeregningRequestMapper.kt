@@ -38,11 +38,12 @@ class SimulerBeregningRequestMapper {
             tidspktReg = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
         }
 
-        val oppdragsEnhet = oppdragSkjemaFactory.createEnhet().apply {
-            enhet = OppdragSkjemaConstants.ENHET
-            typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
-            datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toString()
-        }
+        val oppdragsEnhet =
+            oppdragSkjemaFactory.createEnhet().apply {
+                enhet = OppdragSkjemaConstants.ENHET
+                typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
+                datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toString()
+            }
 
         return fpServiceTypesFactory.createOppdrag().apply {
             kodeEndring = EndringsKode.fromKode(utbetalingsoppdrag.kodeEndring.name).kode
@@ -61,10 +62,14 @@ class SimulerBeregningRequestMapper {
         }
     }
 
-    private fun tilOppdragsLinje(utbetalingsperiode: Utbetalingsperiode, utbetalingsoppdrag: Utbetalingsoppdrag): Oppdragslinje {
-        val attest = oppdragSkjemaFactory.createAttestant().apply {
-            attestantId = utbetalingsoppdrag.saksbehandlerId
-        }
+    private fun tilOppdragsLinje(
+        utbetalingsperiode: Utbetalingsperiode,
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+    ): Oppdragslinje {
+        val attest =
+            oppdragSkjemaFactory.createAttestant().apply {
+                attestantId = utbetalingsoppdrag.saksbehandlerId
+            }
 
         return fpServiceTypesFactory.createOppdragslinje().apply {
             kodeEndringLinje =

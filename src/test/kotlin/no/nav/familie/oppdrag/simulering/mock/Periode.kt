@@ -46,11 +46,12 @@ data class Periode constructor(
             sats = sats,
             typeSats = typeSats,
             kodeKlassifik = kodeKlassifik,
-            periodeType = if (oldSats <= sats) {
-                PeriodeType.ØKNING
-            } else {
-                PeriodeType.REDUKSJON
-            },
+            periodeType =
+                if (oldSats <= sats) {
+                    PeriodeType.ØKNING
+                } else {
+                    PeriodeType.REDUKSJON
+                },
         )
 
     override fun compareTo(other: Periode): Int {

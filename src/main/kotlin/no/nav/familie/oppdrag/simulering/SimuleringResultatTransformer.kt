@@ -16,8 +16,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class SimuleringResultatTransformer {
-
-    fun mapSimulering(beregning: Beregning, utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat {
+    fun mapSimulering(
+        beregning: Beregning,
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+    ): DetaljertSimuleringResultat {
         val mottakerMap = hashMapOf<String, MutableList<SimulertPostering>>()
         for (periode in beregning.beregningsPeriode) {
             for (stoppnivaa in periode.beregningStoppnivaa) {
@@ -33,13 +35,14 @@ class SimuleringResultatTransformer {
         }
 
         val requestMottakerId = hentOrgNrEllerFnr(utbetalingsoppdrag.aktoer)
-        val simuleringMottakerListe = mottakerMap.map { (utbetalesTilId, simulertPostering) ->
-            SimuleringMottaker(
-                mottakerNummer = utbetalesTilId,
-                simulertPostering = simulertPostering,
-                mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId),
-            )
-        }
+        val simuleringMottakerListe =
+            mottakerMap.map { (utbetalesTilId, simulertPostering) ->
+                SimuleringMottaker(
+                    mottakerNummer = utbetalesTilId,
+                    simulertPostering = simulertPostering,
+                    mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId),
+                )
+            }
         return DetaljertSimuleringResultat(simuleringMottakerListe)
     }
 
@@ -52,7 +55,11 @@ class SimuleringResultatTransformer {
             betalingType = utledBetalingType(detaljer.belop),
             erFeilkonto = stoppnivaa.isFeilkonto,
             beløp = detaljer.belop,
-            fagOmrådeKode = FagOmrådeKode.fraKode(stoppnivaa.kodeFagomraade.trim()), // Todo: fjerne.trim() når TØB har rettet trailing spaces-feilen (jira: TOB-1509)
+            fagOmrådeKode =
+                FagOmrådeKode.fraKode(
+                    stoppnivaa.kodeFagomraade.trim(),
+                ),
+            // Todo: fjerne.trim() når TØB har rettet trailing spaces-feilen (jira: TOB-1509)
             fom = parseDato(detaljer.faktiskFom),
             tom = parseDato(detaljer.faktiskTom),
             forfallsdato = parseDato(stoppnivaa.forfall),
@@ -69,7 +76,10 @@ class SimuleringResultatTransformer {
         }
     }
 
-    private fun utledMottakerType(utbetalesTilId: String, harSammeAktørIdSomBruker: Boolean): MottakerType {
+    private fun utledMottakerType(
+        utbetalesTilId: String,
+        harSammeAktørIdSomBruker: Boolean,
+    ): MottakerType {
         if (harSammeAktørIdSomBruker) {
             return MottakerType.BRUKER
         }
@@ -102,7 +112,6 @@ class SimuleringResultatTransformer {
     }
 
     companion object {
-
         private const val DATO_PATTERN = "yyyy-MM-dd"
     }
 }

@@ -5,27 +5,25 @@ import no.nav.familie.kontrakter.felles.tilbakekreving.Ytelsestype
 import no.nav.familie.oppdrag.repository.SimuleringLager
 import no.nav.familie.oppdrag.repository.SimuleringLagerTjeneste
 import no.nav.familie.oppdrag.simulering.util.lagTestUtbetalingsoppdragForFGBMedEttBarn
-import no.nav.familie.oppdrag.util.Containers
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import org.springframework.data.jdbc.core.JdbcAggregateOperations
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.math.BigDecimal
 import java.time.LocalDate
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.PostgreSQLContainer
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -35,7 +33,6 @@ import kotlin.test.assertTrue
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
 internal class SimuleringTjenesteImplTest {
-
     @Autowired lateinit var simuleringLagerTjeneste: SimuleringLagerTjeneste
 
     @Autowired lateinit var simuleringTjeneste: SimuleringTjeneste
@@ -95,14 +92,15 @@ internal class SimuleringTjenesteImplTest {
             ),
         )
 
-        val feilutbetalingerFraSimulering = simuleringTjeneste
-            .hentFeilutbetalinger(
-                HentFeilutbetalingerFraSimuleringRequest(
-                    ytelsestype = Ytelsestype.OVERGANGSSTØNAD,
-                    eksternFagsakId = eksternFagsakId,
-                    fagsystemsbehandlingId = fagsystemsbehandlingId,
-                ),
-            )
+        val feilutbetalingerFraSimulering =
+            simuleringTjeneste
+                .hentFeilutbetalinger(
+                    HentFeilutbetalingerFraSimuleringRequest(
+                        ytelsestype = Ytelsestype.OVERGANGSSTØNAD,
+                        eksternFagsakId = eksternFagsakId,
+                        fagsystemsbehandlingId = fagsystemsbehandlingId,
+                    ),
+                )
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
                 feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 1
@@ -135,14 +133,15 @@ internal class SimuleringTjenesteImplTest {
             ),
         )
 
-        val feilutbetalingerFraSimulering = simuleringTjeneste
-            .hentFeilutbetalinger(
-                HentFeilutbetalingerFraSimuleringRequest(
-                    ytelsestype = Ytelsestype.BARNETRYGD,
-                    eksternFagsakId = eksternFagsakId,
-                    fagsystemsbehandlingId = fagsystemsbehandlingId,
-                ),
-            )
+        val feilutbetalingerFraSimulering =
+            simuleringTjeneste
+                .hentFeilutbetalinger(
+                    HentFeilutbetalingerFraSimuleringRequest(
+                        ytelsestype = Ytelsestype.BARNETRYGD,
+                        eksternFagsakId = eksternFagsakId,
+                        fagsystemsbehandlingId = fagsystemsbehandlingId,
+                    ),
+                )
         assertTrue {
             feilutbetalingerFraSimulering.feilutbetaltePerioder.isNotEmpty() &&
                 feilutbetalingerFraSimulering.feilutbetaltePerioder.size == 3
@@ -189,14 +188,15 @@ internal class SimuleringTjenesteImplTest {
             ),
         )
 
-        val feilutbetalingerFraSimulering = simuleringTjeneste
-            .hentFeilutbetalinger(
-                HentFeilutbetalingerFraSimuleringRequest(
-                    ytelsestype = Ytelsestype.BARNETILSYN,
-                    eksternFagsakId = eksternFagsakId,
-                    fagsystemsbehandlingId = fagsystemsbehandlingId,
-                ),
-            )
+        val feilutbetalingerFraSimulering =
+            simuleringTjeneste
+                .hentFeilutbetalinger(
+                    HentFeilutbetalingerFraSimuleringRequest(
+                        ytelsestype = Ytelsestype.BARNETILSYN,
+                        eksternFagsakId = eksternFagsakId,
+                        fagsystemsbehandlingId = fagsystemsbehandlingId,
+                    ),
+                )
         assertTrue { feilutbetalingerFraSimulering.feilutbetaltePerioder.isEmpty() }
     }
 
