@@ -21,7 +21,7 @@
         <jvmTarget>21</jvmTarget>
         <kotlin.version>1.9.22</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>2.20230508082643_6b28bd8</felles.version>
+        <felles.version>2.20240123084817_35f03aa</felles.version>
         <kontrakter.version>3.0_20240122110213_5591a29</kontrakter.version>
         <token-validation-spring.version>3.2.0</token-validation-spring.version>
 
