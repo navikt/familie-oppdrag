@@ -11,19 +11,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.2</version>
+        <version>3.2.2</version>
     </parent>
 
     <properties>
         <revision>1.0</revision>
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
-        <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.9.0</kotlin.version>
+        <jvmTarget>21</jvmTarget>
+        <kotlin.version>1.9.22</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>2.20230508082643_6b28bd8</felles.version>
-        <kontrakter.version>3.0_20230808083340_ced4750</kontrakter.version>
-        <token-validation-spring.version>3.1.2</token-validation-spring.version>
+        <kontrakter.version>3.0_20240122110213_5591a29</kontrakter.version>
+        <token-validation-spring.version>3.2.0</token-validation-spring.version>
 
         <!--
         denne må oppdateres manuellt då eks `mvn versions:update-properties` henter versjon 2023.
@@ -43,10 +43,10 @@
         </sonar.coverage.exclusions>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <testcontainers.version>1.19.3</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20230718100517_1e1beb0</tjenestespesifikasjoner.version>
-        <springdoc.version>2.2.0</springdoc.version>
+        <springdoc.version>2.3.0</springdoc.version>
 
     </properties>
 
