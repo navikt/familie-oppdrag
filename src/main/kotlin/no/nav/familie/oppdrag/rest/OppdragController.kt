@@ -11,6 +11,7 @@ import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
+import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,7 +30,6 @@ class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
 ) {
-
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
     fun sendOppdrag(
         @Valid @RequestBody
@@ -76,7 +76,7 @@ class OppdragController(
     }
 
     @PostMapping("resend")
-    fun resentOppdrag(
+    fun resendOppdrag(
         @Valid @RequestBody
         oppdragId: OppdragId,
     ) {
@@ -92,6 +92,26 @@ class OppdragController(
             .fold(
                 onFailure = {
                     notFound("Fant ikke oppdrag med id $oppdragId")
+                },
+                onSuccess = {
+                    ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "Savner kvitteringsmelding")
+                },
+            )
+    }
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag/manuell-kvittering"])
+    fun opprettManuellKvitteringPåOppdrag(
+        @Valid @RequestBody
+        oppdragId: OppdragId,
+    ): ResponseEntity<Ressurs<OppdragStatus>> {
+        return Result.runCatching { oppdragService.opprettManuellKvitteringPåOppdrag(oppdragId) }
+            .fold(
+                onFailure = {
+                    if (it is OppdragHarAlleredeKvitteringException) {
+                        conflict("Oppdrag med id $oppdragId er allerede kvittert ut.")
+                    } else {
+                        illegalState("Klarte ikke opprette manuell kvittering for oppdrag med id $oppdragId", it)
+                    }
                 },
                 onSuccess = {
                     ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "Savner kvitteringsmelding")

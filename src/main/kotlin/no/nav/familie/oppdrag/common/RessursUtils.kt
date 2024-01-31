@@ -6,32 +6,37 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
 object RessursUtils {
-
     private val LOG = LoggerFactory.getLogger(this::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun <T> unauthorized(errorMessage: String): ResponseEntity<Ressurs<T>> =
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Ressurs.failure(errorMessage))
 
-    fun <T> notFound(errorMessage: String): ResponseEntity<Ressurs<T>> =
-        errorResponse(HttpStatus.NOT_FOUND, errorMessage, null)
+    fun <T> notFound(errorMessage: String): ResponseEntity<Ressurs<T>> = errorResponse(HttpStatus.NOT_FOUND, errorMessage, null)
 
-    fun <T> badRequest(errorMessage: String, throwable: Throwable?): ResponseEntity<Ressurs<T>> =
-        errorResponse(HttpStatus.BAD_REQUEST, errorMessage, throwable)
+    fun <T> badRequest(
+        errorMessage: String,
+        throwable: Throwable?,
+    ): ResponseEntity<Ressurs<T>> = errorResponse(HttpStatus.BAD_REQUEST, errorMessage, throwable)
 
-    fun <T> forbidden(errorMessage: String): ResponseEntity<Ressurs<T>> =
-        errorResponse(HttpStatus.FORBIDDEN, errorMessage, null)
+    fun <T> forbidden(errorMessage: String): ResponseEntity<Ressurs<T>> = errorResponse(HttpStatus.FORBIDDEN, errorMessage, null)
 
-    fun <T> conflict(errorMessage: String): ResponseEntity<Ressurs<T>> =
-        errorResponse(HttpStatus.CONFLICT, errorMessage, null, true)
+    fun <T> conflict(errorMessage: String): ResponseEntity<Ressurs<T>> = errorResponse(HttpStatus.CONFLICT, errorMessage, null, true)
 
-    fun <T> illegalState(errorMessage: String, throwable: Throwable? = null): ResponseEntity<Ressurs<T>> =
-        errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
+    fun <T> illegalState(
+        errorMessage: String,
+        throwable: Throwable? = null,
+    ): ResponseEntity<Ressurs<T>> = errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
 
-    fun <T> serviceUnavailable(errorMessage: String, throwable: Throwable? = null): ResponseEntity<Ressurs<T>> =
-        errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
+    fun <T> serviceUnavailable(
+        errorMessage: String,
+        throwable: Throwable? = null,
+    ): ResponseEntity<Ressurs<T>> = errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, throwable)
 
-    fun <T> ok(data: T, melding: String? = null): ResponseEntity<Ressurs<T>> = ResponseEntity.ok(Ressurs.success(data, melding))
+    fun <T> ok(
+        data: T,
+        melding: String? = null,
+    ): ResponseEntity<Ressurs<T>> = ResponseEntity.ok(Ressurs.success(data, melding))
 
     fun <T> noContent(): ResponseEntity<Ressurs<T>> = ResponseEntity.noContent().build()
 

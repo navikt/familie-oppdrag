@@ -27,7 +27,6 @@ import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 
 class GrensesnittavstemmingMapperTest {
-
     val fagområde = "BA"
     val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
@@ -137,7 +136,10 @@ class GrensesnittavstemmingMapperTest {
         assertEquals(fagområde, actual.brukerId)
     }
 
-    fun assertDetaljData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Detaljdata) {
+    fun assertDetaljData(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        actual: Detaljdata,
+    ) {
         assertEquals(DetaljType.MANG, actual.detaljType)
         assertEquals(utbetalingsoppdrag.aktoer, actual.offnr)
         assertEquals(fagområde, actual.avleverendeTransaksjonNokkel)
@@ -147,13 +149,19 @@ class GrensesnittavstemmingMapperTest {
         assertEquals(null, actual.tekstMelding)
     }
 
-    fun assertTotalData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Totaldata) {
+    fun assertTotalData(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        actual: Totaldata,
+    ) {
         assertEquals(1, actual.totalAntall)
         assertEquals(utbetalingsoppdrag.utbetalingsperiode.first().sats, actual.totalBelop)
         assertEquals(Fortegn.T, actual.fortegn)
     }
 
-    fun assertPeriodeData(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Periodedata) {
+    fun assertPeriodeData(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        actual: Periodedata,
+    ) {
         assertEquals(
             utbetalingsoppdrag.avstemmingTidspunkt.format(DateTimeFormatter.ofPattern("yyyyMMddHH")),
             actual.datoAvstemtFom,
@@ -164,7 +172,10 @@ class GrensesnittavstemmingMapperTest {
         )
     }
 
-    fun assertGrunnlagsdata(utbetalingsoppdrag: Utbetalingsoppdrag, actual: Grunnlagsdata) {
+    fun assertGrunnlagsdata(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        actual: Grunnlagsdata,
+    ) {
         assertEquals(1, actual.manglerAntall)
         assertEquals(utbetalingsoppdrag.utbetalingsperiode.first().sats, actual.manglerBelop)
         assertEquals(Fortegn.T, actual.manglerFortegn)

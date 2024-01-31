@@ -15,7 +15,6 @@ class ServiceConfig(
     @Value("\${SERVICEUSER_PASSWORD}") private val systemuserPwd: String,
     @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String,
 ) {
-
     @Bean
     fun stsConfig(): StsConfig {
         return StsConfig.builder()
@@ -26,7 +25,7 @@ class ServiceConfig(
     }
 
     @Bean
-    fun SimulerFpServicePort(): SimulerFpService =
+    fun simulerFpServicePort(): SimulerFpService =
         CXFClient(SimulerFpService::class.java)
             .address(simulerFpServiceUrl)
             .timeout(20000, 20000)

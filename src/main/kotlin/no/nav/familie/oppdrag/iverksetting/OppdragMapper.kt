@@ -13,38 +13,40 @@ import java.time.format.DateTimeFormatter
 
 @Component
 class OppdragMapper {
-
     private val objectFactory = ObjectFactory()
     val tidspunktFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     fun tilOppdrag110(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdrag110 {
-        val avstemming = objectFactory.createAvstemming115().apply {
-            nokkelAvstemming = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
-            kodeKomponent = fagområdeTilAvleverendeKomponentKode(utbetalingsoppdrag.fagSystem)
-            tidspktMelding = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
-        }
-
-        val oppdragsEnhet = objectFactory.createOppdragsEnhet120().apply {
-            enhet = OppdragSkjemaConstants.ENHET
-            typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
-            datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate()
-        }
-
-        val oppdrag110 = objectFactory.createOppdrag110().apply {
-            kodeAksjon = OppdragSkjemaConstants.KODE_AKSJON
-            kodeEndring = EndringsKode.fromKode(utbetalingsoppdrag.kodeEndring.name).kode
-            kodeFagomraade = utbetalingsoppdrag.fagSystem
-            fagsystemId = utbetalingsoppdrag.saksnummer
-            utbetFrekvens = UtbetalingsfrekvensKode.MÅNEDLIG.kode
-            oppdragGjelderId = utbetalingsoppdrag.aktoer
-            datoOppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate()
-            saksbehId = utbetalingsoppdrag.saksbehandlerId
-            avstemming115 = avstemming
-            oppdragsEnhet120.add(oppdragsEnhet)
-            utbetalingsoppdrag.utbetalingsperiode.map { periode ->
-                oppdragsLinje150.add(tilOppdragsLinje150(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag))
+        val avstemming =
+            objectFactory.createAvstemming115().apply {
+                nokkelAvstemming = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
+                kodeKomponent = fagområdeTilAvleverendeKomponentKode(utbetalingsoppdrag.fagSystem)
+                tidspktMelding = utbetalingsoppdrag.avstemmingTidspunkt.format(tidspunktFormatter)
             }
-        }
+
+        val oppdragsEnhet =
+            objectFactory.createOppdragsEnhet120().apply {
+                enhet = OppdragSkjemaConstants.ENHET
+                typeEnhet = OppdragSkjemaConstants.ENHET_TYPE
+                datoEnhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.toXMLDate()
+            }
+
+        val oppdrag110 =
+            objectFactory.createOppdrag110().apply {
+                kodeAksjon = OppdragSkjemaConstants.KODE_AKSJON
+                kodeEndring = EndringsKode.fromKode(utbetalingsoppdrag.kodeEndring.name).kode
+                kodeFagomraade = utbetalingsoppdrag.fagSystem
+                fagsystemId = utbetalingsoppdrag.saksnummer
+                utbetFrekvens = UtbetalingsfrekvensKode.MÅNEDLIG.kode
+                oppdragGjelderId = utbetalingsoppdrag.aktoer
+                datoOppdragGjelderFom = OppdragSkjemaConstants.OPPDRAG_GJELDER_DATO_FOM.toXMLDate()
+                saksbehId = utbetalingsoppdrag.saksbehandlerId
+                avstemming115 = avstemming
+                oppdragsEnhet120.add(oppdragsEnhet)
+                utbetalingsoppdrag.utbetalingsperiode.map { periode ->
+                    oppdragsLinje150.add(tilOppdragsLinje150(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag))
+                }
+            }
 
         return oppdrag110
     }
@@ -53,9 +55,10 @@ class OppdragMapper {
         utbetalingsperiode: Utbetalingsperiode,
         utbetalingsoppdrag: Utbetalingsoppdrag,
     ): OppdragsLinje150 {
-        val attestant = objectFactory.createAttestant180().apply {
-            attestantId = utbetalingsoppdrag.saksbehandlerId
-        }
+        val attestant =
+            objectFactory.createAttestant180().apply {
+                attestantId = utbetalingsoppdrag.saksbehandlerId
+            }
 
         return objectFactory.createOppdragsLinje150().apply {
             kodeEndringLinje =
@@ -78,11 +81,12 @@ class OppdragMapper {
             sats = utbetalingsperiode.sats
             fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG
             typeSats = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
-            brukKjoreplan = if (utbetalingsoppdrag.gOmregning) {
-                OppdragSkjemaConstants.BRUK_KJØREPLAN_G_OMBEREGNING
-            } else {
-                OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
-            }
+            brukKjoreplan =
+                if (utbetalingsoppdrag.gOmregning) {
+                    OppdragSkjemaConstants.BRUK_KJØREPLAN_G_OMBEREGNING
+                } else {
+                    OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
+                }
             saksbehId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
             henvisning = utbetalingsperiode.behandlingId.toString()

@@ -16,7 +16,6 @@ class OppdragSenderMQ(
     @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
     @Value("\${oppdrag.mq.mottak}") val kvitteringsKø: String,
 ) : OppdragSender {
-
     override fun sendOppdrag(oppdrag: Oppdrag): String {
         if (!erEnabled.toBoolean()) {
             LOG.info("MQ-integrasjon mot oppdrag er skrudd av")
