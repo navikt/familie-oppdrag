@@ -1,23 +1,25 @@
 package no.nav.familie.oppdrag.repository
 
 import no.nav.familie.oppdrag.service.Fagsystem
-import no.nav.familie.oppdrag.util.Containers
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.UUID
 import kotlin.test.assertEquals
 
 @ActiveProfiles("dev")
-@ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest(
     classes = [MellomlagringKonsistensavstemmingRepositoryTest.TestConfig::class],
     properties = ["spring.cloud.vault.enabled=false"],
@@ -25,12 +27,19 @@ import kotlin.test.assertEquals
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
 internal class MellomlagringKonsistensavstemmingRepositoryTest {
-
     @Autowired lateinit var repository: MellomlagringKonsistensavstemmingRepository
 
     companion object {
+        @Container
+        private val postgreSQLContainer = PostgreSQLContainer<Nothing>("postgres:latest")
 
-        @Container var postgreSQLContainer = Containers.postgreSQLContainer
+        @DynamicPropertySource
+        @JvmStatic
+        fun registerDynamicProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl)
+            registry.add("spring.datasource.username", postgreSQLContainer::getUsername)
+            registry.add("spring.datasource.password", postgreSQLContainer::getPassword)
+        }
     }
 
     @Test
@@ -63,13 +72,16 @@ internal class MellomlagringKonsistensavstemmingRepositoryTest {
         assertEquals(0, repository.hentAggregertAntallOppdrag(transaksjonsId2))
     }
 
-    fun opprettMellomlagringKonsistensavstemming(antallOppdrag: Int, totalBeløp: Long, transaksjonsId: UUID) =
-        MellomlagringKonsistensavstemming(
-            fagsystem = Fagsystem.BA,
-            transaksjonsId = transaksjonsId,
-            antallOppdrag = antallOppdrag,
-            totalBeløp = totalBeløp,
-        )
+    fun opprettMellomlagringKonsistensavstemming(
+        antallOppdrag: Int,
+        totalBeløp: Long,
+        transaksjonsId: UUID,
+    ) = MellomlagringKonsistensavstemming(
+        fagsystem = Fagsystem.BA,
+        transaksjonsId = transaksjonsId,
+        antallOppdrag = antallOppdrag,
+        totalBeløp = totalBeløp,
+    )
 
     @Configuration
     @ComponentScan(

@@ -33,9 +33,10 @@ class AvstemmingController(
     @Autowired val grensesnittavstemmingService: GrensesnittavstemmingService,
     @Autowired val konsistensavstemmingService: KonsistensavstemmingService,
 ) {
-
     @PostMapping(path = ["/grensesnittavstemming"])
-    fun grensesnittavstemming(@RequestBody request: GrensesnittavstemmingRequest): ResponseEntity<Ressurs<String>> {
+    fun grensesnittavstemming(
+        @RequestBody request: GrensesnittavstemmingRequest,
+    ): ResponseEntity<Ressurs<String>> {
         LOG.info("Grensesnittavstemming: Kjører for ${request.fagsystem}-oppdrag fra ${request.fra} til ${request.til}")
 
         return Result.runCatching { grensesnittavstemmingService.utførGrensesnittavstemming(request) }
@@ -108,7 +109,6 @@ class AvstemmingController(
         ok(konsistensavstemmingService.hentSisteUtbetalingsoppdragForFagsaker(fagsystem.name, fagsakIder))
 
     companion object {
-
         val LOG: Logger = LoggerFactory.getLogger(AvstemmingController::class.java)
     }
 }

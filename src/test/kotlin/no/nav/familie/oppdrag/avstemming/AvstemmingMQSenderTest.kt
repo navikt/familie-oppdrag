@@ -30,25 +30,26 @@ private val IDAG = LocalDateTime.now()
 @Testcontainers
 @ContextConfiguration(initializers = [Containers.MQInitializer::class])
 class AvstemmingMQSenderTest {
-
     companion object {
         @Container
         var ibmMQContainer = Containers.ibmMQContainer
     }
 
-    private val mqConn = MQConnectionFactory().apply {
-        hostName = "localhost"
-        port = ibmMQContainer.getMappedPort(1414)
-        channel = "DEV.ADMIN.SVRCONN"
-        queueManager = "QM1"
-        transportType = WMQConstants.WMQ_CM_CLIENT
-    }
+    private val mqConn =
+        MQConnectionFactory().apply {
+            hostName = "localhost"
+            port = ibmMQContainer.getMappedPort(1414)
+            channel = "DEV.ADMIN.SVRCONN"
+            queueManager = "QM1"
+            transportType = WMQConstants.WMQ_CM_CLIENT
+        }
 
-    private val cf = UserCredentialsConnectionFactoryAdapter().apply {
-        setUsername("admin")
-        setPassword("passw0rd")
-        setTargetConnectionFactory(mqConn)
-    }
+    private val cf =
+        UserCredentialsConnectionFactoryAdapter().apply {
+            setUsername("admin")
+            setPassword("passw0rd")
+            setTargetConnectionFactory(mqConn)
+        }
 
     private val jmsTemplate = spyk(JmsTemplate(cf).apply { defaultDestinationName = TESTKØ })
 

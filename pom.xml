@@ -11,19 +11,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.2</version>
+        <version>3.2.2</version>
     </parent>
 
     <properties>
         <revision>1.0</revision>
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
-        <jvmTarget>17</jvmTarget>
-        <kotlin.version>1.9.0</kotlin.version>
+        <jvmTarget>21</jvmTarget>
+        <kotlin.version>1.9.22</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>2.20230508082643_6b28bd8</felles.version>
-        <kontrakter.version>3.0_20230808083340_ced4750</kontrakter.version>
-        <token-validation-spring.version>3.1.2</token-validation-spring.version>
+        <felles.version>2.20240123084817_35f03aa</felles.version>
+        <kontrakter.version>3.0_20240122110213_5591a29</kontrakter.version>
+        <token-validation-spring.version>3.2.0</token-validation-spring.version>
 
         <!--
         denne må oppdateres manuellt då eks `mvn versions:update-properties` henter versjon 2023.
@@ -35,18 +35,10 @@
         <cxf.version>4.0.2</cxf.version>
 
         <mockk.version>1.13.5</mockk.version>
-        <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
-        <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
-        <sonar.organization>navit</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.coverage.exclusions>**/config/FlywayConfig.kt,**/OppdragServiceE2E.kt
-        </sonar.coverage.exclusions>
-        <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
-        <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <testcontainers.version>1.19.3</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20230718100517_1e1beb0</tjenestespesifikasjoner.version>
-        <springdoc.version>2.2.0</springdoc.version>
+        <springdoc.version>2.3.0</springdoc.version>
 
     </properties>
 
@@ -445,27 +437,6 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <finalName>${project.artifactId}</finalName>
 
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.9.1.2184</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.10</version>
-                    <configuration>
-                        <excludes>
-                            <exclude>**/config/FlywayConfig.kt</exclude>
-                            <exclude>**/config/OppdragMQConfig.kt</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -540,9 +511,9 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>com.pinterest</groupId>
-                        <artifactId>ktlint</artifactId>
-                        <version>0.50.0</version>
+                        <groupId>com.pinterest.ktlint</groupId>
+                        <artifactId>ktlint-cli</artifactId>
+                        <version>1.1.1</version>
                     </dependency>
                     <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>

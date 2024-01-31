@@ -13,12 +13,11 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootConfiguration
-@EntityScan(ApplicationConfig.pakkenavn, "no.nav.familie.sikkerhet")
-@ComponentScan(ApplicationConfig.pakkenavn, "no.nav.familie.sikkerhet")
+@EntityScan(ApplicationConfig.PAKKENAVN, "no.nav.familie.sikkerhet")
+@ComponentScan(ApplicationConfig.PAKKENAVN, "no.nav.familie.sikkerhet")
 @EnableScheduling
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 class ApplicationConfig {
-
     @Bean
     fun servletWebServerFactory(): ServletWebServerFactory {
         val serverFactory = JettyServletWebServerFactory()
@@ -43,7 +42,7 @@ class ApplicationConfig {
     }
 
     companion object {
-        const val pakkenavn = "no.nav.familie.oppdrag"
-        val LOKALE_PROFILER = setOf("dev", "e2e", "dev_psql_mq")
+        const val PAKKENAVN = "no.nav.familie.oppdrag"
+        val lokaleProfiler = setOf("dev", "e2e", "dev_psql_mq")
     }
 }

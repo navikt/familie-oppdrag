@@ -22,8 +22,10 @@ data class OppdragTilAvstemming(
 )
 
 object OppdragTilAvstemmingRowMapper : RowMapper<OppdragTilAvstemming> {
-
-    override fun mapRow(resultSet: ResultSet, rowNumbers: Int): OppdragTilAvstemming {
+    override fun mapRow(
+        resultSet: ResultSet,
+        rowNumbers: Int,
+    ): OppdragTilAvstemming {
         return OppdragTilAvstemming(
             fagsystem = resultSet.getString("fagsystem"),
             personIdent = resultSet.getString("person_ident"),

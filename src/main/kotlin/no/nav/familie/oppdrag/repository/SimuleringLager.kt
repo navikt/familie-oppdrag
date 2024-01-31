@@ -22,7 +22,6 @@ data class SimuleringLager(
     @Column("response_xml") var responseXml: String? = null,
     @Column("opprettet_tidspunkt") val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
 ) {
-
     companion object {
         fun lagFraOppdrag(
             utbetalingsoppdrag: Utbetalingsoppdrag,

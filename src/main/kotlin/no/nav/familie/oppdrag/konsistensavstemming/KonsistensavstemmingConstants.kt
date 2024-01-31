@@ -1,7 +1,6 @@
 package no.nav.familie.oppdrag.konsistensavstemming
 
 class KonsistensavstemmingConstants {
-
     companion object {
         const val START = "START"
         const val AVSLUTT = "AVSL"
