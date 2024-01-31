@@ -1,7 +1,6 @@
 package no.nav.familie.oppdrag.repository
 
 class SimuleringLagerTjenesteE2E : SimuleringLagerTjeneste {
-
     override fun lagreINyTransaksjon(simuleringsLager: SimuleringLager) {
         TODO("")
     }
@@ -14,7 +13,11 @@ class SimuleringLagerTjenesteE2E : SimuleringLagerTjeneste {
         TODO("")
     }
 
-    override fun hentSisteSimuleringsresultat(fagsystem: String, fagsakId: String, behandlingId: String): SimuleringLager {
+    override fun hentSisteSimuleringsresultat(
+        fagsystem: String,
+        fagsakId: String,
+        behandlingId: String,
+    ): SimuleringLager {
         TODO("")
     }
 }

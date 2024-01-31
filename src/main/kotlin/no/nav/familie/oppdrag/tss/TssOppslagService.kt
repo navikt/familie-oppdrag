@@ -35,20 +35,35 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         return mapSamhandler(enkeltSamhandler, orgNr)
     }
 
-    fun hentInformasjonOmSamhandlerInstB940(navn: String?, postNummer: String?, område: String?, side: Int): TssSamhandlerData {
+    fun hentInformasjonOmSamhandlerInstB940(
+        navn: String?,
+        postNummer: String?,
+        område: String?,
+        side: Int,
+    ): TssSamhandlerData {
         return tssMQClient.søkOrgInfo(navn, postNummer, område, side)
     }
 
-    fun hentInformasjonOmSamhandlerInst(navn: String?, postNummer: String?, område: String?, side: Int): SøkSamhandlerInfo {
+    fun hentInformasjonOmSamhandlerInst(
+        navn: String?,
+        postNummer: String?,
+        område: String?,
+        side: Int,
+    ): SøkSamhandlerInfo {
         val samhandlerData = hentInformasjonOmSamhandlerInstB940(navn, postNummer, område, side)
         val finnesMerInfo = validateB940response("$navn $postNummer $område", samhandlerData)
         val samhandlerODataB940 = samhandlerData.tssOutputData.samhandlerODataB940
-        val samhandlere = samhandlerODataB940.enkeltSamhandler
-            .filter { enkeltSamhandler -> enkeltSamhandler.samhandlerAvd125.samhAvd.any { erInfotrygdTssAvdeling(it) } }
-            .map { mapSamhandler(it) }
+        val samhandlere =
+            samhandlerODataB940.enkeltSamhandler
+                .filter { enkeltSamhandler -> enkeltSamhandler.samhandlerAvd125.samhAvd.any { erInfotrygdTssAvdeling(it) } }
+                .map { mapSamhandler(it) }
         return SøkSamhandlerInfo(finnesMerInfo, samhandlere)
     }
-    private fun validateB910response(inputData: TssSamhandlerIdent, tssResponse: TssSamhandlerData) {
+
+    private fun validateB910response(
+        inputData: TssSamhandlerIdent,
+        tssResponse: TssSamhandlerData,
+    ) {
         commonResponseValidation(tssResponse)
         val svarStatus = tssResponse.tssOutputData.svarStatus
 
@@ -63,7 +78,10 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         }
     }
 
-    private fun validateB940response(inputData: String?, tssResponse: TssSamhandlerData): Boolean {
+    private fun validateB940response(
+        inputData: String?,
+        tssResponse: TssSamhandlerData,
+    ): Boolean {
         commonResponseValidation(tssResponse)
         val svarStatus = tssResponse.tssOutputData.svarStatus
         if (svarStatus.alvorligGrad != TSS_STATUS_OK) {
@@ -81,15 +99,24 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun commonResponseValidation(tssResponse: TssSamhandlerData) {
-        if (tssResponse.tssOutputData == null || tssResponse.tssOutputData.svarStatus == null || tssResponse.tssOutputData.svarStatus.alvorligGrad == null) {
+        if (erTomResponse(tssResponse)) {
             throw TssConnectionException("Ingen response. Mest sannsynlig timeout mot TSS")
         }
     }
 
-    private fun mapSamhandler(enkeltSamhandler: Samhandler, orgnr: String?): SamhandlerInfo {
+    private fun erTomResponse(tssResponse: TssSamhandlerData) =
+        tssResponse.tssOutputData == null ||
+            tssResponse.tssOutputData.svarStatus == null ||
+            tssResponse.tssOutputData.svarStatus.alvorligGrad == null
+
+    private fun mapSamhandler(
+        enkeltSamhandler: Samhandler,
+        orgnr: String?,
+    ): SamhandlerInfo {
         val navn = enkeltSamhandler.samhandler110.samhandler.first().navnSamh
-        val orgnr = orgnr ?: enkeltSamhandler.alternativId111.samhId.filter { it.kodeAltIdentType == "ORG" && it.datoIdentTom.isBlank() }
-            .firstOrNull()?.idAlternativ
+        val orgnr =
+            orgnr ?: enkeltSamhandler.alternativId111.samhId.filter { it.kodeAltIdentType == "ORG" && it.datoIdentTom.isBlank() }
+                .firstOrNull()?.idAlternativ
         val (tssId, avdNr) = mapTssEksternIdOgAvdNr(enkeltSamhandler.samhandlerAvd125)
 
         val avdelingsAdresser = madAdresse(enkeltSamhandler.adresse130, avdNr)

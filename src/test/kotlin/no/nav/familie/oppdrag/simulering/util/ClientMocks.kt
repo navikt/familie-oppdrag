@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class ClientMocks {
-
     @Bean
     @Profile("dev")
     @Primary

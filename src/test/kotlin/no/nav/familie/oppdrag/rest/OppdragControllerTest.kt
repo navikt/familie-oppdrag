@@ -26,34 +26,34 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 internal class OppdragControllerTest {
-
     val localDateTimeNow = LocalDateTime.now()
     val localDateNow = LocalDate.now()
 
-    val utbetalingsoppdrag = Utbetalingsoppdrag(
-        Utbetalingsoppdrag.KodeEndring.NY,
-        "BA",
-        "SAKSNR",
-        "PERSONID",
-        "SAKSBEHANDLERID",
-        localDateTimeNow,
-        listOf(
-            Utbetalingsperiode(
-                true,
-                Opphør(localDateNow),
-                2,
-                1,
-                localDateNow,
-                "BATR",
-                localDateNow,
-                localDateNow,
-                BigDecimal.ONE,
-                Utbetalingsperiode.SatsType.MND,
-                "UTEBETALES_TIL",
-                1,
+    val utbetalingsoppdrag =
+        Utbetalingsoppdrag(
+            Utbetalingsoppdrag.KodeEndring.NY,
+            "BA",
+            "SAKSNR",
+            "PERSONID",
+            "SAKSBEHANDLERID",
+            localDateTimeNow,
+            listOf(
+                Utbetalingsperiode(
+                    true,
+                    Opphør(localDateNow),
+                    2,
+                    1,
+                    localDateNow,
+                    "BATR",
+                    localDateNow,
+                    localDateNow,
+                    BigDecimal.ONE,
+                    Utbetalingsperiode.SatsType.MND,
+                    "UTEBETALES_TIL",
+                    1,
+                ),
             ),
-        ),
-    )
+        )
 
     @Test
     fun `Skal lagre oppdrag for utbetalingoppdrag`() {
@@ -129,7 +129,11 @@ internal class OppdragControllerTest {
 
         val oppdragLagerRepository = mockk<OppdragLagerRepository>()
         if (alleredeOpprettet) {
-            every { oppdragLagerRepository.opprettOppdrag(any()) } throws org.springframework.dao.DuplicateKeyException("Duplicate key exception")
+            every {
+                oppdragLagerRepository.opprettOppdrag(
+                    any(),
+                )
+            } throws org.springframework.dao.DuplicateKeyException("Duplicate key exception")
         } else {
             every { oppdragLagerRepository.opprettOppdrag(any()) } just Runs
         }
