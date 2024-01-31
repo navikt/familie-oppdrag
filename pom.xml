@@ -30,7 +30,7 @@
         https://github.com/navikt/common-java-modules/releases
         -->
         <common-java-modules.version>3.2023.07.07_09.10-85326e9557f0</common-java-modules.version>
-        <jaxb-core.version>4.0.3</jaxb-core.version>
+        <jaxb.version>4.0.4</jaxb.version>
         <cxf.version>4.0.2</cxf.version>
 
         <mockk.version>1.13.5</mockk.version>
@@ -106,17 +106,17 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>${jaxb-core.version}</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>${jaxb-core.version}</version>
+            <version>${jaxb.version}</version>
         </dependency>
 
 
