@@ -15,7 +15,6 @@ no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
     accepted_audience: ${AZURE_APP_CLIENT_ID}
-    cookie_name: azure_token
 
 spring.datasource.url: ${SPRING_DATASOURCE_URL_OVERRIDE}
 spring.datasource.username: ${SPRING_DATASOURCE_USERNAME_OVERRIDE}
