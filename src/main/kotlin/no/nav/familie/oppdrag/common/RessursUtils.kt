@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.common
 
+import java.nio.channels.ClosedChannelException
 import no.nav.familie.kontrakter.felles.Ressurs
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -50,7 +51,7 @@ object RessursUtils {
 
         secureLogger.error("$className En feil har oppstått: $errorMessage", throwable)
 
-        if (logSomWarning) {
+        if (logSomWarning || throwable is ClosedChannelException) {
             LOG.warn("$className En feil har oppstått: $errorMessage")
         } else {
             LOG.error("$className En feil har oppstått: $errorMessage")
