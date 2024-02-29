@@ -28,9 +28,8 @@ class OppdragMottaker(
     fun mottaKvitteringFraOppdrag(melding: TextMessage) {
         try {
             behandleMelding(melding)
-            secureLogger.info(melding.text)
         } catch (e: Exception) {
-            secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID} meldingInnhold=${melding}", e)
+            secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID}", e)
             throw e
         }
     }
