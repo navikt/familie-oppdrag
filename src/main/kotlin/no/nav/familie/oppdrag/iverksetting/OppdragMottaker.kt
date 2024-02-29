@@ -29,7 +29,7 @@ class OppdragMottaker(
         try {
             behandleMelding(melding)
         } catch (e: Exception) {
-            secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID}", e)
+            secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID} meldingInnhold=${melding}", e)
             throw e
         }
     }
