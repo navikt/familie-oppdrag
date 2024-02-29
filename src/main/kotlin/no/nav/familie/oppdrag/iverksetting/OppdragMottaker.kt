@@ -28,9 +28,9 @@ class OppdragMottaker(
     fun mottaKvitteringFraOppdrag(melding: TextMessage) {
         try {
             behandleMelding(melding)
+            secureLogger.info(melding.text)
         } catch (e: Exception) {
             secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID} meldingInnhold=${melding}", e)
-            secureLogger.info(melding.text)
             throw e
         }
     }
@@ -42,6 +42,8 @@ class OppdragMottaker(
                 svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
             } else if (svarFraOppdrag.contains("ns6:oppdrag")) {
                 svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns6:oppdrag xmlns:ns6")
+            } else if(svarFraOppdrag.contains("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">")) {
+                svarFraOppdrag = svarFraOppdrag.replace("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">", "<oppdrag>")
             }
         }
 

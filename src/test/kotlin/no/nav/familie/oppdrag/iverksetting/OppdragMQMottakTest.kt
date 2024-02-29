@@ -44,6 +44,13 @@ class OppdragMQMottakTest {
     }
 
     @Test
+    fun kvittering_feiler_i_preprod() {
+        val kvittering: String = lesKvittering("kvittering-krasjer.xml")
+        val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering).status
+        assertEquals(Status.OK, statusFraKvittering)
+    }
+
+    @Test
     fun skal_tolke_kvittering_riktig_ved_feil() {
         val kvittering: String = lesKvittering("kvittering-avvist.xml")
         val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering).status
@@ -86,6 +93,27 @@ class OppdragMQMottakTest {
         val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
 
         oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-akseptert.xml".fraRessursSomTextMessage)
+
+        verify(exactly = 0) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), 0) }
+        verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), 1) }
+    }
+
+    @Test
+    fun skal_lagre_kvittering_på_versjon_som_feiler_i_preprod_pga_xmlns() {
+        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somKvitteringsinformasjon.copy(status = OppdragStatus.KVITTERT_OK)
+        val oppdragLagerV1 = utbetalingsoppdragMedTilfeldigAktoer().somKvitteringsinformasjon.copy(versjon = 1)
+
+        val oppdragLagerRepository = mockk<OppdragLagerRepository>()
+
+        every { oppdragLagerRepository.hentKvitteringsinformasjon(any()) } returns
+            listOf(oppdragLager, oppdragLagerV1)
+
+        every { oppdragLagerRepository.oppdaterStatus(any(), any(), any()) } just Runs
+        every { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), any()) } just Runs
+
+        val oppdragMottaker = OppdragMottaker(oppdragLagerRepository, devEnv)
+
+        oppdragMottaker.mottaKvitteringFraOppdrag("kvittering-krasjer.xml".fraRessursSomTextMessage)
 
         verify(exactly = 0) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), 0) }
         verify(exactly = 1) { oppdragLagerRepository.oppdaterKvitteringsmelding(any(), any(), any(), 1) }
