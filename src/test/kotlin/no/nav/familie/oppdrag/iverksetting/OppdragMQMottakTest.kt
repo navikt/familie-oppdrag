@@ -44,10 +44,10 @@ class OppdragMQMottakTest {
     }
 
     @Test
-    fun kvittering_feiler_i_preprod() {
+    fun kvittering_feiler_uten_namespace_med_xmlns_tag() {
         val kvittering: String = lesKvittering("kvittering-krasjer.xml")
         val statusFraKvittering = oppdragMottaker.lesKvittering(kvittering).status
-        assertEquals(Status.OK, statusFraKvittering)
+        assertEquals(Status.UKJENT, statusFraKvittering)
     }
 
     @Test

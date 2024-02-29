@@ -28,24 +28,15 @@ class OppdragMottaker(
     fun mottaKvitteringFraOppdrag(melding: TextMessage) {
         try {
             behandleMelding(melding)
-            secureLogger.info(melding.text)
         } catch (e: Exception) {
             secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID} meldingInnhold=${melding}", e)
+            secureLogger.info("Meldingsinnhold: =${melding.text}")
             throw e
         }
     }
 
     private fun behandleMelding(melding: TextMessage) {
-        var svarFraOppdrag = melding.text as String
-        if (!env.activeProfiles.any { it in lokaleProfiler }) {
-            if (svarFraOppdrag.contains("ns2:oppdrag")) {
-                svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
-            } else if (svarFraOppdrag.contains("ns6:oppdrag")) {
-                svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns6:oppdrag xmlns:ns6")
-            } else if(svarFraOppdrag.contains("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">")) {
-                svarFraOppdrag = svarFraOppdrag.replace("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">", "<oppdrag>")
-            }
-        }
+        val svarFraOppdrag = håndterSvarFraOppdragSomGyldigXml(melding)
 
         val kvittering = lesKvittering(svarFraOppdrag)
         val oppdragId = kvittering.id
@@ -76,6 +67,22 @@ class OppdragMottaker(
             kvittering = oppdatertkvitteringsmelding,
             versjon = førsteOppdragUtenKvittering.versjon,
         )
+    }
+
+    private fun håndterSvarFraOppdragSomGyldigXml(melding: TextMessage): String {
+        var svarFraOppdrag = melding.text as String
+        if (!env.activeProfiles.any { it in lokaleProfiler }) {
+            if (svarFraOppdrag.contains("ns2:oppdrag")) {
+                svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
+            } else if (svarFraOppdrag.contains("ns6:oppdrag")) {
+                svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns6:oppdrag xmlns:ns6")
+            }
+        }
+        if (svarFraOppdrag.contains("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">")) {
+            svarFraOppdrag =
+                svarFraOppdrag.replace("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">", "<oppdrag>")
+        }
+        return svarFraOppdrag
     }
 
     /**
