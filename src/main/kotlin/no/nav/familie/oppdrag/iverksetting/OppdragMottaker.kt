@@ -29,7 +29,7 @@ class OppdragMottaker(
         try {
             behandleMelding(melding)
         } catch (e: Exception) {
-            secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID} meldingInnhold=${melding}", e)
+            secureLogger.warn("Feilet lesing av melding=${melding.jmsMessageID} meldingInnhold=$melding", e)
             secureLogger.info("Meldingsinnhold: =${melding.text}")
             throw e
         }
@@ -72,13 +72,18 @@ class OppdragMottaker(
     private fun håndterSvarFraOppdragSomGyldigXml(melding: TextMessage): String {
         var svarFraOppdrag = melding.text as String
         if (!env.activeProfiles.any { it in lokaleProfiler }) {
+            // TODO: Denne skal fjernes etter at oppdrag har prodsatt sin fiks som håndteres nedenfor.
+            // TODO: Sjekk logger at denne if-branchen aldri treffes før den fjernes
             if (svarFraOppdrag.contains("ns2:oppdrag")) {
+                log.info("Bytter <oppdrag xmlns med <ns2:oppdrag xmlns:ns2")
                 svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns2:oppdrag xmlns:ns2")
             } else if (svarFraOppdrag.contains("ns6:oppdrag")) {
+                log.info("Bytter <oppdrag xmlns med <ns6:oppdrag xmlns:ns6")
                 svarFraOppdrag = svarFraOppdrag.replace("oppdrag xmlns", "ns6:oppdrag xmlns:ns6")
             }
         }
         if (svarFraOppdrag.contains("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">")) {
+            log.info("Bytter <oppdrag xmlns med <oppdrag uten xmlns")
             svarFraOppdrag =
                 svarFraOppdrag.replace("<oppdrag xmlns=\"http://www.trygdeetaten.no/skjema/oppdrag\">", "<oppdrag>")
         }
