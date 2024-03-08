@@ -7,7 +7,6 @@ import no.nav.virksomhet.tjenester.avstemming.meldinger.v1.ObjectFactory
 import java.io.StringWriter
 
 object JaxbGrensesnittAvstemmingsdata {
-
     val jaxbContext = JAXBContext.newInstance(Avstemmingsdata::class.java)
 
     fun tilXml(avstemmingsmelding: Avstemmingsdata): String {

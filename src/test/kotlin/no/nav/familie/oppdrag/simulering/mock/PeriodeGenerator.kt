@@ -10,6 +10,7 @@ import java.util.Collections
 class PeriodeGenerator {
     var opphørsPerioder: MutableList<Periode> = ArrayList()
     var ytelsesPerioder: MutableList<Periode> = ArrayList()
+
     fun genererPerioder(oppdragslinjeList: List<Oppdragslinje>): List<Periode>? {
         lagOpphørOgYtelse(oppdragslinjeList)
         Collections.sort(ytelsesPerioder)
@@ -297,7 +298,13 @@ class PeriodeGenerator {
                         removeYtelsesPerioder.add(ytelse)
                         continue@ytelseloop
                         // Scenario 9
-                    } else if (ytelse.fom.isAfter(opphør.fom) && !ytelse.tom.isAfter(opphør.tom)) { // ytelse.getFom() er implisit før opphør.getTom() da ytelse.getFom() ikke kan være etter ytelse.getTom()
+                    } else if (ytelse.fom.isAfter(
+                            opphør.fom,
+                        ) &&
+                        !ytelse.tom.isAfter(
+                            opphør.tom,
+                        )
+                    ) { // ytelse.getFom() er implisit før opphør.getTom() da ytelse.getFom() ikke kan være etter ytelse.getTom()
                         opphør.sats?.let {
                             Periode(
                                 ytelse.fom,
@@ -311,7 +318,13 @@ class PeriodeGenerator {
                         removeYtelsesPerioder.add(ytelse)
                         continue@ytelseloop
                         // Scenario 10 & 11
-                    } else if (ytelse.fom.isAfter(opphør.fom) && !ytelse.fom.isAfter(opphør.tom)) { // ytelse.getTom() er implisit after opphør.getTom() ellers ville den truffet forrige if-statement
+                    } else if (ytelse.fom.isAfter(
+                            opphør.fom,
+                        ) &&
+                        !ytelse.fom.isAfter(
+                            opphør.tom,
+                        )
+                    ) { // ytelse.getTom() er implisit after opphør.getTom() ellers ville den truffet forrige if-statement
                         opphør.sats?.let {
                             Periode(
                                 ytelse.fom,
@@ -360,9 +373,13 @@ class PeriodeGenerator {
 
     private fun lagOpphørOgYtelse(oppdragslinjeList: List<Oppdragslinje>) {
         for (oppdragslinje in oppdragslinjeList) {
-            assert(oppdragslinje.typeSats == "MND" || oppdragslinje.typeSats == "DAG") { "Forventet at typeSats er enten DAG eller MND, men typeSats var: " + oppdragslinje.typeSats }
+            assert(oppdragslinje.typeSats == "MND" || oppdragslinje.typeSats == "DAG") {
+                "Forventet at typeSats er enten DAG eller MND, men typeSats var: " + oppdragslinje.typeSats
+            }
             if (oppdragslinje.kodeEndringLinje == "ENDR") {
-                assert(oppdragslinje.kodeStatusLinje == KodeStatusLinje.OPPH) { "Forventet at KodeStatusLinje er OPPH når KodeEndringLinje er ENDR" }
+                assert(
+                    oppdragslinje.kodeStatusLinje == KodeStatusLinje.OPPH,
+                ) { "Forventet at KodeStatusLinje er OPPH når KodeEndringLinje er ENDR" }
                 if (oppdragslinje.datoStatusFom != null) {
                     opphørsPerioder.add(
                         Periode(

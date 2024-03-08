@@ -8,10 +8,7 @@ import java.util.UUID
 interface MellomlagringKonsistensavstemmingRepository :
     RepositoryInterface<MellomlagringKonsistensavstemming, UUID>,
     InsertUpdateRepository<MellomlagringKonsistensavstemming> {
-
-    fun findAllByTransaksjonsId(
-        transaksjonsId: UUID,
-    ): List<MellomlagringKonsistensavstemming>
+    fun findAllByTransaksjonsId(transaksjonsId: UUID): List<MellomlagringKonsistensavstemming>
 
     @Query(
         "SELECT COALESCE(sum(antall_oppdrag),0) from mellomlagring_konsistensavstemming WHERE transaksjons_id = :transaksjonsId",

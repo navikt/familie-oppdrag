@@ -9,17 +9,19 @@ import java.util.Properties
 object DevPsqlMqLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
-        val psql = KPostgreSQLContainer("postgres:15.2")
-            .withDatabaseName("familie-oppdrag")
-            .withUsername("postgres")
-            .withPassword("test")
+        val psql =
+            KPostgreSQLContainer("postgres:15.2")
+                .withDatabaseName("familie-oppdrag")
+                .withUsername("postgres")
+                .withPassword("test")
 
         psql.start()
 
-        val mq = KGenericContainer("ibmcom/mq")
-            .withEnv("LICENSE", "accept")
-            .withEnv("MQ_QMGR_NAME", "QM1")
-            .withExposedPorts(1414, 9443)
+        val mq =
+            KGenericContainer("ibmcom/mq")
+                .withEnv("LICENSE", "accept")
+                .withEnv("MQ_QMGR_NAME", "QM1")
+                .withExposedPorts(1414, 9443)
 
         mq.start()
 

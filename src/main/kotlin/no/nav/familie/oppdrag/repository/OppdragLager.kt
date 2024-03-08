@@ -28,10 +28,12 @@ data class OppdragLager(
     val kvitteringsmelding: Mmel?,
     val versjon: Int = 0,
 ) {
-
     companion object {
-
-        fun lagFraOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int = 0): OppdragLager {
+        fun lagFraOppdrag(
+            utbetalingsoppdrag: Utbetalingsoppdrag,
+            oppdrag: Oppdrag,
+            versjon: Int = 0,
+        ): OppdragLager {
             return OppdragLager(
                 personIdent = utbetalingsoppdrag.aktoer,
                 fagsystem = utbetalingsoppdrag.fagSystem,

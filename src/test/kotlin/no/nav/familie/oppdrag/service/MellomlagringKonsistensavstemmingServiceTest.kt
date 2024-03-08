@@ -10,7 +10,6 @@ import java.util.UUID
 import kotlin.test.assertEquals
 
 class MellomlagringKonsistensavstemmingServiceTest {
-
     private lateinit var mellomlagringKonsistensavstemmingRepository: MellomlagringKonsistensavstemmingRepository
     private lateinit var mellomlagringKonsistensavstemmingService: MellomlagringKonsistensavstemmingService
 
@@ -20,7 +19,9 @@ class MellomlagringKonsistensavstemmingServiceTest {
     fun setUp() {
         mellomlagringKonsistensavstemmingRepository = mockk()
         mellomlagringKonsistensavstemmingService =
-            MellomlagringKonsistensavstemmingService(mellomlagringKonsistensavstemmingRepository = mellomlagringKonsistensavstemmingRepository)
+            MellomlagringKonsistensavstemmingService(
+                mellomlagringKonsistensavstemmingRepository = mellomlagringKonsistensavstemmingRepository,
+            )
     }
 
     @Test
@@ -73,6 +74,5 @@ class MellomlagringKonsistensavstemmingServiceTest {
         sendStartmelding: Boolean,
         sendAvsluttmelding: Boolean,
         transaksjonsId: UUID?,
-    ) =
-        KonsistensavstemmingMetaInfo(Fagsystem.BA, transaksjonsId, LocalDateTime.now(), sendStartmelding, sendAvsluttmelding, emptyList())
+    ) = KonsistensavstemmingMetaInfo(Fagsystem.BA, transaksjonsId, LocalDateTime.now(), sendStartmelding, sendAvsluttmelding, emptyList())
 }

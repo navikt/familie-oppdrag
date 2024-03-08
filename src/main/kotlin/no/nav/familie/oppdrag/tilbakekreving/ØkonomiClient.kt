@@ -18,7 +18,6 @@ import java.util.UUID
 
 @Service
 class ØkonomiClient(private val økonomiService: TilbakekrevingPortType) {
-
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     fun iverksettVedtak(

@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SimuleringLagerTjenesteImpl : SimuleringLagerTjeneste {
-
     @Autowired lateinit var simuleringLagerRepository: SimuleringLagerRepository
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -23,7 +22,11 @@ class SimuleringLagerTjenesteImpl : SimuleringLagerTjeneste {
         return simuleringLagerRepository.findAll().toList()
     }
 
-    override fun hentSisteSimuleringsresultat(fagsystem: String, fagsakId: String, behandlingId: String): SimuleringLager {
+    override fun hentSisteSimuleringsresultat(
+        fagsystem: String,
+        fagsakId: String,
+        behandlingId: String,
+    ): SimuleringLager {
         return simuleringLagerRepository.finnSisteSimuleringsresultat(fagsystem, fagsakId, behandlingId)
     }
 }
