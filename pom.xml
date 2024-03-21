@@ -30,7 +30,7 @@
         https://github.com/navikt/common-java-modules/releases
         -->
         <common-java-modules.version>3.2023.07.07_09.10-85326e9557f0</common-java-modules.version>
-        <jaxb.version>4.0.4</jaxb.version>
+        <jaxb.version>4.0.5</jaxb.version>
         <cxf.version>4.0.2</cxf.version>
 
         <mockk.version>1.13.10</mockk.version>
