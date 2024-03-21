@@ -1,10 +1,10 @@
 package no.nav.familie.oppdrag.common
 
-import java.nio.channels.ClosedChannelException
 import no.nav.familie.kontrakter.felles.Ressurs
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import java.nio.channels.ClosedChannelException
 
 object RessursUtils {
     private val LOG = LoggerFactory.getLogger(this::class.java)
