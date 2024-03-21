@@ -33,9 +33,9 @@ spec:
     max: 4
   resources:
     limits:
-      memory: 1.5Gi
+      memory: 2000Mi
     requests:
-      memory: 1.5Gi
+      memory: 2000Mi
       cpu: 50m
   secureLogs:
     enabled: true
