@@ -33,10 +33,10 @@ spec:
     max: 4
   resources:
     limits:
-      memory: 6096Mi
+      memory: 2000Mi
     requests:
-      memory: 1Gi
-      cpu: 500m
+      memory: 2000Mi
+      cpu: 50m
   secureLogs:
     enabled: true
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
