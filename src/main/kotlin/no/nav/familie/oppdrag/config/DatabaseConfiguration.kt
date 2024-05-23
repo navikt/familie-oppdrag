@@ -19,7 +19,6 @@ import javax.sql.DataSource
 
 @Configuration
 class DatabaseConfiguration : AbstractJdbcConfiguration() {
-
     @Bean
     fun operations(dataSource: DataSource): NamedParameterJdbcTemplate {
         return NamedParameterJdbcTemplate(dataSource)
@@ -44,7 +43,6 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
 
     @ReadingConverter
     class PGobjectTilUtbetalingsoppdragConverter : Converter<PGobject, Utbetalingsoppdrag> {
-
         override fun convert(pGobject: PGobject): Utbetalingsoppdrag? {
             return pGobject.value?.let { objectMapper.readValue(it) }
         }
@@ -52,7 +50,6 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
 
     @WritingConverter
     class UtbetalingsoppdragTilPGobjectConverter : Converter<Utbetalingsoppdrag, PGobject> {
-
         override fun convert(utbetalingsoppdrag: Utbetalingsoppdrag): PGobject =
             PGobject().apply {
                 type = "json"
@@ -62,7 +59,6 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
 
     @ReadingConverter
     class PGobjectTilMmelConverter : Converter<PGobject, Mmel> {
-
         override fun convert(pGobject: PGobject): Mmel? {
             return pGobject.value?.let { objectMapper.readValue(it) }
         }
@@ -70,7 +66,6 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
 
     @WritingConverter
     class MmelTilPGobjectConverter : Converter<Mmel, PGobject> {
-
         override fun convert(utbetalingsoppdrag: Mmel): PGobject =
             PGobject().apply {
                 type = "json"

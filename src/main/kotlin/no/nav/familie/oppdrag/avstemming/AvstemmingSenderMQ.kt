@@ -17,16 +17,16 @@ class AvstemmingSenderMQ(
     val jmsTemplateAvstemming: JmsTemplate,
     @Value("\${oppdrag.mq.enabled}") val erEnabled: String,
 ) : AvstemmingSender {
-
     override fun sendGrensesnittAvstemming(avstemmingsdata: Avstemmingsdata) {
         val avstemmingXml = JaxbGrensesnittAvstemmingsdata.tilXml(avstemmingsdata)
         leggPåKø(avstemmingXml)
     }
 
     override fun sendKonsistensAvstemming(avstemmingsdata: Konsistensavstemmingsdata) {
-        val konsistensavstemmingRequest = SendAsynkronKonsistensavstemmingsdata().apply {
-            request = SendAsynkronKonsistensavstemmingsdataRequest().apply { konsistensavstemmingsdata = avstemmingsdata }
-        }
+        val konsistensavstemmingRequest =
+            SendAsynkronKonsistensavstemmingsdata().apply {
+                request = SendAsynkronKonsistensavstemmingsdataRequest().apply { konsistensavstemmingsdata = avstemmingsdata }
+            }
 
         val requestXml = JaxbKonsistensavstemming.tilXml(konsistensavstemmingRequest)
         leggPåKø(requestXml)

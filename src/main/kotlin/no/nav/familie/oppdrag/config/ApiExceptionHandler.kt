@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
 class ApiExceptionHandler {
-
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleJwtTokenUnauthorizedException(jwtTokenUnauthorizedException: JwtTokenUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
+    fun handleJwtTokenUnauthorizedException(
+        jwtTokenUnauthorizedException: JwtTokenUnauthorizedException,
+    ): ResponseEntity<Ressurs<Nothing>> {
         return unauthorized("Unauthorized")
     }
 

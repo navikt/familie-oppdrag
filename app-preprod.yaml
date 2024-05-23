@@ -30,10 +30,10 @@ spec:
     max: 4
   resources:
     limits:
-      memory: 1024Mi
+      memory: 700Mi
     requests:
-      memory: 512Mi
-      cpu: 500m
+      memory: 700Mi
+      cpu: 25m
   ingresses:
     - https://familie-oppdrag.dev-fss-pub.nais.io
     - https://familie-oppdrag.dev.intern.nav.no
@@ -69,9 +69,7 @@ spec:
       external:
         - host: b27apvl220.preprod.local
           ports:
-            - name: mq
-              port: 1413
-              protocol: TCP
+            - port: 1413
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod

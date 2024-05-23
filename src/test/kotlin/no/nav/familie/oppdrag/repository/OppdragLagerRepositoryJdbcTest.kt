@@ -2,7 +2,6 @@ package no.nav.familie.oppdrag.repository
 
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.oppdrag.iverksetting.Jaxb
-import no.nav.familie.oppdrag.util.Containers
 import no.nav.familie.oppdrag.util.TestConfig
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag
 import no.nav.familie.oppdrag.util.TestOppdragMedAvstemmingsdato.lagUtbetalingsperiode
@@ -14,11 +13,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
@@ -28,19 +30,26 @@ import java.util.UUID
 import kotlin.test.assertFailsWith
 
 @ActiveProfiles("dev")
-@ContextConfiguration(initializers = arrayOf(Containers.PostgresSQLInitializer::class))
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest(classes = [TestConfig::class], properties = ["spring.cloud.vault.enabled=false"])
 @DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true")
 @Testcontainers
 internal class OppdragLagerRepositoryJdbcTest {
-
     @Autowired lateinit var oppdragLagerRepository: OppdragLagerRepository
 
     @Autowired lateinit var jdbcTemplate: JdbcTemplate
 
     companion object {
+        @Container
+        private val postgreSQLContainer = PostgreSQLContainer<Nothing>("postgres:latest")
 
-        @Container var postgreSQLContainer = Containers.postgreSQLContainer
+        @DynamicPropertySource
+        @JvmStatic
+        fun registerDynamicProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl)
+            registry.add("spring.datasource.username", postgreSQLContainer::getUsername)
+            registry.add("spring.datasource.password", postgreSQLContainer::getPassword)
+        }
     }
 
     @BeforeEach
@@ -61,8 +70,9 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun skal_lagre_status() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
-            .copy(status = OppdragStatus.LAGT_PÅ_KØ)
+        val oppdragLager =
+            utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+                .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
 
@@ -77,8 +87,9 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun skal_lagre_kvitteringsmelding() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
-            .copy(status = OppdragStatus.LAGT_PÅ_KØ)
+        val oppdragLager =
+            utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+                .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
         val hentetOppdrag = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragLager.id).single()
@@ -95,8 +106,9 @@ internal class OppdragLagerRepositoryJdbcTest {
 
     @Test
     fun `skal kun sette kvitteringsmeldingen til null`() {
-        val oppdragLager = utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
-            .copy(status = OppdragStatus.LAGT_PÅ_KØ, kvitteringsmelding = kvitteringsmelding())
+        val oppdragLager =
+            utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+                .copy(status = OppdragStatus.LAGT_PÅ_KØ, kvitteringsmelding = kvitteringsmelding())
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
         val hentetOppdrag = oppdragLagerRepository.hentKvitteringsinformasjon(oppdragLager.id).single()
@@ -109,10 +121,11 @@ internal class OppdragLagerRepositoryJdbcTest {
     }
 
     private fun kvitteringsmelding(): Mmel {
-        val kvitteringsmelding = Jaxb.tilOppdrag(
-            this::class.java.getResourceAsStream("/kvittering-avvist.xml")
-                .bufferedReader().use { it.readText() },
-        )
+        val kvitteringsmelding =
+            Jaxb.tilOppdrag(
+                this::class.java.getResourceAsStream("/kvittering-avvist.xml")
+                    .bufferedReader().use { it.readText() },
+            )
         return kvitteringsmelding.mmel
     }
 
@@ -157,21 +170,24 @@ internal class OppdragLagerRepositoryJdbcTest {
                 page,
             ).map { it.behandlingId.toInt() }
 
-        val oppdrag1 = lagTestUtbetalingsoppdrag(
-            dag.atTime(4, 0),
-            "BA",
-            utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 3)),
-        )
-        val oppdrag2 = lagTestUtbetalingsoppdrag(
-            dag.atTime(12, 0),
-            "BA",
-            utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 1)),
-        )
-        val oppdrag3 = lagTestUtbetalingsoppdrag(
-            dag.atTime(16, 0),
-            "BA",
-            utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 2)),
-        )
+        val oppdrag1 =
+            lagTestUtbetalingsoppdrag(
+                dag.atTime(4, 0),
+                "BA",
+                utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 3)),
+            )
+        val oppdrag2 =
+            lagTestUtbetalingsoppdrag(
+                dag.atTime(12, 0),
+                "BA",
+                utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 1)),
+            )
+        val oppdrag3 =
+            lagTestUtbetalingsoppdrag(
+                dag.atTime(16, 0),
+                "BA",
+                utbetalingsperiode = arrayOf(lagUtbetalingsperiode(behandlingId = 2)),
+            )
         listOf(oppdrag1, oppdrag2, oppdrag3).forEach { oppdragLagerRepository.opprettOppdrag(it.somOppdragLager) }
 
         assertThat(hentOppdragForGrensesnittsavstemming(page = 0)).containsExactly(1, 2)
@@ -281,10 +297,11 @@ internal class OppdragLagerRepositoryJdbcTest {
         oppdragLagerRepository.opprettOppdrag(oppdragLager1)
         oppdragLagerRepository.opprettOppdrag(oppdragLager2)
 
-        val hentedeOppdrag = oppdragLagerRepository.hentSisteUtbetalingsoppdragForFagsaker(
-            fagsystem = oppdragLager1.fagsystem,
-            fagsakIder = setOf(oppdragLager1.fagsakId, oppdragLager2.fagsakId),
-        )
+        val hentedeOppdrag =
+            oppdragLagerRepository.hentSisteUtbetalingsoppdragForFagsaker(
+                fagsystem = oppdragLager1.fagsystem,
+                fagsakIder = setOf(oppdragLager1.fagsakId, oppdragLager2.fagsakId),
+            )
 
         assertThat(hentedeOppdrag.map { it.utbetalingsoppdrag }).containsAll(listOf(utbetalingsoppdrag1, utbetalingsoppdrag2))
     }

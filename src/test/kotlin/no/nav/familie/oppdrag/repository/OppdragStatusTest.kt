@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 internal class OppdragStatusTest {
-
     @Test
     fun skal_konvertere_status() {
         assertEquals(OppdragStatus.KVITTERT_OK, lagOppdrag("00").oppdragStatus)

@@ -22,9 +22,12 @@ class OppdragServiceImpl(
     @Autowired private val oppdragSender: OppdragSender,
     @Autowired private val oppdragLagerRepository: OppdragLagerRepository,
 ) : OppdragService {
-
     @Transactional(rollbackFor = [Throwable::class])
-    override fun opprettOppdrag(utbetalingsoppdrag: Utbetalingsoppdrag, oppdrag: Oppdrag, versjon: Int) {
+    override fun opprettOppdrag(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+        oppdrag: Oppdrag,
+        versjon: Int,
+    ) {
         LOG.debug("Lagrer oppdrag i databasen " + oppdrag.id)
         try {
             oppdragLagerRepository.opprettOppdrag(OppdragLager.lagFraOppdrag(utbetalingsoppdrag, oppdrag), versjon)
@@ -74,10 +77,10 @@ class OppdragServiceImpl(
     }
 
     companion object {
-
         val LOG = LoggerFactory.getLogger(OppdragServiceImpl::class.java)
     }
 }
 
 class OppdragAlleredeSendtException() : RuntimeException()
+
 class OppdragHarAlleredeKvitteringException(melding: String) : RuntimeException(melding)

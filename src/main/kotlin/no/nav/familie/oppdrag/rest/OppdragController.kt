@@ -30,7 +30,6 @@ class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
 ) {
-
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
     fun sendOppdrag(
         @Valid @RequestBody

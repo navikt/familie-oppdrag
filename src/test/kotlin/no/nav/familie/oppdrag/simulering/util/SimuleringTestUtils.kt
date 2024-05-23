@@ -51,7 +51,10 @@ fun lagTestUtbetalingsoppdragForFGBMedEttBarn(): Utbetalingsoppdrag {
     )
 }
 
-fun lagBeregningsPeriode(bergeningStopNiva: List<BeregningStoppnivaa>, date: LocalDate): BeregningsPeriode {
+fun lagBeregningsPeriode(
+    bergeningStopNiva: List<BeregningStoppnivaa>,
+    date: LocalDate,
+): BeregningsPeriode {
     val beregningsPeriode = BeregningsPeriode()
     beregningsPeriode.periodeFom = date.with(TemporalAdjusters.firstDayOfMonth()).toString()
     beregningsPeriode.periodeTom = date.with(TemporalAdjusters.lastDayOfMonth()).toString()
@@ -79,15 +82,17 @@ fun lagTestSimuleringResponse(): SimulerBeregningResponse {
 
     val enTideligereMåned = currentDate.plusMonths(1)
 
-    val periodeNåværendeMåned = lagBeregningsPeriode(
-        listOf(lagBeregningStoppniva(currentDate)),
-        currentDate,
-    )
+    val periodeNåværendeMåned =
+        lagBeregningsPeriode(
+            listOf(lagBeregningStoppniva(currentDate)),
+            currentDate,
+        )
 
-    val periodeTidligereMåned = lagBeregningsPeriode(
-        listOf(lagBeregningStoppniva(enTideligereMåned, 2)),
-        enTideligereMåned,
-    )
+    val periodeTidligereMåned =
+        lagBeregningsPeriode(
+            listOf(lagBeregningStoppniva(enTideligereMåned, 2)),
+            enTideligereMåned,
+        )
 
     return lagSimulerBeregningResponse(listOf(periodeNåværendeMåned, periodeTidligereMåned))
 }
