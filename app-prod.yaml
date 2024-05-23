@@ -42,6 +42,7 @@ spec:
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
     - https://familie-oppdrag.nais.adeo.no
     - https://familie-oppdrag.prod-fss-pub.nais.io
+    - https://familie-oppdrag.intern.nav.no
   azure:
     application:
       enabled: true
