@@ -13,9 +13,10 @@ class TestConfig
 
 object Containers {
     var ibmMQContainer =
-        MyGeneralContainer("ibmcom/mq")
+        MyGeneralContainer("ibm-mqadvanced-server-dev:9.3.5.1-arm64")
             .withEnv("LICENSE", "accept")
             .withEnv("MQ_QMGR_NAME", "QM1")
+            .withEnv("MQ_ADMIN_PASSWORD", "passw0rd")
             .withEnv("persistance.enabled", "true")
             .withExposedPorts(1414)
 
