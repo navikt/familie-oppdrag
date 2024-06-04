@@ -94,7 +94,7 @@ class OppdragController(
                     notFound("Fant ikke oppdrag med id $oppdragId")
                 },
                 onSuccess = {
-                    ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "Savner kvitteringsmelding")
+                    ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "")
                 },
             )
     }
@@ -114,7 +114,7 @@ class OppdragController(
                     }
                 },
                 onSuccess = {
-                    ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "Savner kvitteringsmelding")
+                    ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "")
                 },
             )
     }
