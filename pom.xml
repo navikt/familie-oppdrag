@@ -22,7 +22,7 @@
         <kotlin.version>2.0.0</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>3.20240515152313_9dd5659</felles.version>
-        <kontrakter.version>3.0_20240603143357_2992125</kontrakter.version>
+        <kontrakter.version>3.0_20240607101709_d35e18c</kontrakter.version>
         <token-validation-spring.version>4.1.7</token-validation-spring.version>
 
         <!--
