@@ -20,18 +20,14 @@ import javax.sql.DataSource
 @Configuration
 class DatabaseConfiguration : AbstractJdbcConfiguration() {
     @Bean
-    fun operations(dataSource: DataSource): NamedParameterJdbcTemplate {
-        return NamedParameterJdbcTemplate(dataSource)
-    }
+    fun operations(dataSource: DataSource): NamedParameterJdbcTemplate = NamedParameterJdbcTemplate(dataSource)
 
     @Bean
-    fun transactionManager(dataSource: DataSource): PlatformTransactionManager {
-        return DataSourceTransactionManager(dataSource)
-    }
+    fun transactionManager(dataSource: DataSource): PlatformTransactionManager = DataSourceTransactionManager(dataSource)
 
     @Bean
-    override fun jdbcCustomConversions(): JdbcCustomConversions {
-        return JdbcCustomConversions(
+    override fun jdbcCustomConversions(): JdbcCustomConversions =
+        JdbcCustomConversions(
             listOf(
                 PGobjectTilUtbetalingsoppdragConverter(),
                 UtbetalingsoppdragTilPGobjectConverter(),
@@ -39,13 +35,10 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
                 MmelTilPGobjectConverter(),
             ),
         )
-    }
 
     @ReadingConverter
     class PGobjectTilUtbetalingsoppdragConverter : Converter<PGobject, Utbetalingsoppdrag> {
-        override fun convert(pGobject: PGobject): Utbetalingsoppdrag? {
-            return pGobject.value?.let { objectMapper.readValue(it) }
-        }
+        override fun convert(pGobject: PGobject): Utbetalingsoppdrag? = pGobject.value?.let { objectMapper.readValue(it) }
     }
 
     @WritingConverter
@@ -59,9 +52,7 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
 
     @ReadingConverter
     class PGobjectTilMmelConverter : Converter<PGobject, Mmel> {
-        override fun convert(pGobject: PGobject): Mmel? {
-            return pGobject.value?.let { objectMapper.readValue(it) }
-        }
+        override fun convert(pGobject: PGobject): Mmel? = pGobject.value?.let { objectMapper.readValue(it) }
     }
 
     @WritingConverter

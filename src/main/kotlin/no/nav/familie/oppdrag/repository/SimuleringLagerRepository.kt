@@ -5,7 +5,9 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface SimuleringLagerRepository : RepositoryInterface<SimuleringLager, UUID>, InsertUpdateRepository<SimuleringLager> {
+interface SimuleringLagerRepository :
+    RepositoryInterface<SimuleringLager, UUID>,
+    InsertUpdateRepository<SimuleringLager> {
     // language=PostgreSQL
     @Query(
         """

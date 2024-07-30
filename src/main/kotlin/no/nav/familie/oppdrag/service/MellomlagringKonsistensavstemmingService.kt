@@ -20,13 +20,12 @@ class MellomlagringKonsistensavstemmingService(
             0L
         }
 
-    fun hentAggregertAntallOppdrag(metaInfo: KonsistensavstemmingMetaInfo): Int {
-        return if (metaInfo.erSisteBatchIEnSplittetBatch()) {
+    fun hentAggregertAntallOppdrag(metaInfo: KonsistensavstemmingMetaInfo): Int =
+        if (metaInfo.erSisteBatchIEnSplittetBatch()) {
             mellomlagringKonsistensavstemmingRepository.hentAggregertAntallOppdrag(metaInfo.transaksjonsId!!)
         } else {
             0
         }
-    }
 
     fun opprettInnslagIMellomlagring(
         metaInfo: KonsistensavstemmingMetaInfo,

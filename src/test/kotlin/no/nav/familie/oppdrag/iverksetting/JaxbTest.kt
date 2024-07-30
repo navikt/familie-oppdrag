@@ -26,7 +26,8 @@ internal class JaxbTest {
     internal fun `oppdrag tilXml`() {
         val dato = LocalDate.of(2022, 1, 1)
         val xmlGregorianCalendar =
-            DatatypeFactory.newInstance()
+            DatatypeFactory
+                .newInstance()
                 .newXMLGregorianCalendar(GregorianCalendar.from(dato.atStartOfDay(ZoneId.of("Europe/Oslo"))))
         val oppdrag =
             Oppdrag().apply {
@@ -129,5 +130,8 @@ internal class JaxbTest {
         )
     }
 
-    private fun loadResource(file: String) = JaxbTest::class.java.classLoader.getResource(file)!!.readText()
+    private fun loadResource(file: String) =
+        JaxbTest::class.java.classLoader
+            .getResource(file)!!
+            .readText()
 }

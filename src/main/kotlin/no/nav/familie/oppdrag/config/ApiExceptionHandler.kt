@@ -24,9 +24,7 @@ class ApiExceptionHandler {
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
     fun handleJwtTokenUnauthorizedException(
         jwtTokenUnauthorizedException: JwtTokenUnauthorizedException,
-    ): ResponseEntity<Ressurs<Nothing>> {
-        return unauthorized("Unauthorized")
-    }
+    ): ResponseEntity<Ressurs<Nothing>> = unauthorized("Unauthorized")
 
     @ExceptionHandler(Throwable::class)
     fun handleThrowable(throwable: Throwable): ResponseEntity<Ressurs<Nothing>> {
@@ -38,7 +36,8 @@ class ApiExceptionHandler {
     fun handleThrowable(feil: IntegrasjonException): ResponseEntity<Ressurs<Nothing>> {
         secureLogger.error("Feil mot ${feil.system} har oppstått", feil)
         logger.error("Feil mot ${feil.system} har oppstått exception=${getMostSpecificCause(feil)::class}")
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(Ressurs.failure(errorMessage = feil.message))
     }
 
@@ -48,7 +47,8 @@ class ApiExceptionHandler {
         return when (tssException) {
             is TssConnectionException -> serviceUnavailable(tssException.message!!, tssException)
             is TssNoDataFoundException -> {
-                ResponseEntity.status(HttpStatus.NOT_FOUND)
+                ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
                     .body(Ressurs.failure(errorMessage = tssException.message))
             }
             else -> illegalState(tssException.message!!, tssException)
@@ -58,7 +58,8 @@ class ApiExceptionHandler {
     @ExceptionHandler(FinnesIkkeITps::class)
     fun handleThrowable(feil: FinnesIkkeITps): ResponseEntity<Ressurs<Nothing>> {
         logger.warn("Personen finnes ikke i TPS system=${feil.system} ")
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(Ressurs.failure(errorMessage = "Personen finnes ikke i TPS"))
     }
 }

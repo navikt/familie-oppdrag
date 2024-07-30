@@ -57,8 +57,8 @@ class GrensesnittavstemmingMapper(
             aksjon = opprettAksjonsdata(aksjonType)
         }
 
-    private fun opprettAksjonsdata(aksjonType: AksjonType): Aksjonsdata {
-        return Aksjonsdata().apply {
+    private fun opprettAksjonsdata(aksjonType: AksjonType): Aksjonsdata =
+        Aksjonsdata().apply {
             this.aksjonType = aksjonType
             this.kildeType = KildeType.AVLEV
             this.avstemmingType = AvstemmingType.GRSN
@@ -70,18 +70,16 @@ class GrensesnittavstemmingMapper(
             this.avleverendeAvstemmingId = avstemmingId
             this.brukerId = fagområde
         }
-    }
 
-    private fun opprettAvstemmingsdataLister(oppdragsliste: List<OppdragTilAvstemming>): List<Avstemmingsdata> {
-        return opprettDetaljdata(oppdragsliste).chunked(ANTALL_DETALJER_PER_MELDING).map {
+    private fun opprettAvstemmingsdataLister(oppdragsliste: List<OppdragTilAvstemming>): List<Avstemmingsdata> =
+        opprettDetaljdata(oppdragsliste).chunked(ANTALL_DETALJER_PER_MELDING).map {
             lagMelding(AksjonType.DATA).apply {
                 this.detalj.addAll(it)
             }
         }
-    }
 
-    private fun opprettDetaljdata(oppdragsliste: List<OppdragTilAvstemming>): List<Detaljdata> {
-        return oppdragsliste.mapNotNull { oppdrag ->
+    private fun opprettDetaljdata(oppdragsliste: List<OppdragTilAvstemming>): List<Detaljdata> =
+        oppdragsliste.mapNotNull { oppdrag ->
 
             leggTilGrunnlagsinformasjon(oppdrag)
             leggTilTotalData(oppdrag)
@@ -106,7 +104,6 @@ class GrensesnittavstemmingMapper(
                 null
             }
         }
-    }
 
     private fun håndterAvstemmingstidspunkt(oppdrag: OppdragTilAvstemming) {
         val fom = avstemmingstidspunkt.fom
@@ -159,13 +156,12 @@ class GrensesnittavstemmingMapper(
             OppdragStatus.KVITTERT_UKJENT -> null
         }
 
-    private fun opprettTotalData(): Totaldata {
-        return Totaldata().apply {
+    private fun opprettTotalData(): Totaldata =
+        Totaldata().apply {
             this.totalAntall = total.antall
             this.totalBelop = BigDecimal.valueOf(total.beløp)
             this.fortegn = getFortegn(total.beløp)
         }
-    }
 
     private fun opprettPeriodeData(): Periodedata {
         val fom =
@@ -180,8 +176,8 @@ class GrensesnittavstemmingMapper(
         }
     }
 
-    private fun opprettGrunnlagsData(): Grunnlagsdata {
-        return Grunnlagsdata().apply {
+    private fun opprettGrunnlagsData(): Grunnlagsdata =
+        Grunnlagsdata().apply {
             godkjentAntall = grunnlagsdata.godkjentAntall
             godkjentBelop = BigDecimal.valueOf(grunnlagsdata.godkjentBelop)
             godkjentFortegn = getFortegn(grunnlagsdata.godkjentBelop)
@@ -198,17 +194,18 @@ class GrensesnittavstemmingMapper(
             avvistBelop = BigDecimal.valueOf(grunnlagsdata.avvistBelop)
             avvistFortegn = getFortegn(grunnlagsdata.avvistBelop)
         }
-    }
 
     private fun getSatsBeløp(oppdrag: OppdragTilAvstemming): Long =
-        oppdrag.utbetalingsoppdrag.utbetalingsperiode.map { it.sats }.reduce(BigDecimal::add).toLong()
+        oppdrag.utbetalingsoppdrag.utbetalingsperiode
+            .map { it.sats }
+            .reduce(BigDecimal::add)
+            .toLong()
 
-    private fun getFortegn(satsbeløp: Long): Fortegn {
-        return if (satsbeløp >= 0) Fortegn.T else Fortegn.F
-    }
+    private fun getFortegn(satsbeløp: Long): Fortegn = if (satsbeløp >= 0) Fortegn.T else Fortegn.F
 
     private fun formaterTilPeriodedataFormat(stringTimestamp: String): String =
-        LocalDateTime.parse(stringTimestamp, tidspunktFormatter)
+        LocalDateTime
+            .parse(stringTimestamp, tidspunktFormatter)
             .format(DateTimeFormatter.ofPattern("yyyyMMddHH"))
 }
 

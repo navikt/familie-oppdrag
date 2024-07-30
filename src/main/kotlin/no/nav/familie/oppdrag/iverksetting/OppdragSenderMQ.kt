@@ -22,7 +22,11 @@ class OppdragSenderMQ(
             throw UnsupportedOperationException("Kan ikke sende melding til oppdrag. Integrasjonen er skrudd av.")
         }
 
-        val oppdragId = oppdrag.oppdrag110?.oppdragsLinje150?.lastOrNull()?.henvisning
+        val oppdragId =
+            oppdrag.oppdrag110
+                ?.oppdragsLinje150
+                ?.lastOrNull()
+                ?.henvisning
         val oppdragXml = Jaxb.tilXml(oppdrag)
         LOG.info(
             "Sender oppdrag for fagsystem=${oppdrag.oppdrag110.kodeFagomraade} og " +

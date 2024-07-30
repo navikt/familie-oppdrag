@@ -39,7 +39,8 @@ class AvstemmingController(
     ): ResponseEntity<Ressurs<String>> {
         LOG.info("Grensesnittavstemming: Kjører for ${request.fagsystem}-oppdrag fra ${request.fra} til ${request.til}")
 
-        return Result.runCatching { grensesnittavstemmingService.utførGrensesnittavstemming(request) }
+        return Result
+            .runCatching { grensesnittavstemmingService.utførGrensesnittavstemming(request) }
             .fold(
                 onFailure = { illegalState("Grensesnittavstemming feilet", it) },
                 onSuccess = { ok("Grensesnittavstemming sendt ok") },
@@ -68,12 +69,13 @@ class AvstemmingController(
                 "med ${request.perioderForBehandlinger.sumOf { it.perioder.size }} antall periodeIder",
         )
 
-        return Result.runCatching {
-            konsistensavstemmingService.utførKonsistensavstemming(request, sendStartmelding, sendAvsluttmelding, transaksjonsId)
-        }.fold(
-            onFailure = { illegalState("Konsistensavstemming feilet", it) },
-            onSuccess = { ok("Konsistensavstemming sendt ok") },
-        )
+        return Result
+            .runCatching {
+                konsistensavstemmingService.utførKonsistensavstemming(request, sendStartmelding, sendAvsluttmelding, transaksjonsId)
+            }.fold(
+                onFailure = { illegalState("Konsistensavstemming feilet", it) },
+                onSuccess = { ok("Konsistensavstemming sendt ok") },
+            )
     }
 
     @PostMapping(path = ["/konsistensavstemming"], consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -88,17 +90,18 @@ class AvstemmingController(
                 "med ${request.utbetalingsoppdrag.size} antall oppdrag",
         )
 
-        return Result.runCatching {
-            konsistensavstemmingService.utførKonsistensavstemming(
-                request,
-                sendStartmelding = sendStartmelding,
-                sendAvsluttmelding = sendAvsluttmelding,
-                transaksjonsId = transaksjonId,
+        return Result
+            .runCatching {
+                konsistensavstemmingService.utførKonsistensavstemming(
+                    request,
+                    sendStartmelding = sendStartmelding,
+                    sendAvsluttmelding = sendAvsluttmelding,
+                    transaksjonsId = transaksjonId,
+                )
+            }.fold(
+                onFailure = { illegalState("Konsistensavstemming feilet", it) },
+                onSuccess = { ok("Konsistensavstemming sendt ok") },
             )
-        }.fold(
-            onFailure = { illegalState("Konsistensavstemming feilet", it) },
-            onSuccess = { ok("Konsistensavstemming sendt ok") },
-        )
     }
 
     @PostMapping("/{fagsystem}/fagsaker/siste-utbetalingsoppdrag")

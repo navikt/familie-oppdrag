@@ -40,9 +40,7 @@ class OppdragServiceImpl(
         oppdragSender.sendOppdrag(oppdrag)
     }
 
-    override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager {
-        return oppdragLagerRepository.hentOppdrag(oppdragId)
-    }
+    override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager = oppdragLagerRepository.hentOppdrag(oppdragId)
 
     @Transactional(rollbackFor = [Throwable::class])
     override fun resendOppdrag(oppdragId: OppdragId) {
@@ -81,6 +79,8 @@ class OppdragServiceImpl(
     }
 }
 
-class OppdragAlleredeSendtException() : RuntimeException()
+class OppdragAlleredeSendtException : RuntimeException()
 
-class OppdragHarAlleredeKvitteringException(melding: String) : RuntimeException(melding)
+class OppdragHarAlleredeKvitteringException(
+    melding: String,
+) : RuntimeException(melding)

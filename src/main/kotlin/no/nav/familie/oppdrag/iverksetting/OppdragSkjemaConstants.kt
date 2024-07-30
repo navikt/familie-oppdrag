@@ -23,7 +23,9 @@ class OppdragSkjemaConstants {
     }
 }
 
-enum class EndringsKode(val kode: String) {
+enum class EndringsKode(
+    val kode: String,
+) {
     NY("NY"),
     UENDRET("UEND"),
     ENDRING("ENDR"),
@@ -39,7 +41,9 @@ enum class EndringsKode(val kode: String) {
     }
 }
 
-enum class UtbetalingsfrekvensKode(val kode: String) {
+enum class UtbetalingsfrekvensKode(
+    val kode: String,
+) {
     DAGLIG("DAG"),
     UKENTLIG("UKE"),
     MÅNEDLIG("MND"),
@@ -47,7 +51,9 @@ enum class UtbetalingsfrekvensKode(val kode: String) {
     ENGANGSUTBETALING("ENG"),
 }
 
-enum class SatsTypeKode(val kode: String) {
+enum class SatsTypeKode(
+    val kode: String,
+) {
     DAGLIG("DAG"),
     UKENTLIG("UKE"),
     MÅNEDLIG("MND"),
@@ -68,14 +74,16 @@ enum class SatsTypeKode(val kode: String) {
     }
 }
 
-enum class GradTypeKode(val kode: String) {
+enum class GradTypeKode(
+    val kode: String,
+) {
     UFØREGRAD("UFOR"),
     UTBETALINGSGRAD("UBGR"),
     UTTAKSGRAD_ALDERSPENSJON("UTAP"),
     UTTAKSGRAD_AFP("AFPG"),
 }
 
-fun LocalDate.toXMLDate(): XMLGregorianCalendar {
-    return DatatypeFactory.newInstance()
+fun LocalDate.toXMLDate(): XMLGregorianCalendar =
+    DatatypeFactory
+        .newInstance()
         .newXMLGregorianCalendar(GregorianCalendar.from(atStartOfDay(ZoneId.systemDefault())))
-}

@@ -50,8 +50,8 @@ class SimuleringResultatTransformer {
         utenInntrekk: Boolean,
         stoppnivaa: BeregningStoppnivaa,
         detaljer: BeregningStoppnivaaDetaljer,
-    ): SimulertPostering {
-        return SimulertPostering(
+    ): SimulertPostering =
+        SimulertPostering(
             betalingType = utledBetalingType(detaljer.belop),
             erFeilkonto = stoppnivaa.isFeilkonto,
             beløp = detaljer.belop,
@@ -66,15 +66,13 @@ class SimuleringResultatTransformer {
             posteringType = PosteringType.fraKode(detaljer.typeKlasse),
             utenInntrekk = utenInntrekk,
         )
-    }
 
-    private fun hentOrgNrEllerFnr(orgNrEllerFnr: String): String {
-        return if (erOrgNr(orgNrEllerFnr)) {
+    private fun hentOrgNrEllerFnr(orgNrEllerFnr: String): String =
+        if (erOrgNr(orgNrEllerFnr)) {
             orgNrEllerFnr.substring(2)
         } else {
             orgNrEllerFnr
         }
-    }
 
     private fun utledMottakerType(
         utbetalesTilId: String,
@@ -98,13 +96,12 @@ class SimuleringResultatTransformer {
         return "00" == verdi.substring(0, 2)
     }
 
-    private fun utledBetalingType(belop: BigDecimal): BetalingType {
-        return if (belop > BigDecimal.ZERO) {
+    private fun utledBetalingType(belop: BigDecimal): BetalingType =
+        if (belop > BigDecimal.ZERO) {
             BetalingType.DEBIT
         } else {
             BetalingType.KREDIT
         }
-    }
 
     private fun parseDato(dato: String): LocalDate {
         val dtf = DateTimeFormatter.ofPattern(DATO_PATTERN)

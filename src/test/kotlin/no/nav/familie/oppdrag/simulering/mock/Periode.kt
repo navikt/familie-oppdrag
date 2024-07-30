@@ -54,9 +54,7 @@ data class Periode constructor(
                 },
         )
 
-    override fun compareTo(other: Periode): Int {
-        return fom.compareTo(other.fom)
-    }
+    override fun compareTo(other: Periode): Int = fom.compareTo(other.fom)
 
     val antallVirkedager: Int
         get() {

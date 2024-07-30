@@ -71,7 +71,8 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Test
     fun skal_lagre_status() {
         val oppdragLager =
-            utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+            utbetalingsoppdragMedTilfeldigAktoer()
+                .somOppdragLager
                 .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
@@ -88,7 +89,8 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Test
     fun skal_lagre_kvitteringsmelding() {
         val oppdragLager =
-            utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+            utbetalingsoppdragMedTilfeldigAktoer()
+                .somOppdragLager
                 .copy(status = OppdragStatus.LAGT_PÅ_KØ)
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
@@ -107,7 +109,8 @@ internal class OppdragLagerRepositoryJdbcTest {
     @Test
     fun `skal kun sette kvitteringsmeldingen til null`() {
         val oppdragLager =
-            utbetalingsoppdragMedTilfeldigAktoer().somOppdragLager
+            utbetalingsoppdragMedTilfeldigAktoer()
+                .somOppdragLager
                 .copy(status = OppdragStatus.LAGT_PÅ_KØ, kvitteringsmelding = kvitteringsmelding())
 
         oppdragLagerRepository.opprettOppdrag(oppdragLager)
@@ -123,8 +126,10 @@ internal class OppdragLagerRepositoryJdbcTest {
     private fun kvitteringsmelding(): Mmel {
         val kvitteringsmelding =
             Jaxb.tilOppdrag(
-                this::class.java.getResourceAsStream("/kvittering-avvist.xml")
-                    .bufferedReader().use { it.readText() },
+                this::class.java
+                    .getResourceAsStream("/kvittering-avvist.xml")
+                    .bufferedReader()
+                    .use { it.readText() },
             )
         return kvitteringsmelding.mmel
     }
@@ -162,13 +167,14 @@ internal class OppdragLagerRepositoryJdbcTest {
         val dag = LocalDate.now()
 
         fun hentOppdragForGrensesnittsavstemming(page: Int) =
-            oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
-                dag.atStartOfDay(),
-                dag.atTime(23, 59),
-                "BA",
-                2,
-                page,
-            ).map { it.behandlingId.toInt() }
+            oppdragLagerRepository
+                .hentIverksettingerForGrensesnittavstemming(
+                    dag.atStartOfDay(),
+                    dag.atTime(23, 59),
+                    "BA",
+                    2,
+                    page,
+                ).map { it.behandlingId.toInt() }
 
         val oppdrag1 =
             lagTestUtbetalingsoppdrag(
@@ -244,16 +250,14 @@ internal class OppdragLagerRepositoryJdbcTest {
                 baOppdragLager.fagsystem,
                 setOf("finnes ikke"),
             ),
-        )
-            .isEmpty()
+        ).isEmpty()
 
         assertThat(
             oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
                 baOppdragLager.fagsystem,
                 setOf(baOppdragLager.behandlingId),
             ),
-        )
-            .hasSize(1)
+        ).hasSize(1)
 
         assertThat(
             oppdragLagerRepository.hentUtbetalingsoppdragForKonsistensavstemming(
@@ -263,8 +267,7 @@ internal class OppdragLagerRepositoryJdbcTest {
                     behandlingB.behandlingId,
                 ),
             ),
-        )
-            .hasSize(2)
+        ).hasSize(2)
     }
 
     @Test

@@ -11,4 +11,6 @@ open class IntegrasjonException(
     throwable: Throwable? = null,
 ) : RuntimeException(msg, throwable)
 
-open class FinnesIkkeITps(val system: Integrasjonssystem) : RuntimeException()
+open class FinnesIkkeITps(
+    val system: Integrasjonssystem,
+) : RuntimeException()

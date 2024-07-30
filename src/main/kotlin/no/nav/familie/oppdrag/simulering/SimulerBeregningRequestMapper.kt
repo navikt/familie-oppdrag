@@ -18,14 +18,20 @@ import java.time.format.DateTimeFormatter
 @Component
 class SimulerBeregningRequestMapper {
     private val fpServiceGrensesnittFactory =
-        no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.ObjectFactory()
-    private val fpServiceTypesFactory = no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.ObjectFactory()
-    private val oppdragSkjemaFactory = no.nav.system.os.entiteter.oppdragskjema.ObjectFactory()
+        no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt
+            .ObjectFactory()
+    private val fpServiceTypesFactory =
+        no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes
+            .ObjectFactory()
+    private val oppdragSkjemaFactory =
+        no.nav.system.os.entiteter.oppdragskjema
+            .ObjectFactory()
 
     private val tidspunktFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH.mm.ss.SSSSSS")
 
     fun tilSimulerBeregningRequest(utbetalingsoppdrag: Utbetalingsoppdrag): SimulerBeregningRequest =
-        fpServiceGrensesnittFactory.createSimulerBeregningRequest()
+        fpServiceGrensesnittFactory
+            .createSimulerBeregningRequest()
             .apply { request = tilSimulerBeregningTypesRequest(utbetalingsoppdrag) }
 
     private fun tilSimulerBeregningTypesRequest(utbetalingsoppdrag: Utbetalingsoppdrag) =
