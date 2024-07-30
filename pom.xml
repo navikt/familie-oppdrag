@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.6</version>
+        <version>3.3.2</version>
     </parent>
 
     <properties>
@@ -21,9 +21,9 @@
         <jvmTarget>21</jvmTarget>
         <kotlin.version>2.0.0</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>3.20240515152313_9dd5659</felles.version>
-        <kontrakter.version>3.0_20240603143357_2992125</kontrakter.version>
-        <token-validation-spring.version>4.1.7</token-validation-spring.version>
+        <felles.version>3.20240624143824_64bf8f2</felles.version>
+        <kontrakter.version>3.0_20240607101709_d35e18c</kontrakter.version>
+        <token-validation-spring.version>5.0.1</token-validation-spring.version>
 
         <!--
         denne må oppdateres manuellt då eks `mvn versions:update-properties` henter versjon 2023.
@@ -34,10 +34,10 @@
         <cxf.version>4.0.4</cxf.version>
 
         <mockk.version>1.13.11</mockk.version>
-        <spring-cloud.version>2023.0.2</spring-cloud.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
         <testcontainers.version>1.19.8</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20240528104756_019ab12</tjenestespesifikasjoner.version>
-        <springdoc.version>2.5.0</springdoc.version>
+        <springdoc.version>2.6.0</springdoc.version>
 
     </properties>
 
@@ -176,12 +176,27 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
 
         <!-- NAV interne avhengigheter-->
+        <dependency>
+            <groupId>no.nav.security</groupId>
+            <artifactId>token-client-spring</artifactId>
+            <version>${token-validation-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.security</groupId>
+            <artifactId>token-client-core</artifactId>
+            <version>${token-validation-spring.version}</version>
+        </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>token-validation-spring</artifactId>
