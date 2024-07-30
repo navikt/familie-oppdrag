@@ -70,12 +70,11 @@ class OppdragMQConfig(
     }
 
     @Bean
-    fun jmsTemplateUtgående(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate {
-        return JmsTemplate(mqQueueConnectionFactory).apply {
+    fun jmsTemplateUtgående(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate =
+        JmsTemplate(mqQueueConnectionFactory).apply {
             defaultDestinationName = sendQueue
             isSessionTransacted = true
         }
-    }
 
     @Bean
     fun tssConnectionFactory(): ConnectionFactory {
@@ -131,7 +130,6 @@ class OppdragMQConfig(
     }
 
     @Bean
-    fun jmsTemplateAvstemming(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate {
-        return JmsTemplate(mqQueueConnectionFactory).apply { defaultDestinationName = avstemmingQueue }
-    }
+    fun jmsTemplateAvstemming(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate =
+        JmsTemplate(mqQueueConnectionFactory).apply { defaultDestinationName = avstemmingQueue }
 }

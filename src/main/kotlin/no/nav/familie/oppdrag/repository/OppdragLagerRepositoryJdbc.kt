@@ -16,7 +16,9 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Repository
-class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) : OppdragLagerRepository {
+class OppdragLagerRepositoryJdbc(
+    val jdbcTemplate: NamedParameterJdbcTemplate,
+) : OppdragLagerRepository {
     internal val log = LoggerFactory.getLogger(OppdragLagerRepositoryJdbc::class.java)
 
     override fun hentOppdrag(
@@ -202,21 +204,23 @@ class OppdragLagerRepositoryJdbc(val jdbcTemplate: NamedParameterJdbcTemplate) :
 
         val status = setOf(OppdragStatus.KVITTERT_OK, OppdragStatus.KVITTERT_MED_MANGLER).map { it.name }
 
-        return behandlingIder.chunked(3000).map { behandlingIderChunked ->
-            val values =
-                MapSqlParameterSource()
-                    .addValue("fagsystem", fagsystem)
-                    .addValue("behandlingIder", behandlingIderChunked)
-                    .addValue("status", status)
+        return behandlingIder
+            .chunked(3000)
+            .map { behandlingIderChunked ->
+                val values =
+                    MapSqlParameterSource()
+                        .addValue("fagsystem", fagsystem)
+                        .addValue("behandlingIder", behandlingIderChunked)
+                        .addValue("status", status)
 
-            jdbcTemplate.query(query, values) { resultSet, _ ->
-                UtbetalingsoppdragForKonsistensavstemming(
-                    resultSet.getString("fagsak_id"),
-                    resultSet.getString("behandling_id"),
-                    objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
-                )
-            }
-        }.flatten()
+                jdbcTemplate.query(query, values) { resultSet, _ ->
+                    UtbetalingsoppdragForKonsistensavstemming(
+                        resultSet.getString("fagsak_id"),
+                        resultSet.getString("behandling_id"),
+                        objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
+                    )
+                }
+            }.flatten()
     }
 
     override fun hentSisteUtbetalingsoppdragForFagsaker(
@@ -256,8 +260,8 @@ class OppdragLagerRowMapper : RowMapper<OppdragLager> {
     override fun mapRow(
         resultSet: ResultSet,
         rowNumbers: Int,
-    ): OppdragLager {
-        return OppdragLager(
+    ): OppdragLager =
+        OppdragLager(
             uuid = UUID.fromString(resultSet.getString("id") ?: UUID.randomUUID().toString()),
             fagsystem = resultSet.getString("fagsystem"),
             personIdent = resultSet.getString("person_ident"),
@@ -271,5 +275,4 @@ class OppdragLagerRowMapper : RowMapper<OppdragLager> {
             kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
             versjon = resultSet.getInt("versjon"),
         )
-    }
 }

@@ -105,7 +105,8 @@ internal class OppdragControllerIntegrationTest {
     ) {
         await()
             .pollInterval(Duration.ofMillis(200))
-            .atMost(Duration.ofSeconds(10)).untilAsserted {
+            .atMost(Duration.ofSeconds(10))
+            .untilAsserted {
                 assertThat(oppdragLagerRepository.hentOppdrag(oppdragId).status).isEqualTo(oppdragStatus)
             }
     }

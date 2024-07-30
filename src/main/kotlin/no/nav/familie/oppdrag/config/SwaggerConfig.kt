@@ -13,18 +13,17 @@ class SwaggerConfig {
     private val bearer = "JWT"
 
     @Bean
-    fun openApi(): OpenAPI {
-        return OpenAPI().info(Info().title("Familie oppdrag api"))
+    fun openApi(): OpenAPI =
+        OpenAPI()
+            .info(Info().title("Familie oppdrag api"))
             .components(Components().addSecuritySchemes(bearer, bearerTokenSecurityScheme()))
             .addSecurityItem(SecurityRequirement().addList(bearer, listOf("read", "write")))
-    }
 
-    private fun bearerTokenSecurityScheme(): SecurityScheme {
-        return SecurityScheme()
+    private fun bearerTokenSecurityScheme(): SecurityScheme =
+        SecurityScheme()
             .type(SecurityScheme.Type.APIKEY)
             .scheme(bearer)
             .bearerFormat("JWT")
             .`in`(SecurityScheme.In.HEADER)
             .name("Authorization")
-    }
 }

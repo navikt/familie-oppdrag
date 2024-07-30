@@ -31,17 +31,11 @@ class OppdragServiceE2E(
         oppdragLagerRepository.oppdaterStatus(oppdrag.id, OppdragStatus.KVITTERT_OK)
     }
 
-    override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager {
-        return oppdragLagerRepository.hentOppdrag(oppdragId)
-    }
+    override fun hentStatusForOppdrag(oppdragId: OppdragId): OppdragLager = oppdragLagerRepository.hentOppdrag(oppdragId)
 
-    override fun resendOppdrag(oppdragId: OppdragId) {
-        throw NotImplementedError("Ikke implementert")
-    }
+    override fun resendOppdrag(oppdragId: OppdragId): Unit = throw NotImplementedError("Ikke implementert")
 
-    override fun opprettManuellKvitteringPåOppdrag(oppdragId: OppdragId): OppdragLager {
-        throw NotImplementedError("Ikke implementert")
-    }
+    override fun opprettManuellKvitteringPåOppdrag(oppdragId: OppdragId): OppdragLager = throw NotImplementedError("Ikke implementert")
 
     companion object {
         val LOG = LoggerFactory.getLogger(OppdragServiceE2E::class.java)

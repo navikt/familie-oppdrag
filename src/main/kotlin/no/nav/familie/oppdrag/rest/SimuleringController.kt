@@ -35,9 +35,8 @@ class SimuleringController(
     fun utførSimuleringOgHentResultat(
         @Valid @RequestBody
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
-        return ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
-    }
+    ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> =
+        ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
 
     @PostMapping(path = ["/feilutbetalinger"])
     fun hentFeilutbetalinger(

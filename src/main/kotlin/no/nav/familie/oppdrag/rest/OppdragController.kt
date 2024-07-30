@@ -34,46 +34,46 @@ class OppdragController(
     fun sendOppdrag(
         @Valid @RequestBody
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): ResponseEntity<Ressurs<String>> {
-        return Result.runCatching {
-            val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+    ): ResponseEntity<Ressurs<String>> =
+        Result
+            .runCatching {
+                val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
+                val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-            oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, 0)
-        }.fold(
-            onFailure = {
-                if (it is OppdragAlleredeSendtException) {
-                    conflict("Oppdrag er allerede sendt for saksnr ${utbetalingsoppdrag.saksnummer}.")
-                } else {
-                    illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
-                }
-            },
-            onSuccess = {
-                ok("Oppdrag sendt OK")
-            },
-        )
-    }
+                oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, 0)
+            }.fold(
+                onFailure = {
+                    if (it is OppdragAlleredeSendtException) {
+                        conflict("Oppdrag er allerede sendt for saksnr ${utbetalingsoppdrag.saksnummer}.")
+                    } else {
+                        illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
+                    }
+                },
+                onSuccess = {
+                    ok("Oppdrag sendt OK")
+                },
+            )
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
     fun sendOppdragPåNytt(
         @Valid @RequestBody
         utbetalingsoppdrag: Utbetalingsoppdrag,
         @PathVariable versjon: Int,
-    ): ResponseEntity<Ressurs<String>> {
-        return Result.runCatching {
-            val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
-            val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
+    ): ResponseEntity<Ressurs<String>> =
+        Result
+            .runCatching {
+                val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
+                val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
 
-            oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, versjon)
-        }.fold(
-            onFailure = {
-                illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
-            },
-            onSuccess = {
-                ok("Oppdrag sendt OK")
-            },
-        )
-    }
+                oppdragService.opprettOppdrag(utbetalingsoppdrag, oppdrag, versjon)
+            }.fold(
+                onFailure = {
+                    illegalState("Klarte ikke sende oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}", it)
+                },
+                onSuccess = {
+                    ok("Oppdrag sendt OK")
+                },
+            )
 
     @PostMapping("resend")
     fun resendOppdrag(
@@ -87,8 +87,9 @@ class OppdragController(
     fun hentStatus(
         @Valid @RequestBody
         oppdragId: OppdragId,
-    ): ResponseEntity<Ressurs<OppdragStatus>> {
-        return Result.runCatching { oppdragService.hentStatusForOppdrag(oppdragId) }
+    ): ResponseEntity<Ressurs<OppdragStatus>> =
+        Result
+            .runCatching { oppdragService.hentStatusForOppdrag(oppdragId) }
             .fold(
                 onFailure = {
                     notFound("Fant ikke oppdrag med id $oppdragId")
@@ -97,14 +98,14 @@ class OppdragController(
                     ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "")
                 },
             )
-    }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag/manuell-kvittering"])
     fun opprettManuellKvitteringPåOppdrag(
         @Valid @RequestBody
         oppdragId: OppdragId,
-    ): ResponseEntity<Ressurs<OppdragStatus>> {
-        return Result.runCatching { oppdragService.opprettManuellKvitteringPåOppdrag(oppdragId) }
+    ): ResponseEntity<Ressurs<OppdragStatus>> =
+        Result
+            .runCatching { oppdragService.opprettManuellKvitteringPåOppdrag(oppdragId) }
             .fold(
                 onFailure = {
                     if (it is OppdragHarAlleredeKvitteringException) {
@@ -117,5 +118,4 @@ class OppdragController(
                     ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "")
                 },
             )
-    }
 }

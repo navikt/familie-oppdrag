@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service
 @Profile("dev", "dev_psql_mq")
 @Service
 class SimuleringSenderMock : SimuleringSender {
-    override fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse {
-        return SimuleringGenerator().opprettSimuleringsResultat(simulerBeregningRequest!!)
-    }
+    override fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse =
+        SimuleringGenerator().opprettSimuleringsResultat(simulerBeregningRequest!!)
 }

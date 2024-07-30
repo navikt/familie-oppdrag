@@ -26,14 +26,13 @@ data class SimuleringLager(
         fun lagFraOppdrag(
             utbetalingsoppdrag: Utbetalingsoppdrag,
             request: SimulerBeregningRequest,
-        ): SimuleringLager {
-            return SimuleringLager(
+        ): SimuleringLager =
+            SimuleringLager(
                 fagsystem = utbetalingsoppdrag.fagSystem,
                 fagsakId = utbetalingsoppdrag.saksnummer,
                 behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
                 utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
                 requestXml = Jaxb.tilXml(request = request),
             )
-        }
     }
 }

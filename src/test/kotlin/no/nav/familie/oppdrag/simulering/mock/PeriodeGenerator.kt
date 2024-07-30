@@ -190,16 +190,17 @@ class PeriodeGenerator {
                                 PeriodeType.YTEL,
                             ),
                         )
-                        opphør.sats?.let {
-                            Periode(
-                                ytelse.tom,
-                                ytelse.tom,
-                                it,
-                                ytelse.sats,
-                                ytelse.typeSats,
-                                ytelse.kodeKlassifik,
-                            )
-                        }?.let { periodeList.add(it) }
+                        opphør.sats
+                            ?.let {
+                                Periode(
+                                    ytelse.tom,
+                                    ytelse.tom,
+                                    it,
+                                    ytelse.sats,
+                                    ytelse.typeSats,
+                                    ytelse.kodeKlassifik,
+                                )
+                            }?.let { periodeList.add(it) }
                         removeYtelsesPerioder.add(ytelse)
                         continue@ytelseloop
                         // Scenario 3,4 og 5
@@ -216,38 +217,40 @@ class PeriodeGenerator {
                         )
                         // Scenario 3 & 4
                         if (!ytelse.tom.isAfter(opphør.tom)) {
-                            opphør.sats?.let {
-                                Periode(
-                                    opphør.fom,
-                                    ytelse.tom,
-                                    it,
-                                    ytelse.sats,
-                                    ytelse.typeSats,
-                                    ytelse.kodeKlassifik,
-                                )
-                            }?.let {
-                                periodeList.add(
-                                    it,
-                                )
-                            }
+                            opphør.sats
+                                ?.let {
+                                    Periode(
+                                        opphør.fom,
+                                        ytelse.tom,
+                                        it,
+                                        ytelse.sats,
+                                        ytelse.typeSats,
+                                        ytelse.kodeKlassifik,
+                                    )
+                                }?.let {
+                                    periodeList.add(
+                                        it,
+                                    )
+                                }
                             removeYtelsesPerioder.add(ytelse)
                             continue@ytelseloop
                             // Scenario 5
                         } else { // if (ytelse.getTom().isAfter(opphør.getTom())
-                            opphør.sats?.let {
-                                Periode(
-                                    opphør.fom,
-                                    opphør.tom,
-                                    it,
-                                    ytelse.sats,
-                                    ytelse.typeSats,
-                                    ytelse.kodeKlassifik,
-                                )
-                            }?.let {
-                                periodeList.add(
-                                    it,
-                                )
-                            }
+                            opphør.sats
+                                ?.let {
+                                    Periode(
+                                        opphør.fom,
+                                        opphør.tom,
+                                        it,
+                                        ytelse.sats,
+                                        ytelse.typeSats,
+                                        ytelse.kodeKlassifik,
+                                    )
+                                }?.let {
+                                    periodeList.add(
+                                        it,
+                                    )
+                                }
                             addYtelsesPerioder.add(
                                 Periode(
                                     opphør.tom.plusDays(1),
@@ -262,30 +265,32 @@ class PeriodeGenerator {
                         }
                         // Scenario 6 & 7
                     } else if (ytelse.fom.isEqual(opphør.fom) && !ytelse.tom.isAfter(opphør.tom)) {
-                        opphør.sats?.let {
-                            Periode(
-                                ytelse.fom,
-                                ytelse.tom,
-                                it,
-                                ytelse.sats,
-                                ytelse.typeSats,
-                                ytelse.kodeKlassifik,
-                            )
-                        }?.let { periodeList.add(it) }
+                        opphør.sats
+                            ?.let {
+                                Periode(
+                                    ytelse.fom,
+                                    ytelse.tom,
+                                    it,
+                                    ytelse.sats,
+                                    ytelse.typeSats,
+                                    ytelse.kodeKlassifik,
+                                )
+                            }?.let { periodeList.add(it) }
                         removeYtelsesPerioder.add(ytelse)
                         continue@ytelseloop
                         // Scenario 8
                     } else if (ytelse.fom.isEqual(opphør.fom) && ytelse.tom.isAfter(opphør.tom)) {
-                        opphør.sats?.let {
-                            Periode(
-                                ytelse.fom,
-                                opphør.tom,
-                                it,
-                                ytelse.sats,
-                                ytelse.typeSats,
-                                ytelse.kodeKlassifik,
-                            )
-                        }?.let { periodeList.add(it) }
+                        opphør.sats
+                            ?.let {
+                                Periode(
+                                    ytelse.fom,
+                                    opphør.tom,
+                                    it,
+                                    ytelse.sats,
+                                    ytelse.typeSats,
+                                    ytelse.kodeKlassifik,
+                                )
+                            }?.let { periodeList.add(it) }
                         addYtelsesPerioder.add(
                             Periode(
                                 opphør.tom.plusDays(1),
@@ -305,16 +310,17 @@ class PeriodeGenerator {
                             opphør.tom,
                         )
                     ) { // ytelse.getFom() er implisit før opphør.getTom() da ytelse.getFom() ikke kan være etter ytelse.getTom()
-                        opphør.sats?.let {
-                            Periode(
-                                ytelse.fom,
-                                ytelse.tom,
-                                it,
-                                ytelse.sats,
-                                ytelse.typeSats,
-                                ytelse.kodeKlassifik,
-                            )
-                        }?.let { periodeList.add(it) }
+                        opphør.sats
+                            ?.let {
+                                Periode(
+                                    ytelse.fom,
+                                    ytelse.tom,
+                                    it,
+                                    ytelse.sats,
+                                    ytelse.typeSats,
+                                    ytelse.kodeKlassifik,
+                                )
+                            }?.let { periodeList.add(it) }
                         removeYtelsesPerioder.add(ytelse)
                         continue@ytelseloop
                         // Scenario 10 & 11
@@ -325,16 +331,17 @@ class PeriodeGenerator {
                             opphør.tom,
                         )
                     ) { // ytelse.getTom() er implisit after opphør.getTom() ellers ville den truffet forrige if-statement
-                        opphør.sats?.let {
-                            Periode(
-                                ytelse.fom,
-                                opphør.tom,
-                                it,
-                                ytelse.sats,
-                                ytelse.typeSats,
-                                ytelse.kodeKlassifik,
-                            )
-                        }?.let { periodeList.add(it) }
+                        opphør.sats
+                            ?.let {
+                                Periode(
+                                    ytelse.fom,
+                                    opphør.tom,
+                                    it,
+                                    ytelse.sats,
+                                    ytelse.typeSats,
+                                    ytelse.kodeKlassifik,
+                                )
+                            }?.let { periodeList.add(it) }
                         addYtelsesPerioder.add(
                             Periode(
                                 opphør.tom.plusDays(1),

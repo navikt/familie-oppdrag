@@ -64,14 +64,16 @@ class GrensesnittavstemmingServiceTest {
             )
         } returns
             listOf(
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-                    LocalDateTime.now(),
-                    fagområde,
-                ).somAvstemming,
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-                    LocalDateTime.now(),
-                    fagområde,
-                ).somAvstemming,
+                TestOppdragMedAvstemmingsdato
+                    .lagTestUtbetalingsoppdrag(
+                        LocalDateTime.now(),
+                        fagområde,
+                    ).somAvstemming,
+                TestOppdragMedAvstemmingsdato
+                    .lagTestUtbetalingsoppdrag(
+                        LocalDateTime.now(),
+                        fagområde,
+                    ).somAvstemming,
             )
         every {
             oppdragLagerRepository.hentIverksettingerForGrensesnittavstemming(
@@ -83,10 +85,11 @@ class GrensesnittavstemmingServiceTest {
             )
         } returns
             listOf(
-                TestOppdragMedAvstemmingsdato.lagTestUtbetalingsoppdrag(
-                    LocalDateTime.now(),
-                    fagområde,
-                ).somAvstemming,
+                TestOppdragMedAvstemmingsdato
+                    .lagTestUtbetalingsoppdrag(
+                        LocalDateTime.now(),
+                        fagområde,
+                    ).somAvstemming,
             )
 
         grensesnittavstemmingService.utførGrensesnittavstemming(

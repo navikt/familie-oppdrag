@@ -77,8 +77,8 @@ class KonsistensavstemmingMapper(
         return dataListe
     }
 
-    private fun lagOppdragsdata(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdragsdata {
-        return Oppdragsdata().apply {
+    private fun lagOppdragsdata(utbetalingsoppdrag: Utbetalingsoppdrag): Oppdragsdata =
+        Oppdragsdata().apply {
             fagomradeKode = utbetalingsoppdrag.fagSystem
             fagsystemId = utbetalingsoppdrag.saksnummer
             utbetalingsfrekvens = UtbetalingsfrekvensKode.MÅNEDLIG.kode
@@ -97,7 +97,6 @@ class KonsistensavstemmingMapper(
                     )
                 }
         }
-    }
 
     private fun lagOppdragsLinjeListe(
         utbetalingsperiode: Utbetalingsperiode,
@@ -150,19 +149,17 @@ class KonsistensavstemmingMapper(
         return aktiv
     }
 
-    private fun lagAttestant(utbetalingsoppdrag: Utbetalingsoppdrag): Attestant {
-        return Attestant().apply {
+    private fun lagAttestant(utbetalingsoppdrag: Utbetalingsoppdrag): Attestant =
+        Attestant().apply {
             attestantId = utbetalingsoppdrag.saksbehandlerId
         }
-    }
 
-    private fun lagEnhet(): Enhet {
-        return Enhet().apply {
+    private fun lagEnhet(): Enhet =
+        Enhet().apply {
             enhetType = OppdragSkjemaConstants.ENHET_TYPE
             enhet = OppdragSkjemaConstants.ENHET
             enhetFom = OppdragSkjemaConstants.ENHET_DATO_FOM.format(datoFormatter)
         }
-    }
 
     private fun lagTotaldata(): Konsistensavstemmingsdata {
         val konsistensavstemmingsdata = lagAksjonsmelding(KonsistensavstemmingConstants.DATA)
@@ -177,21 +174,20 @@ class KonsistensavstemmingMapper(
         return konsistensavstemmingsdata
     }
 
-    private fun getFortegn(satsbeløp: Long): String {
-        return if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO) {
+    private fun getFortegn(satsbeløp: Long): String =
+        if (BigDecimal.valueOf(satsbeløp) >= BigDecimal.ZERO) {
             KonsistensavstemmingConstants.FORTEGN_T
         } else {
             KonsistensavstemmingConstants.FORTEGN_F
         }
-    }
 
     private fun lagAksjonsmelding(aksjontype: String): Konsistensavstemmingsdata =
         Konsistensavstemmingsdata().apply {
             aksjonsdata = opprettAksjonsdata(aksjontype)
         }
 
-    private fun opprettAksjonsdata(aksjonstype: String): Aksjonsdata {
-        return Aksjonsdata().apply {
+    private fun opprettAksjonsdata(aksjonstype: String): Aksjonsdata =
+        Aksjonsdata().apply {
             this.aksjonsType = aksjonstype
             this.kildeType = KonsistensavstemmingConstants.KILDETYPE
             this.avstemmingType = KonsistensavstemmingConstants.KONSISTENSAVSTEMMING
@@ -202,7 +198,6 @@ class KonsistensavstemmingMapper(
             this.avleverendeAvstemmingId = avstemmingId
             this.brukerId = fagsystem
         }
-    }
 
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(KonsistensavstemmingMapper::class.java)

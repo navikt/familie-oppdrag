@@ -9,7 +9,10 @@ fun logSoapFaultException(e: Exception) {
     if (e is SOAPFaultException) {
         val details =
             e.fault.detail?.let { detail ->
-                detail.detailEntries.asSequence().mapNotNull { it.textContent }.joinToString(",")
+                detail.detailEntries
+                    .asSequence()
+                    .mapNotNull { it.textContent }
+                    .joinToString(",")
             }
         secureLogger.error(
             "SOAPFaultException -" +
