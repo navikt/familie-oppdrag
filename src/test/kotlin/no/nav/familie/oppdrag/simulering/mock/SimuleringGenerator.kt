@@ -30,7 +30,8 @@ class SimuleringGenerator {
             response.response = null
         } else {
             val innerResponse =
-                no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningResponse()
+                no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes
+                    .SimulerBeregningResponse()
             response.response = innerResponse
             innerResponse.simulering = beregning
         }
@@ -168,7 +169,8 @@ class SimuleringGenerator {
                         )
                     }
                 } else if (oppdragsperiode.periodeType == PeriodeType.REDUKSJON &&
-                    YearMonth.from(periode.fom)
+                    YearMonth
+                        .from(periode.fom)
                         .isBefore(nesteMåned)
                 ) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(
@@ -187,7 +189,8 @@ class SimuleringGenerator {
                         )
                     }
                 } else if (oppdragsperiode.periodeType == PeriodeType.ØKNING &&
-                    YearMonth.from(periode.fom)
+                    YearMonth
+                        .from(periode.fom)
                         .isBefore(nesteMåned)
                 ) {
                     stoppnivaa.beregningStoppnivaaDetaljer.add(

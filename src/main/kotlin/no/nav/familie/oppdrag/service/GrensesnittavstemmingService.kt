@@ -151,7 +151,10 @@ class GrensesnittavstemmingService(
     }
 }
 
-enum class Status(val status: String, val beskrivelse: String) {
+enum class Status(
+    val status: String,
+    val beskrivelse: String,
+) {
     GODKJENT("godkjent", "Antall oppdrag som har fått OK kvittering (alvorlighetsgrad 00)."),
     AVVIST(
         "avvist",

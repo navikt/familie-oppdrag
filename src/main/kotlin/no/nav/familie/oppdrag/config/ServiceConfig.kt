@@ -16,13 +16,13 @@ class ServiceConfig(
     @Value("\${OPPDRAG_SERVICE_URL}") private val simulerFpServiceUrl: String,
 ) {
     @Bean
-    fun stsConfig(): StsConfig {
-        return StsConfig.builder()
+    fun stsConfig(): StsConfig =
+        StsConfig
+            .builder()
             .url(stsUrl)
             .username(systemuserUsername)
             .password(systemuserPwd)
             .build()
-    }
 
     @Bean
     fun simulerFpServicePort(): SimulerFpService =

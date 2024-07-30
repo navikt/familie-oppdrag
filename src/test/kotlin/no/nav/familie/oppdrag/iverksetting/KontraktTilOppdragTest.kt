@@ -154,7 +154,13 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsoppdrag.aktoer, oppdragsLinje150.utbetalesTilId)
         Assertions.assertEquals(utbetalingsperiode.behandlingId.toString(), oppdragsLinje150.henvisning)
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.attestant180[0].attestantId)
-        Assertions.assertEquals(utbetalingsperiode.utbetalingsgrad, oppdragsLinje150.grad170.firstOrNull()?.grad?.toInt())
+        Assertions.assertEquals(
+            utbetalingsperiode.utbetalingsgrad,
+            oppdragsLinje150.grad170
+                .firstOrNull()
+                ?.grad
+                ?.toInt(),
+        )
 
         if (utbetalingsperiode.forrigePeriodeId !== null && !utbetalingsperiode.erEndringPåEksisterendePeriode) {
             Assertions.assertEquals(

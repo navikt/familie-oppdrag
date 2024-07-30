@@ -18,15 +18,11 @@ class SimuleringLagerTjenesteImpl : SimuleringLagerTjeneste {
         simuleringLagerRepository.update(simuleringLager)
     }
 
-    override fun finnAlleSimuleringsLager(): List<SimuleringLager> {
-        return simuleringLagerRepository.findAll().toList()
-    }
+    override fun finnAlleSimuleringsLager(): List<SimuleringLager> = simuleringLagerRepository.findAll().toList()
 
     override fun hentSisteSimuleringsresultat(
         fagsystem: String,
         fagsakId: String,
         behandlingId: String,
-    ): SimuleringLager {
-        return simuleringLagerRepository.finnSisteSimuleringsresultat(fagsystem, fagsakId, behandlingId)
-    }
+    ): SimuleringLager = simuleringLagerRepository.finnSisteSimuleringsresultat(fagsystem, fagsakId, behandlingId)
 }

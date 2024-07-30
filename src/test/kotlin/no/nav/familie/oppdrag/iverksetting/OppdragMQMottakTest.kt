@@ -179,9 +179,10 @@ class OppdragMQMottakTest {
         verify(exactly = 1) { oppdragMottaker.log.warn(any()) }
     }
 
-    private fun lesKvittering(filnavn: String): String {
-        return this::class.java.getResourceAsStream("/$filnavn").bufferedReader().use { it.readText() }
-    }
+    private fun lesKvittering(filnavn: String): String =
+        this::class.java.getResourceAsStream("/$filnavn").bufferedReader().use {
+            it.readText()
+        }
 
     val String.fraRessursSomTextMessage: TextMessage
         get() {

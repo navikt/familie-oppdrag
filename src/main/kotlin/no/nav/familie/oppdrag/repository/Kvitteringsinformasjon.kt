@@ -30,8 +30,8 @@ object KvitteringsinformasjonRowMapper : RowMapper<Kvitteringsinformasjon> {
     override fun mapRow(
         resultSet: ResultSet,
         rowNumbers: Int,
-    ): Kvitteringsinformasjon {
-        return Kvitteringsinformasjon(
+    ): Kvitteringsinformasjon =
+        Kvitteringsinformasjon(
             fagsystem = resultSet.getString("fagsystem"),
             personIdent = resultSet.getString("person_ident"),
             fagsakId = resultSet.getString("fagsak_id"),
@@ -42,5 +42,4 @@ object KvitteringsinformasjonRowMapper : RowMapper<Kvitteringsinformasjon> {
             kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
             versjon = resultSet.getInt("versjon"),
         )
-    }
 }

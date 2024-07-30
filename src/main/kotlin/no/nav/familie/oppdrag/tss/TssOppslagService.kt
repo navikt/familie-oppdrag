@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class TssOppslagService(private val tssMQClient: TssMQClient) {
+class TssOppslagService(
+    private val tssMQClient: TssMQClient,
+) {
     private val logger = LoggerFactory.getLogger(TssOppslagService::class.java)
 
     fun hentSamhandlerDataForOrganisasjonB910(tssSamhandlerIdent: TssSamhandlerIdent): TypeOD910 {
@@ -40,9 +42,7 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         postNummer: String?,
         område: String?,
         side: Int,
-    ): TssSamhandlerData {
-        return tssMQClient.søkOrgInfo(navn, postNummer, område, side)
-    }
+    ): TssSamhandlerData = tssMQClient.søkOrgInfo(navn, postNummer, område, side)
 
     fun hentInformasjonOmSamhandlerInst(
         navn: String?,
@@ -113,10 +113,15 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
         enkeltSamhandler: Samhandler,
         orgnr: String?,
     ): SamhandlerInfo {
-        val navn = enkeltSamhandler.samhandler110.samhandler.first().navnSamh
+        val navn =
+            enkeltSamhandler.samhandler110.samhandler
+                .first()
+                .navnSamh
         val orgnr =
-            orgnr ?: enkeltSamhandler.alternativId111.samhId.filter { it.kodeAltIdentType == "ORG" && it.datoIdentTom.isBlank() }
-                .firstOrNull()?.idAlternativ
+            orgnr ?: enkeltSamhandler.alternativId111.samhId
+                .filter { it.kodeAltIdentType == "ORG" && it.datoIdentTom.isBlank() }
+                .firstOrNull()
+                ?.idAlternativ
         val (tssId, avdNr) = mapTssEksternIdOgAvdNr(enkeltSamhandler.samhandlerAvd125)
 
         val avdelingsAdresser = madAdresse(enkeltSamhandler.adresse130, avdNr)
@@ -124,7 +129,10 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     }
 
     private fun mapSamhandler(enkeltSamhandler: TypeKomp940): SamhandlerInfo {
-        val navn = enkeltSamhandler.samhandler110.samhandler.first().navnSamh
+        val navn =
+            enkeltSamhandler.samhandler110.samhandler
+                .first()
+                .navnSamh
         val (tssId, avdNr) = mapTssEksternIdOgAvdNr(enkeltSamhandler.samhandlerAvd125)
 
         val avdelingsAdresser = madAdresse(enkeltSamhandler.adresse130, avdNr)
@@ -146,10 +154,10 @@ class TssOppslagService(private val tssMQClient: TssMQClient) {
     private fun madAdresse(
         adresse130: TypeSamhAdr,
         avdNr: String?,
-    ) = adresse130.adresseSamh.filter {
-        it.avdNr == avdNr && it.gyldigAdresse == "J"
-    }
-        .mapNotNull {
+    ) = adresse130.adresseSamh
+        .filter {
+            it.avdNr == avdNr && it.gyldigAdresse == "J"
+        }.mapNotNull {
             val adresseLinje = if (it.antAdrLinje.isNullOrBlank()) emptyList() else it.adrLinjeInfo.adresseLinje
             SamhandlerAdresse(adresseLinje, it.postNr, it.poststed, it.beskrAdresseType)
         }

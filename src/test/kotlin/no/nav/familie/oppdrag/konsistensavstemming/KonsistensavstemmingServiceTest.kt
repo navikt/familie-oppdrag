@@ -112,12 +112,19 @@ class KonsistensavstemmingServiceTest {
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(2)
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[0])
         assertTrue {
-            oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe
+            oppdrag.captured.oppdragsdataListe[0]
+                .oppdragslinjeListe
                 .all { it.utbetalesTilId == aktiveFødselsnummere[0] }
         }
 
-        assertThat(totalData.captured.totaldata.totalBelop.toInt()).isEqualTo(322)
-        assertThat(totalData.captured.totaldata.totalAntall.toInt()).isEqualTo(1)
+        assertThat(
+            totalData.captured.totaldata.totalBelop
+                .toInt(),
+        ).isEqualTo(322)
+        assertThat(
+            totalData.captured.totaldata.totalAntall
+                .toInt(),
+        ).isEqualTo(1)
     }
 
     @Test
@@ -146,11 +153,25 @@ class KonsistensavstemmingServiceTest {
         assertThat(oppdrag.captured.oppdragsdataListe).hasSize(1)
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(2)
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[0])
-        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe[0].utbetalesTilId == "tss-id")
-        assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe[1].utbetalesTilId == aktiveFødselsnummere[0])
+        assertThat(
+            oppdrag.captured.oppdragsdataListe[0]
+                .oppdragslinjeListe[0]
+                .utbetalesTilId == "tss-id",
+        )
+        assertThat(
+            oppdrag.captured.oppdragsdataListe[0]
+                .oppdragslinjeListe[1]
+                .utbetalesTilId == aktiveFødselsnummere[0],
+        )
 
-        assertThat(totalData.captured.totaldata.totalBelop.toInt()).isEqualTo(322)
-        assertThat(totalData.captured.totaldata.totalAntall.toInt()).isEqualTo(1)
+        assertThat(
+            totalData.captured.totaldata.totalBelop
+                .toInt(),
+        ).isEqualTo(322)
+        assertThat(
+            totalData.captured.totaldata.totalAntall
+                .toInt(),
+        ).isEqualTo(1)
     }
 
     @Test
@@ -183,7 +204,8 @@ class KonsistensavstemmingServiceTest {
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(1)
         assertThat(oppdrag.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[0])
         assertTrue {
-            oppdrag.captured.oppdragsdataListe[0].oppdragslinjeListe
+            oppdrag.captured.oppdragsdataListe[0]
+                .oppdragslinjeListe
                 .any { it.utbetalesTilId == aktiveFødselsnummere[0] }
         }
 
@@ -191,12 +213,19 @@ class KonsistensavstemmingServiceTest {
         assertThat(oppdrag2.captured.oppdragsdataListe[0].oppdragslinjeListe).hasSize(2)
         assertThat(oppdrag2.captured.oppdragsdataListe[0].oppdragGjelderId).isEqualTo(aktiveFødselsnummere[1])
         assertTrue {
-            oppdrag2.captured.oppdragsdataListe[0].oppdragslinjeListe
+            oppdrag2.captured.oppdragsdataListe[0]
+                .oppdragslinjeListe
                 .any { it.utbetalesTilId == aktiveFødselsnummere[1] }
         }
 
-        assertThat(totalData.captured.totaldata.totalBelop.toInt()).isEqualTo(161)
-        assertThat(totalData.captured.totaldata.totalAntall.toInt()).isEqualTo(2)
+        assertThat(
+            totalData.captured.totaldata.totalBelop
+                .toInt(),
+        ).isEqualTo(161)
+        assertThat(
+            totalData.captured.totaldata.totalAntall
+                .toInt(),
+        ).isEqualTo(2)
     }
 
     @Test

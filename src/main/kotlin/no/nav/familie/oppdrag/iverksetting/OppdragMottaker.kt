@@ -51,7 +51,8 @@ class OppdragMottaker(
         log.debug("Henter oppdrag $oppdragId fra databasen")
 
         val førsteOppdragUtenKvittering =
-            oppdragLagerRepository.hentKvitteringsinformasjon(oppdragId)
+            oppdragLagerRepository
+                .hentKvitteringsinformasjon(oppdragId)
                 .find { oppdrag -> oppdrag.status == OppdragStatus.LAGT_PÅ_KØ }
         if (førsteOppdragUtenKvittering == null) {
             log.warn("Oppdraget tilknyttet mottatt kvittering har uventet status i databasen. Oppdraget er: $oppdragId")
@@ -100,7 +101,5 @@ class OppdragMottaker(
             OppdragStatus.KVITTERT_OK
         }
 
-    fun lesKvittering(svarFraOppdrag: String): Oppdrag {
-        return Jaxb.tilOppdrag(svarFraOppdrag)
-    }
+    fun lesKvittering(svarFraOppdrag: String): Oppdrag = Jaxb.tilOppdrag(svarFraOppdrag)
 }

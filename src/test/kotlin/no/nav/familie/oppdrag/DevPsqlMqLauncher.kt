@@ -39,6 +39,10 @@ object DevPsqlMqLauncher {
     }
 }
 
-class KPostgreSQLContainer(imageName: String) : PostgreSQLContainer<KPostgreSQLContainer>(imageName)
+class KPostgreSQLContainer(
+    imageName: String,
+) : PostgreSQLContainer<KPostgreSQLContainer>(imageName)
 
-class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
+class KGenericContainer(
+    imageName: String,
+) : GenericContainer<KGenericContainer>(imageName)

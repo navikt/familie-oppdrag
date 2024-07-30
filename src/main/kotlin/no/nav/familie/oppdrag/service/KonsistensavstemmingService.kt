@@ -74,9 +74,8 @@ class KonsistensavstemmingService(
     fun hentSisteUtbetalingsoppdragForFagsaker(
         fagsystem: String,
         fagsakIder: Set<String>,
-    ): List<UtbetalingsoppdragForKonsistensavstemming> {
-        return oppdragLagerRepository.hentSisteUtbetalingsoppdragForFagsaker(fagsystem, fagsakIder)
-    }
+    ): List<UtbetalingsoppdragForKonsistensavstemming> =
+        oppdragLagerRepository.hentSisteUtbetalingsoppdragForFagsaker(fagsystem, fagsakIder)
 
     @Transactional
     fun utførKonsistensavstemming(
@@ -158,14 +157,19 @@ class KonsistensavstemmingService(
 
         return utbetalingsoppdragPåFagsak.map { (saksnummer, utbetalingsoppdragListe) ->
             val senesteUtbetalingsoppdrag =
-                utbetalingsoppdragListe.maxByOrNull { oppdrag ->
-                    oppdrag.utbetalingsoppdrag.utbetalingsperiode.maxOf { it.periodeId }
-                }?.utbetalingsoppdrag ?: error("Finner ikke seneste behandling for fagsak=$saksnummer")
+                utbetalingsoppdragListe
+                    .maxByOrNull { oppdrag ->
+                        oppdrag.utbetalingsoppdrag.utbetalingsperiode.maxOf { it.periodeId }
+                    }?.utbetalingsoppdrag ?: error("Finner ikke seneste behandling for fagsak=$saksnummer")
 
             val behandlingsIderForFagsak = utbetalingsoppdragListe.map { it.behandlingId }.toSet()
 
             val aktuellePeriodeIderForFagsak =
-                perioderPåBehandling.filter { behandlingsIderForFagsak.contains(it.key) }.values.flatten().toSet()
+                perioderPåBehandling
+                    .filter { behandlingsIderForFagsak.contains(it.key) }
+                    .values
+                    .flatten()
+                    .toSet()
 
             var aktivtFødselsnummer: String? = null
             val perioderTilKonsistensavstemming =
@@ -197,7 +201,11 @@ class KonsistensavstemmingService(
     ) {
         if (periodeIderPåBehandling.size != request.perioderForBehandlinger.size) {
             val duplikateBehandlinger =
-                request.perioderForBehandlinger.map { it.behandlingId }.groupingBy { it }.eachCount().filter { it.value > 1 }
+                request.perioderForBehandlinger
+                    .map { it.behandlingId }
+                    .groupingBy { it }
+                    .eachCount()
+                    .filter { it.value > 1 }
             error("Behandling finnes flere ganger i requesten: ${duplikateBehandlinger.keys}")
         }
     }
@@ -205,10 +213,9 @@ class KonsistensavstemmingService(
     private fun hentFødselsnummerForBehandling(
         fødselsnummerPåBehandling: Map<String, String>,
         behandlingId: String,
-    ): String {
-        return fødselsnummerPåBehandling[behandlingId]
+    ): String =
+        fødselsnummerPåBehandling[behandlingId]
             ?: error("Finnes ikke et aktivt fødselsnummer for behandlingId $behandlingId")
-    }
 
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(KonsistensavstemmingService::class.java)

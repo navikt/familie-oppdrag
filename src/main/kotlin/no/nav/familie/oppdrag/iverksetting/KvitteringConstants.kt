@@ -3,7 +3,9 @@ package no.nav.familie.oppdrag.iverksetting
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import java.lang.IllegalArgumentException
 
-enum class Status(val kode: String) {
+enum class Status(
+    val kode: String,
+) {
     OK("00"),
     AKSEPTERT_MEN_NOE_ER_FEIL("04"),
     AVVIST_FUNKSJONELLE_FEIL("08"),
