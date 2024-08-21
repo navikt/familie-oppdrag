@@ -24,21 +24,31 @@ internal class SimuleringGeneratorTest {
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
             .isEqualTo(oppdragGjelderId)
-            .isEqualTo(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].utbetalesTilId)
-            .withFailMessage("Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder")
+            .isEqualTo(
+                response.response.simulering.beregningsPeriode[0]
+                    .beregningStoppnivaa[0]
+                    .utbetalesTilId,
+            ).withFailMessage(
+                "Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder",
+            )
         assertThat(response.response.simulering.beregningsPeriode.size)
             .isEqualTo(1)
             .withFailMessage(
                 "Resultatperioden ble delt opp feil, ettersom alle periodene er sammenhengende skal de komme som en lang resultatperiode",
             )
-        assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
-            .isEqualTo(6)
+        assertThat(
+            response.response.simulering.beregningsPeriode[0]
+                .beregningStoppnivaa.size,
+        ).isEqualTo(6)
             .withFailMessage(
                 "Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
-                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+                    response.response.simulering.beregningsPeriode[0]
+                        .beregningStoppnivaa.size,
             )
         val detaljer: List<BeregningStoppnivaaDetaljer> =
-            response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
+            response.response.simulering.beregningsPeriode[0]
+                .beregningStoppnivaa[0]
+                .beregningStoppnivaaDetaljer
         detaljer.sortedBy { beregningStoppnivaaDetaljer -> beregningStoppnivaaDetaljer.behandlingskode }
         assertThat(detaljer.size)
             .isEqualTo(1)
@@ -63,17 +73,27 @@ internal class SimuleringGeneratorTest {
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
             .isEqualTo(oppdragGjelderId)
-            .isEqualTo(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].utbetalesTilId)
-            .withFailMessage("Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder")
-        assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
-            .isEqualTo(5)
+            .isEqualTo(
+                response.response.simulering.beregningsPeriode[0]
+                    .beregningStoppnivaa[0]
+                    .utbetalesTilId,
+            ).withFailMessage(
+                "Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder",
+            )
+        assertThat(
+            response.response.simulering.beregningsPeriode[0]
+                .beregningStoppnivaa.size,
+        ).isEqualTo(5)
             .withFailMessage(
                 "Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
-                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+                    response.response.simulering.beregningsPeriode[0]
+                        .beregningStoppnivaa.size,
             )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
-            response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
+            response.response.simulering.beregningsPeriode[0]
+                .beregningStoppnivaa[0]
+                .beregningStoppnivaaDetaljer
         assertThat(detaljer.size)
             .isEqualTo(3)
             .withFailMessage("En respons med senket ytelse skal ha 3 beregningsStoppnivåDetaljer, Ytelse, Feilutbetaling og Negativ ytelse")
@@ -110,17 +130,27 @@ internal class SimuleringGeneratorTest {
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
         assertThat(response.response.simulering.gjelderId)
             .isEqualTo(oppdragGjelderId)
-            .isEqualTo(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].utbetalesTilId)
-            .withFailMessage("Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder")
-        assertThat(response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size)
-            .isEqualTo(4)
+            .isEqualTo(
+                response.response.simulering.beregningsPeriode[0]
+                    .beregningStoppnivaa[0]
+                    .utbetalesTilId,
+            ).withFailMessage(
+                "Forventet 'gjelderId' var feil og/eller mottaker av ytelsen stemte ikke overens med personen ytelsen gjelder",
+            )
+        assertThat(
+            response.response.simulering.beregningsPeriode[0]
+                .beregningStoppnivaa.size,
+        ).isEqualTo(4)
             .withFailMessage(
                 "Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " +
-                    response.response.simulering.beregningsPeriode[0].beregningStoppnivaa.size,
+                    response.response.simulering.beregningsPeriode[0]
+                        .beregningStoppnivaa.size,
             )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
-            response.response.simulering.beregningsPeriode[0].beregningStoppnivaa[0].beregningStoppnivaaDetaljer
+            response.response.simulering.beregningsPeriode[0]
+                .beregningStoppnivaa[0]
+                .beregningStoppnivaaDetaljer
         assertThat(detaljer.size)
             .isEqualTo(3)
             .withFailMessage("En respons med senket ytelse skal ha 3 beregningsStoppnivåDetaljer, Ytelse, Feilutbetaling og Negativ ytelse")
@@ -151,7 +181,8 @@ internal class SimuleringGeneratorTest {
     ): SimulerBeregningRequest {
         val request = SimulerBeregningRequest()
         request.request =
-            no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningRequest()
+            no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes
+                .SimulerBeregningRequest()
         request.request.oppdrag = Oppdrag()
         request.request.oppdrag.kodeEndring = kodeEndring
         request.request.oppdrag.kodeFagomraade = "BA"

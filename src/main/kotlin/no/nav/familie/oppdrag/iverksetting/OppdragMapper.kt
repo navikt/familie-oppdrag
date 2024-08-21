@@ -103,9 +103,8 @@ class OppdragMapper {
         }
     }
 
-    fun tilOppdrag(oppdrag110: Oppdrag110): Oppdrag {
-        return objectFactory.createOppdrag().apply {
+    fun tilOppdrag(oppdrag110: Oppdrag110): Oppdrag =
+        objectFactory.createOppdrag().apply {
             this.oppdrag110 = oppdrag110
         }
-    }
 }

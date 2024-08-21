@@ -12,8 +12,8 @@ object AvstemmingMapper {
         return Base64.getUrlEncoder().encodeToString(bb.array()).substring(0, 22)
     }
 
-    fun fagområdeTilAvleverendeKomponentKode(fagområde: String): String {
-        return when (fagområde) {
+    fun fagområdeTilAvleverendeKomponentKode(fagområde: String): String =
+        when (fagområde) {
             "EFOG" -> "EF"
             "EFBT" -> "EF"
             "EFSP" -> "EF"
@@ -21,9 +21,10 @@ object AvstemmingMapper {
             "KS" -> "KS"
             else -> throw Error("$fagområde støttes ikke ennå")
         }
-    }
 }
 
-enum class SystemKode(val kode: String) {
+enum class SystemKode(
+    val kode: String,
+) {
     OPPDRAGSSYSTEMET("OS"),
 }

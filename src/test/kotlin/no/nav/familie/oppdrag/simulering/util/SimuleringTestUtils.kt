@@ -68,7 +68,8 @@ fun lagSimulerBeregningResponse(beregningsPerioder: List<BeregningsPeriode>): Si
     beregning.beregningsPeriode.addAll(beregningsPerioder)
 
     val simulerBeregningResponse =
-        no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.SimulerBeregningResponse()
+        no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes
+            .SimulerBeregningResponse()
     simulerBeregningResponse.simulering = beregning
 
     val response = SimulerBeregningResponse()

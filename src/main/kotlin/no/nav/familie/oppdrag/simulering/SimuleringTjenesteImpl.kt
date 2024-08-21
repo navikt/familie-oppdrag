@@ -123,43 +123,46 @@ class SimuleringTjenesteImpl(
         return FeilutbetalingerFraSimulering(feilutbetaltePerioder = feilutbetaltPerioder)
     }
 
-    private fun finnFeilPosteringer(simulering: Beregning): Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>> {
-        return simulering.beregningsPeriode.map { beregningsperiode ->
-            beregningsperiode to
-                beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
+    private fun finnFeilPosteringer(simulering: Beregning): Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>> =
+        simulering.beregningsPeriode
+            .map { beregningsperiode ->
+                beregningsperiode to
+                    beregningsperiode.beregningStoppnivaa
+                        .map { stoppNivå ->
+                            stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
+                                detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
+                                    detalj.belop > BigDecimal.ZERO
+                            }
+                        }.flatten()
+            }.filter { it.second.isNotEmpty() }
+            .toMap()
+
+    private fun finnYtelPosteringer(simulering: Beregning): Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>> =
+        simulering.beregningsPeriode.associateWith { beregningsperiode ->
+            beregningsperiode.beregningStoppnivaa
+                .map { stoppNivå ->
                     stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
-                        detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
-                            detalj.belop > BigDecimal.ZERO
+                        detalj.typeKlasse == PosteringType.YTELSE.kode
                     }
                 }.flatten()
-        }.filter { it.second.isNotEmpty() }.toMap()
-    }
-
-    private fun finnYtelPosteringer(simulering: Beregning): Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>> {
-        return simulering.beregningsPeriode.associateWith { beregningsperiode ->
-            beregningsperiode.beregningStoppnivaa.map { stoppNivå ->
-                stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
-                    detalj.typeKlasse == PosteringType.YTELSE.kode
-                }
-            }.flatten()
         }
-    }
 
     private fun hentYtelPerioder(
         feilutbetaltePeriode: BeregningsPeriode,
         ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
-    ): List<BeregningsPeriode> {
-        return ytelPerioder.keys.filter { ytelPeriode ->
+    ): List<BeregningsPeriode> =
+        ytelPerioder.keys.filter { ytelPeriode ->
             ytelPeriode.periodeFom == feilutbetaltePeriode.periodeFom &&
                 ytelPeriode.periodeTom == feilutbetaltePeriode.periodeTom
         }
-    }
 
     private fun summerNegativeYtelPosteringer(
         perioder: List<BeregningsPeriode>,
         ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
     ) = perioder.sumOf { beregningsperiode ->
-        ytelPerioder.getValue(beregningsperiode).filter { it.belop < BigDecimal.ZERO }
+        ytelPerioder
+            .getValue(beregningsperiode)
+            .filter { it.belop < BigDecimal.ZERO }
             .sumOf { detalj -> detalj.belop }
     }
 
@@ -167,7 +170,9 @@ class SimuleringTjenesteImpl(
         perioder: List<BeregningsPeriode>,
         ytelPerioder: Map<BeregningsPeriode, List<BeregningStoppnivaaDetaljer>>,
     ) = perioder.sumOf { beregningsperiode ->
-        ytelPerioder.getValue(beregningsperiode).filter { it.belop > BigDecimal.ZERO }
+        ytelPerioder
+            .getValue(beregningsperiode)
+            .filter { it.belop > BigDecimal.ZERO }
             .sumOf { detalj -> detalj.belop }
     }
 

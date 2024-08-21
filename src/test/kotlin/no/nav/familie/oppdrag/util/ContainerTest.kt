@@ -19,21 +19,24 @@ object Containers {
             .withEnv("persistance.enabled", "true")
             .withExposedPorts(1414)
 
-    class MyGeneralContainer(imageName: String) : GenericContainer<MyGeneralContainer>(imageName)
+    class MyGeneralContainer(
+        imageName: String,
+    ) : GenericContainer<MyGeneralContainer>(imageName)
 
     class MQInitializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
-            TestPropertyValues.of(
-                "oppdrag.mq.port=" + ibmMQContainer.getMappedPort(1414),
-                "oppdrag.mq.queuemanager=QM1",
-                "oppdrag.mq.send=DEV.QUEUE.1",
-                "oppdrag.mq.mottak=DEV.QUEUE.1",
-                "oppdrag.mq.channel=DEV.ADMIN.SVRCONN",
-                "oppdrag.mq.hostname=localhost",
-                "oppdrag.mq.user=admin",
-                "oppdrag.mq.password: passw0rd",
-                "oppdrag.mq.enabled: true",
-            ).applyTo(configurableApplicationContext.environment)
+            TestPropertyValues
+                .of(
+                    "oppdrag.mq.port=" + ibmMQContainer.getMappedPort(1414),
+                    "oppdrag.mq.queuemanager=QM1",
+                    "oppdrag.mq.send=DEV.QUEUE.1",
+                    "oppdrag.mq.mottak=DEV.QUEUE.1",
+                    "oppdrag.mq.channel=DEV.ADMIN.SVRCONN",
+                    "oppdrag.mq.hostname=localhost",
+                    "oppdrag.mq.user=admin",
+                    "oppdrag.mq.password: passw0rd",
+                    "oppdrag.mq.enabled: true",
+                ).applyTo(configurableApplicationContext.environment)
         }
     }
 }

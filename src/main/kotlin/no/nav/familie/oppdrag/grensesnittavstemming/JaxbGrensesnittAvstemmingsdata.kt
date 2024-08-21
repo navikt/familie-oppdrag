@@ -11,9 +11,11 @@ object JaxbGrensesnittAvstemmingsdata {
 
     fun tilXml(avstemmingsmelding: Avstemmingsdata): String {
         val stringWriter = StringWriter()
-        jaxbContext.createMarshaller().apply {
-            setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-        }.marshal(ObjectFactory().createAvstemmingsdata(avstemmingsmelding), stringWriter)
+        jaxbContext
+            .createMarshaller()
+            .apply {
+                setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+            }.marshal(ObjectFactory().createAvstemmingsdata(avstemmingsmelding), stringWriter)
         return stringWriter.toString()
     }
 }

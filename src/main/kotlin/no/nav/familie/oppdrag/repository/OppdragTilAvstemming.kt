@@ -25,8 +25,8 @@ object OppdragTilAvstemmingRowMapper : RowMapper<OppdragTilAvstemming> {
     override fun mapRow(
         resultSet: ResultSet,
         rowNumbers: Int,
-    ): OppdragTilAvstemming {
-        return OppdragTilAvstemming(
+    ): OppdragTilAvstemming =
+        OppdragTilAvstemming(
             fagsystem = resultSet.getString("fagsystem"),
             personIdent = resultSet.getString("person_ident"),
             fagsakId = resultSet.getString("fagsak_id"),
@@ -37,5 +37,4 @@ object OppdragTilAvstemmingRowMapper : RowMapper<OppdragTilAvstemming> {
             opprettetTidspunkt = resultSet.getTimestamp("opprettet_tidspunkt").toLocalDateTime(),
             kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
         )
-    }
 }

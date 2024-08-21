@@ -33,8 +33,8 @@ data class OppdragLager(
             utbetalingsoppdrag: Utbetalingsoppdrag,
             oppdrag: Oppdrag,
             versjon: Int = 0,
-        ): OppdragLager {
-            return OppdragLager(
+        ): OppdragLager =
+            OppdragLager(
                 personIdent = utbetalingsoppdrag.aktoer,
                 fagsystem = utbetalingsoppdrag.fagSystem,
                 fagsakId = utbetalingsoppdrag.saksnummer,
@@ -45,7 +45,6 @@ data class OppdragLager(
                 kvitteringsmelding = null,
                 versjon = versjon,
             )
-        }
     }
 }
 
