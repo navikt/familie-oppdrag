@@ -66,6 +66,13 @@ spec:
         - host: mpls02.adeo.no
           ports:
             - port: 1414
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "grafana-lgtm"
+        - id: "elastic-apm"
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
