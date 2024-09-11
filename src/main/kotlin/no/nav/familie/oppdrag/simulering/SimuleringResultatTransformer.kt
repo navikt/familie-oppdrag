@@ -65,6 +65,7 @@ class SimuleringResultatTransformer {
             forfallsdato = parseDato(stoppnivaa.forfall),
             posteringType = PosteringType.fraKode(detaljer.typeKlasse),
             utenInntrekk = utenInntrekk,
+            klassekode = detaljer.klassekode?.trim()
         )
 
     private fun hentOrgNrEllerFnr(orgNrEllerFnr: String): String =
