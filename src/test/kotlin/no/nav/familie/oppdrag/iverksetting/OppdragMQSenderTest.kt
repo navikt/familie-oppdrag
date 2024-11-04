@@ -89,7 +89,7 @@ class OppdragMQSenderTest {
                 datoVedtakFom = LocalDate.now().toXMLDate()
                 datoVedtakTom = LocalDate.now().plusDays(1).toXMLDate()
                 sats = SATS_BARNETRYGD.toBigDecimal()
-                fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG
+                fradragTillegg = OppdragSkjemaConstants.FT_TILLEGG
                 typeSats = SatsTypeKode.MÅNEDLIG.kode
                 brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
                 saksbehId = "Z999999"

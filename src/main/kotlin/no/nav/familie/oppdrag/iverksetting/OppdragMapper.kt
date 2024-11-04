@@ -7,8 +7,10 @@ import no.trygdeetaten.skjema.oppdrag.ObjectFactory
 import no.trygdeetaten.skjema.oppdrag.Oppdrag
 import no.trygdeetaten.skjema.oppdrag.Oppdrag110
 import no.trygdeetaten.skjema.oppdrag.OppdragsLinje150
+import no.trygdeetaten.skjema.oppdrag.TfradragTillegg
 import no.trygdeetaten.skjema.oppdrag.TkodeStatusLinje
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 import java.time.format.DateTimeFormatter
 
 @Component
@@ -44,7 +46,12 @@ class OppdragMapper {
                 avstemming115 = avstemming
                 oppdragsEnhet120.add(oppdragsEnhet)
                 utbetalingsoppdrag.utbetalingsperiode.map { periode ->
-                    oppdragsLinje150.add(tilOppdragsLinje150(utbetalingsperiode = periode, utbetalingsoppdrag = utbetalingsoppdrag))
+                    oppdragsLinje150.add(
+                        tilOppdragsLinje150(
+                            utbetalingsperiode = periode,
+                            utbetalingsoppdrag = utbetalingsoppdrag,
+                        ),
+                    )
                 }
             }
 
@@ -79,7 +86,7 @@ class OppdragMapper {
             datoVedtakFom = utbetalingsperiode.vedtakdatoFom.toXMLDate()
             datoVedtakTom = utbetalingsperiode.vedtakdatoTom.toXMLDate()
             sats = utbetalingsperiode.sats
-            fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG
+            fradragTillegg = utledFortegn(utbetalingsperiode.sats)
             typeSats = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
             brukKjoreplan =
                 if (utbetalingsoppdrag.gOmregning) {
@@ -106,5 +113,11 @@ class OppdragMapper {
     fun tilOppdrag(oppdrag110: Oppdrag110): Oppdrag =
         objectFactory.createOppdrag().apply {
             this.oppdrag110 = oppdrag110
+        }
+
+    private fun utledFortegn(satsbeløp: BigDecimal): TfradragTillegg =
+        when (satsbeløp >= BigDecimal.ZERO) {
+            true -> OppdragSkjemaConstants.FT_TILLEGG
+            false -> OppdragSkjemaConstants.FT_FRADRAG
         }
 }

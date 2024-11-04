@@ -118,7 +118,7 @@ class KonsistensavstemmingMapper(
             sats = utbetalingsperiode.sats
             satstypeKode = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
             brukKjoreplan = OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT
-            fradragTillegg = OppdragSkjemaConstants.FRADRAG_TILLEGG.value()
+            fradragTillegg = OppdragSkjemaConstants.FT_TILLEGG.value()
             saksbehandlerId = utbetalingsoppdrag.saksbehandlerId
             utbetalesTilId = utbetalingsperiode.utbetalesTil
             henvisning = utbetalingsperiode.behandlingId.toString()

@@ -201,7 +201,7 @@ class KonsistensavstemmingMapperTest {
         assertEquals(utbetalingsperiode.sats, actual.sats)
         assertEquals(SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode, actual.satstypeKode)
         assertEquals(OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT, actual.brukKjoreplan)
-        assertEquals(OppdragSkjemaConstants.FRADRAG_TILLEGG.value(), actual.fradragTillegg)
+        assertEquals(OppdragSkjemaConstants.FT_TILLEGG.value(), actual.fradragTillegg)
         assertEquals(saksbehandler, actual.saksbehandlerId)
         assertEquals(utbetalingsperiode.utbetalesTil, actual.utbetalesTilId)
         assertEquals(utbetalingsperiode.behandlingId.toString(), actual.henvisning)

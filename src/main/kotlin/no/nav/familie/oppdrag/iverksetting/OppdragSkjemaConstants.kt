@@ -17,7 +17,8 @@ class OppdragSkjemaConstants {
         const val ENHET = "8020"
         val ENHET_DATO_FOM: LocalDate = LocalDate.of(1900, 1, 1)
 
-        val FRADRAG_TILLEGG = TfradragTillegg.T
+        val FT_TILLEGG = TfradragTillegg.T
+        val FT_FRADRAG = TfradragTillegg.F
         const val BRUK_KJØREPLAN_DEFAULT = "N"
         const val BRUK_KJØREPLAN_G_OMBEREGNING = "J"
     }

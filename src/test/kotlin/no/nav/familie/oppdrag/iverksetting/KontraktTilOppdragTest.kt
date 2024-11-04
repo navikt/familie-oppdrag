@@ -147,7 +147,7 @@ class KontraktTilOppdragTest {
         Assertions.assertEquals(utbetalingsperiode.vedtakdatoFom.toXMLDate(), oppdragsLinje150.datoVedtakFom)
         Assertions.assertEquals(utbetalingsperiode.vedtakdatoTom.toXMLDate(), oppdragsLinje150.datoVedtakTom)
         Assertions.assertEquals(utbetalingsperiode.sats, oppdragsLinje150.sats)
-        Assertions.assertEquals(OppdragSkjemaConstants.FRADRAG_TILLEGG, oppdragsLinje150.fradragTillegg)
+        Assertions.assertEquals(OppdragSkjemaConstants.FT_TILLEGG, oppdragsLinje150.fradragTillegg)
         Assertions.assertEquals(utbetalingsperiode.satsType.name, oppdragsLinje150.typeSats)
         Assertions.assertEquals(OppdragSkjemaConstants.BRUK_KJØREPLAN_DEFAULT, oppdragsLinje150.brukKjoreplan)
         Assertions.assertEquals(utbetalingsoppdrag.saksbehandlerId, oppdragsLinje150.saksbehId)
