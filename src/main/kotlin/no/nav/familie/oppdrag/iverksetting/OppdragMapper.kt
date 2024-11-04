@@ -85,7 +85,7 @@ class OppdragMapper {
             kodeKlassifik = utbetalingsperiode.klassifisering
             datoVedtakFom = utbetalingsperiode.vedtakdatoFom.toXMLDate()
             datoVedtakTom = utbetalingsperiode.vedtakdatoTom.toXMLDate()
-            sats = utbetalingsperiode.sats
+            sats = utbetalingsperiode.sats.abs()
             fradragTillegg = utledFortegn(utbetalingsperiode.sats)
             typeSats = SatsTypeKode.fromKode(utbetalingsperiode.satsType.name).kode
             brukKjoreplan =
