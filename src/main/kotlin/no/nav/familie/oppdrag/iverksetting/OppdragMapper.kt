@@ -103,7 +103,7 @@ class OppdragMapper {
                 grad170.add(
                     objectFactory.createGrad170().apply {
                         typeGrad = GradTypeKode.UTBETALINGSGRAD.kode
-                        grad = utbetalingsgrad.toBigInteger()
+                        grad = utbetalingsgrad.toBigInteger().abs()
                     },
                 )
             }
