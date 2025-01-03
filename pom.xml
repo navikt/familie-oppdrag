@@ -36,7 +36,7 @@
         <mockk.version>1.13.14</mockk.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <testcontainers.version>1.20.4</testcontainers.version>
-        <tjenestespesifikasjoner.version>1.0_20241111164947_b183dab</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.0_20250103091213_2eaa779</tjenestespesifikasjoner.version>
         <springdoc.version>2.7.0</springdoc.version>
 
     </properties>
