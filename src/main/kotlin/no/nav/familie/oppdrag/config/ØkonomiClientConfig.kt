@@ -10,7 +10,6 @@ import org.apache.cxf.ext.logging.LoggingOutInterceptor
 import org.apache.cxf.frontend.ClientProxy
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 import org.apache.cxf.transport.http.HTTPConduit
-import org.apache.cxf.ws.addressing.WSAddressingFeature
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -35,7 +34,6 @@ class ØkonomiClientConfig(
                 endpointName = port
                 serviceClass = TilbakekrevingPortType::class.java
                 address = tilbakekrevingUrl
-                features.add(WSAddressingFeature())
                 features.add(loggingFeature())
                 outInterceptors.add(LoggingOutInterceptor())
                 inInterceptors.add(LoggingInInterceptor())
