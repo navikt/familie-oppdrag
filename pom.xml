@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.2</version>
     </parent>
 
     <properties>
@@ -19,11 +19,11 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>21</jvmTarget>
-        <kotlin.version>2.1.0</kotlin.version>
+        <kotlin.version>2.1.10</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>3.20241216102134_145872f</felles.version>
-	<kontrakter.version>3.0_20241220141021_9e86ad8</kontrakter.version>
-        <token-validation-spring.version>5.0.13</token-validation-spring.version>
+        <felles.version>3.20250122103549_5bcb4dc</felles.version>
+	<kontrakter.version>3.0_20250113155636_bb71360</kontrakter.version>
+        <token-validation-spring.version>5.0.17</token-validation-spring.version>
 
         <!--
         denne må oppdateres manuellt då eks `mvn versions:update-properties` henter versjon 2023.
@@ -33,11 +33,11 @@
         <jaxb.version>4.0.5</jaxb.version>
         <cxf.version>4.0.5</cxf.version>
 
-        <mockk.version>1.13.14</mockk.version>
+        <mockk.version>1.13.16</mockk.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20241111164947_b183dab</tjenestespesifikasjoner.version>
-        <springdoc.version>2.7.0</springdoc.version>
+        <springdoc.version>2.8.4</springdoc.version>
 
     </properties>
 
