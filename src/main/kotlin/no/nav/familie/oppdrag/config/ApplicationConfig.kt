@@ -1,5 +1,6 @@
 package no.nav.familie.oppdrag.config
 
+import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -28,7 +29,7 @@ class ApplicationConfig {
     @Bean
     fun logFilter(): FilterRegistrationBean<LogFilter> {
         val filterRegistration = FilterRegistrationBean<LogFilter>()
-        filterRegistration.filter = LogFilter()
+        filterRegistration.filter = LogFilter(NavSystemtype.NAV_INTEGRASJON)
         filterRegistration.order = 1
         return filterRegistration
     }
