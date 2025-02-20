@@ -31,5 +31,7 @@ class ServiceConfig(
             .timeout(20000, 20000)
             .configureStsForSystemUser(stsConfig())
             .withOutInterceptor(LoggingOutInterceptor())
+            .property("org.apache.cxf.ws.addressing.context", true)
+            .property("ws-addressing", true)
             .build()
 }
