@@ -54,8 +54,10 @@ spec:
         - application: familie-ks-sak
           cluster: dev-gcp
         - application: familie-tilbake
+          namespace: tilbake
           cluster: dev-gcp
         - application: familie-tilbake-lokal
+          namespace: tilbake
           cluster: dev-gcp
         - application: familie-ef-sak
           cluster: dev-gcp

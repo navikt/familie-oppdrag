@@ -56,6 +56,7 @@ spec:
         - application: familie-ba-sak
           cluster: prod-gcp
         - application: familie-tilbake
+          namespace: tilbake
           cluster: prod-gcp
         - application: familie-ef-sak
           cluster: prod-gcp
