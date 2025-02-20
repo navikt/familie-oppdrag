@@ -4,6 +4,7 @@ import no.nav.common.cxf.CXFClient
 import no.nav.common.cxf.StsConfig
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerFpService
 import org.apache.cxf.interceptor.LoggingOutInterceptor
+import org.apache.cxf.ws.addressing.MAPAggregator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,7 +32,6 @@ class ServiceConfig(
             .timeout(20000, 20000)
             .configureStsForSystemUser(stsConfig())
             .withOutInterceptor(LoggingOutInterceptor())
-            .withProperty("org.apache.cxf.ws.addressing.context", true)
-            .withProperty("ws-addressing", true)
+            .withOutInterceptor(MAPAggregator())
             .build()
 }
