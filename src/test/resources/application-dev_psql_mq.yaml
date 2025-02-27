@@ -7,8 +7,6 @@ oppdrag.mq:
   channel: DEV.ADMIN.SVRCONN
   hostname: localhost
   port: ${OPPDRAG_MQ_PORT_OVERRIDE}
-  user: admin
-  password: passw0rd
   enabled: true
 
 no.nav.security.jwt:
@@ -21,8 +19,11 @@ spring.datasource.username: ${SPRING_DATASOURCE_USERNAME_OVERRIDE}
 spring.datasource.password: ${SPRING_DATASOURCE_PASSWORD_OVERRIDE}
 spring.datasource.driver-class-name: ${SPRING_DATASOURCE_DRIVER_OVERRIDE}
 
+vault:
+  systembruker:
+    password: "src/test/resources/vault/serviceuser_password"
+    username: "src/test/resources/vault/serviceuser_username"
+
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-SERVICEUSER_USERNAME: not-a-real-srvuser
-SERVICEUSER_PASSWORD: not-a-real-pw
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt
 AZURE_APP_WELL_KNOWN_URL: "https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration"
