@@ -20,6 +20,8 @@ updates:
     interne-avhengigheter:
       patterns:
         - "no.nav.familie*"
+      exclude-patterns:
+        - "no.nav.familie.tjenestespesifikasjoner*"
     spring-med-avhengigheter:
       patterns:
         - "org.springframework*"
