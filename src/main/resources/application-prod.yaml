@@ -7,8 +7,6 @@ oppdrag.mq:
   channel: P_FAMILIE_OPPDRAG
   hostname: mpls02.adeo.no
   port: 1414
-  user: ${SERVICEUSER_USERNAME}
-  password: ${SERVICEUSER_PASSWORD}
   enabled: true
 
 no.nav.security.jwt:

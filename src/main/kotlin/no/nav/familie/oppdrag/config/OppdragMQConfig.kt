@@ -11,6 +11,7 @@ import com.ibm.msg.client.jakarta.wmq.WMQConstants
 import com.ibm.msg.client.jakarta.wmq.common.CommonConstants.WMQ_CM_CLIENT
 import jakarta.jms.ConnectionFactory
 import jakarta.jms.JMSException
+import no.nav.common.cxf.StsConfig
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -36,15 +37,13 @@ class OppdragMQConfig(
     @Value("\${oppdrag.mq.avstemming}") val avstemmingQueue: String,
     @Value("\${oppdrag.mq.tss}") val tssQueue: String,
     @Value("\${oppdrag.mq.port}") val port: Int,
-    @Value("\${oppdrag.mq.user}") val user: String,
-    @Value("\${oppdrag.mq.password}") val password: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     @Bean
     @Throws(JMSException::class)
-    fun mqQueueConnectionFactory(): JmsPoolConnectionFactory {
+    fun mqQueueConnectionFactory(stsConfig: StsConfig): JmsPoolConnectionFactory {
         val targetFactory = MQQueueConnectionFactory()
         targetFactory.hostName = hostname
         targetFactory.queueManager = queuemanager
@@ -57,8 +56,8 @@ class OppdragMQConfig(
         targetFactory.setIntProperty(JMS_IBM_CHARACTER_SET, UTF_8_WITH_PUA)
 
         val cf = UserCredentialsConnectionFactoryAdapter()
-        cf.setUsername(user)
-        cf.setPassword(password)
+        cf.setUsername(stsConfig.username)
+        cf.setPassword(stsConfig.password)
         cf.setTargetConnectionFactory(targetFactory)
 
         val pooledFactory = JmsPoolConnectionFactory()
@@ -77,7 +76,7 @@ class OppdragMQConfig(
         }
 
     @Bean
-    fun tssConnectionFactory(): ConnectionFactory {
+    fun tssConnectionFactory(stsConfig: StsConfig): ConnectionFactory {
         val ff = JmsFactoryFactory.getInstance(WMQConstants.JAKARTA_WMQ_PROVIDER)
         val cf = ff.createConnectionFactory()
         // Set the properties
@@ -88,8 +87,8 @@ class OppdragMQConfig(
         cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, queuemanager)
         cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "familie-oppdrag")
         cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true)
-        cf.setStringProperty(WMQConstants.USERID, user)
-        cf.setStringProperty(WMQConstants.PASSWORD, password)
+        cf.setStringProperty(WMQConstants.USERID, stsConfig.username)
+        cf.setStringProperty(WMQConstants.PASSWORD, stsConfig.password)
         return cf
     }
 

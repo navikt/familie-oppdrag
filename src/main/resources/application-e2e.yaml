@@ -25,10 +25,13 @@ spring:
       database:
         role: familie
 
+vault:
+  systembruker:
+    password: "src/test/resources/vault/serviceuser_password"
+    username: "src/test/resources/vault/serviceuser_username"
+
 logging:
   config: "classpath:logback-e2e.xml"
 
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-SERVICEUSER_USERNAME: not-a-real-srvuser
-SERVICEUSER_PASSWORD: not-a-real-pw
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt
