@@ -7,8 +7,6 @@ oppdrag.mq:
   channel: Q1_FAMILIE_OPPDRAG
   hostname: b27apvl220.preprod.local
   port: 1413
-  user: ${SERVICEUSER_USERNAME}
-  password: ${SERVICEUSER_PASSWORD}
   enabled: true
 
 

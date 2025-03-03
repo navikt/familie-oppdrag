@@ -53,6 +53,11 @@ springdoc:
   swagger-ui:
     disable-swagger-default-url: true
 
+vault:
+  systembruker:
+    password: "/secret/serviceuser/password"
+    username: "/secret/serviceuser/username"
+
 BA_SAK_CLIENT_ID: ""
 EF_SAK_CLIENT_ID: ""
 EF_IVERKSETT_CLIENT_ID: ""

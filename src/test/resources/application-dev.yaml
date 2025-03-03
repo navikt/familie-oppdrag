@@ -7,8 +7,6 @@ oppdrag.mq:
   channel: DEV.ADMIN.SVRCONN
   hostname: localhost
   port: 1414
-  user: admin
-  password: passw0rd
   enabled: true
 
 grensesnitt:
@@ -23,8 +21,11 @@ spring.datasource.url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
 spring.datasource.username: postgres
 spring.datasource.password: test
 
+vault:
+  systembruker:
+    password: "src/test/resources/vault/serviceuser_password"
+    username: "src/test/resources/vault/serviceuser_username"
+
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-SERVICEUSER_USERNAME: not-a-real-srvuser
-SERVICEUSER_PASSWORD: not-a-real-pw
 AZURE_APP_WELL_KNOWN_URL: "https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration"
