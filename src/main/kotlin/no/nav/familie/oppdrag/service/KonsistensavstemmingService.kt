@@ -3,6 +3,7 @@ package no.nav.familie.oppdrag.service
 import no.nav.familie.kontrakter.felles.oppdrag.KonsistensavstemmingRequestV2
 import no.nav.familie.kontrakter.felles.oppdrag.KonsistensavstemmingUtbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
+import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.konsistensavstemming.KonsistensavstemmingMapper
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
@@ -173,17 +174,21 @@ class KonsistensavstemmingService(
 
             var aktivtFødselsnummer: String? = null
             val perioderTilKonsistensavstemming =
-                utbetalingsoppdragListe.flatMap {
-                    aktivtFødselsnummer = hentFødselsnummerForBehandling(fødselsnummerPåBehandling, it.behandlingId)
-                    val utbetalesTil = utbetalesTilPåBehandling[it.behandlingId] ?: aktivtFødselsnummer
+                utbetalingsoppdragListe
+                    .flatMap {
+                        aktivtFødselsnummer = hentFødselsnummerForBehandling(fødselsnummerPåBehandling, it.behandlingId)
+                        val utbetalesTil = utbetalesTilPåBehandling[it.behandlingId] ?: aktivtFødselsnummer
 
-                    it.utbetalingsoppdrag.utbetalingsperiode
-                        .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
-                        // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
-                        .map { utbetalingsperiode ->
-                            utbetalingsperiode.copy(utbetalesTil = utbetalesTil ?: utbetalingsperiode.utbetalesTil)
-                        }
-                }
+                        it.utbetalingsoppdrag.utbetalingsperiode
+                            .filter { utbetalingsperiode -> aktuellePeriodeIderForFagsak.contains(utbetalingsperiode.periodeId) }
+                            // Setter aktivt fødselsnummer på behandling som mottok fra fagsystem
+                            .map { utbetalingsperiode ->
+                                utbetalingsperiode.copy(utbetalesTil = utbetalesTil ?: utbetalingsperiode.utbetalesTil)
+                            }
+                    }
+                    // Dersom det finnes opphør i fagsaken hvor vi har opphørt ved å avkorte en eksisterende periode vil perioden forekomme minimum 2 ganger i listen.
+                    // Derfor må vi filtrere bort perioder med samme periodeId og kun ta med perioden som stammer fra det seneste vedtaket.
+                    .filtrerPerioderMedLikPeriodeIdEtterSenesteVedtakDato()
 
             senesteUtbetalingsoppdrag.let {
                 it.copy(
@@ -194,6 +199,16 @@ class KonsistensavstemmingService(
             }
         }
     }
+
+    private fun List<Utbetalingsperiode>.filtrerPerioderMedLikPeriodeIdEtterSenesteVedtakDato(): List<Utbetalingsperiode> =
+        this
+            .groupBy { utbetalingsperiode -> utbetalingsperiode.periodeId }
+            .mapValues { (_, utbetalingsperioder) ->
+                utbetalingsperioder.maxBy { utbetalingsperioder ->
+                    utbetalingsperioder.datoForVedtak
+                }
+            }.values
+            .toList()
 
     private fun verifyUnikeBehandlinger(
         periodeIderPåBehandling: Map<String, Set<Long>>,
