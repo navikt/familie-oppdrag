@@ -204,8 +204,8 @@ class KonsistensavstemmingService(
         this
             .groupBy { utbetalingsperiode -> utbetalingsperiode.periodeId }
             .mapValues { (_, utbetalingsperioder) ->
-                utbetalingsperioder.maxBy { utbetalingsperioder ->
-                    utbetalingsperioder.datoForVedtak
+                utbetalingsperioder.maxBy {
+                    it.datoForVedtak
                 }
             }.values
             .toList()
