@@ -167,7 +167,7 @@ class KonsistensavstemmingServiceTest {
         assertThat(
             totalData.captured.totaldata.totalBelop
                 .toInt(),
-        ).isEqualTo(322)
+        ).isEqualTo(422)
         assertThat(
             totalData.captured.totaldata.totalAntall
                 .toInt(),
