@@ -19,7 +19,7 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>21</jvmTarget>
-        <kotlin.version>2.1.10</kotlin.version>
+        <kotlin.version>2.1.20</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>3.20250312114810_5371990</felles.version>
 	    <kontrakter.version>3.0_20250312084645_ae52997</kontrakter.version>
@@ -36,7 +36,7 @@
         <mockk.version>1.13.17</mockk.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <testcontainers.version>1.20.6</testcontainers.version>
-        <tjenestespesifikasjoner.version>1.0_20250305183600_209cc99</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.0_20250325204124_1df392d</tjenestespesifikasjoner.version>
         <springdoc.version>2.8.5</springdoc.version>
 
     </properties>
