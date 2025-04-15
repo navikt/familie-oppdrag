@@ -75,13 +75,13 @@ jobs:
 
 
         run: mvn -B --no-transfer-progress compile --settings .m2/maven-settings.xml
-      # ℹ️ Command-line programs to run using the OS shell.
-
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
 
-
       #   If the Autobuild fails above, remove it and uncomment the following three lines.
+
+
       #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
+
 
 
       # - run: |
@@ -89,6 +89,9 @@ jobs:
       #     ./location_of_script_within_repo/buildscript.sh
       - name: Perform CodeQL Analysis
 
+        # ℹ️ Command-line programs to run using the OS shell.
+
         uses: github/codeql-action/analyze@1b549b9259bda1cb5ddde3b41741a82a2d15a841 # ratchet:github/codeql-action/analyze@v3
+
         with:
           category: "/language:${{matrix.language}}"
