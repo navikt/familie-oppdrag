@@ -42,3 +42,7 @@ updates:
     day: "sunday"
     time: "04:00"
   open-pull-requests-limit: 10
+  groups:
+    workfloes:
+      patterns:
+        - "*"
