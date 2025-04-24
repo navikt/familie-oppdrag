@@ -7,6 +7,18 @@ Bygging gjøres med `mvn clean install`.
 ## Swagger
 http://localhost:8087/swagger-ui.html
 
+## Oppsett for å kjøre Maven lokalt for nyere Mac'er med ARM(M1/M2) prosessorer
+Det er ingen docker for ibmmq som er bygget for arm64. Man må dermed skru på Rosetta 2 emulering i ditt dockermiljø.
+#### Rosetta for Colima
+```
+colima start --vm-type=vz --vz-rosetta
+```
+#### Rosetta for Docker Desktop
+![Docker desktop](./src/test/resources/doc/docker-desktop.png)
+
+#### Rosetta for Podman
+![Podman](./src/test/resources/doc/podman.png)
+
 ## Kjøring lokalt
 #### Sett environment variabel
 ```
