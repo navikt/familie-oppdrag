@@ -70,6 +70,10 @@ spec:
           ports:
             - port: 1414
   observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
     autoInstrumentation:
       enabled: true
       runtime: java
