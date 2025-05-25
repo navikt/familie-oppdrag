@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.5</version>
+        <version>3.5.0</version>
     </parent>
 
     <properties>
@@ -19,10 +19,10 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>21</jvmTarget>
-        <kotlin.version>2.1.20</kotlin.version>
+        <kotlin.version>2.1.21</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>3.20250505101905_835431d</felles.version>
-	    <kontrakter.version>3.0_20250508163827_676473b</kontrakter.version>
+	    <kontrakter.version>3.0_20250520105353_6584047</kontrakter.version>
         <token-validation-spring.version>5.0.25</token-validation-spring.version>
 
         <!--
@@ -31,7 +31,7 @@
         -->
         <common-java-modules.version>3.2023.10.23_12.41-bafec3836d28</common-java-modules.version>
         <jaxb.version>4.0.5</jaxb.version>
-        <cxf.version>4.1.1</cxf.version>
+        <cxf.version>4.1.2</cxf.version>
 
         <mockk.version>1.14.2</mockk.version>
         <spring-cloud.version>2024.0.1</spring-cloud.version>
@@ -520,7 +520,7 @@
                     <dependency>
                         <groupId>com.pinterest.ktlint</groupId>
                         <artifactId>ktlint-cli</artifactId>
-                        <version>1.5.0</version>
+                        <version>1.6.0</version>
                     </dependency>
                     <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>
