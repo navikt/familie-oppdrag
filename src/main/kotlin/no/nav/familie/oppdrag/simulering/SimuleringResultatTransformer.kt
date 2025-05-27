@@ -29,12 +29,8 @@ class SimuleringResultatTransformer {
                     posteringer.add(postering)
                 }
                 val utbetalesTilId = stoppnivaa.utbetalesTilId
-                val fagsystemId = stoppnivaa.fagsystemId
-
-                if (utbetalingsoppdrag.saksnummer == fagsystemId) {
-                    val posteringListe = mottakerMap.getOrPut(utbetalesTilId) { mutableListOf() }
-                    posteringListe.addAll(posteringer)
-                }
+                val posteringListe = mottakerMap.getOrPut(utbetalesTilId) { mutableListOf() }
+                posteringListe.addAll(posteringer)
             }
         }
 
