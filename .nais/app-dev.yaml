@@ -69,6 +69,9 @@ spec:
         - application: familie-ef-iverksett-lokal
           cluster: dev-gcp
     outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
       external:
         - host: b27apvl220.preprod.local
           ports:
