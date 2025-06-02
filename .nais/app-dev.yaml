@@ -68,6 +68,9 @@ spec:
           cluster: dev-gcp
         - application: familie-ef-iverksett-lokal
           cluster: dev-gcp
+        - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
     outbound:
       rules:
         - application: logging

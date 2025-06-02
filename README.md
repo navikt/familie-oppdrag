@@ -86,5 +86,11 @@ Detaljer ligger [her](https://github.com/navikt/familie/blob/master/doc/utviklin
 Databasen heter `familie-oppdrag` og i skrivende stund er IP-adressen til serveren `10.183.160.86
 
 
+#### Test token i q2
+I q2 er det mulig å hente ut azure test tokens fra azure-token-generator:
+client credential: https://azure-token-generator.intern.dev.nav.no/api/m2m?aud=dev-fss.teamfamilie.familie-oppdrag
+on-behalf-of: https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-fss.teamfamilie.familie-oppdrag
+
+
 ## Kontaktinfo
 For NAV-interne kan henvendelser om appen rettes til #team-familie på slack. Ellers kan man opprette et issue her på github.
