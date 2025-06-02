@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.rest
 
 import jakarta.validation.Valid
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
@@ -9,6 +10,7 @@ import no.nav.familie.oppdrag.common.RessursUtils.conflict
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.ok
+import no.nav.familie.oppdrag.common.RessursUtils.secureLogger
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
 import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
@@ -95,6 +97,14 @@ class OppdragController(
                     notFound("Fant ikke oppdrag med id $oppdragId")
                 },
                 onSuccess = {
+                    if (!listOf(OppdragStatus.KVITTERT_OK, OppdragStatus.LAGT_PÅ_KØ).contains(it.status)) {
+                        secureLogger.warn(
+                            "Oppdrag $oppdragId har status ${it.status} og kvitteringsmelding: ${objectMapper.writeValueAsString(
+                                it.kvitteringsmelding,
+                            )}",
+                        )
+                    }
+
                     ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "")
                 },
             )
