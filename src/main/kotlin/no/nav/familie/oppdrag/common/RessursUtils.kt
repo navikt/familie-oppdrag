@@ -8,7 +8,7 @@ import java.nio.channels.ClosedChannelException
 
 object RessursUtils {
     private val LOG = LoggerFactory.getLogger(this::class.java)
-    private val secureLogger = LoggerFactory.getLogger("secureLogger")
+    val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun <T> unauthorized(errorMessage: String): ResponseEntity<Ressurs<T>> =
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Ressurs.failure(errorMessage))
