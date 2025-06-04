@@ -57,8 +57,10 @@ CREATE DATABASE "familie-oppdrag";
 Les mer om postgres på nav [her](https://github.com/navikt/utvikling/blob/master/PostgreSQL.md). For å hente credentials manuelt, se [her](https://github.com/navikt/utvikling/blob/master/Vault.md). 
 
 ## Teste i preprod, f.eks Postman
+I q2 er det mulig å hente ut azure test tokens fra azure-token-generator:
+client credential: https://azure-token-generator.intern.dev.nav.no/api/m2m?aud=dev-fss.teamfamilie.familie-oppdrag
+on-behalf-of: https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-fss.teamfamilie.familie-oppdrag
 
-Detaljer for å få access-token ligger [her](https://github.com/navikt/familie/blob/master/doc/utvikling/preprod/kalle_autentisert_api.md).
 
 ### Test med Postman
 For å teste i postman kan du prøve med følgende verdier:
@@ -84,7 +86,6 @@ Du bør få et 404-svar som ser slik ut:
 Detaljer ligger [her](https://github.com/navikt/familie/blob/master/doc/utvikling/preprod/kikke_i_databasen)
 
 Databasen heter `familie-oppdrag` og i skrivende stund er IP-adressen til serveren `10.183.160.86
-
 
 ## Kontaktinfo
 For NAV-interne kan henvendelser om appen rettes til #team-familie på slack. Ellers kan man opprette et issue her på github.
