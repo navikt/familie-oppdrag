@@ -23,7 +23,7 @@
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>3.20250616113100_41d23f2</felles.version>
 	    <kontrakter.version>3.0_20250724145643_3e1e3e4</kontrakter.version>
-        <token-validation-spring.version>5.0.33</token-validation-spring.version>
+        <token-validation-spring.version>5.0.34</token-validation-spring.version>
 
         <!--
         denne må oppdateres manuellt då eks `mvn versions:update-properties` henter versjon 2023.
