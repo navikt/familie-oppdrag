@@ -16,6 +16,20 @@ class SimuleringSenderImpl(
 ) : SimuleringSender {
     @Override
     @Retryable(value = [SimulerBeregningFeilUnderBehandling::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
-    override fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse =
-        port.simulerBeregning(simulerBeregningRequest)
+    override fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse {
+        val response = port.simulerBeregning(simulerBeregningRequest)
+
+        // Filter out beregningStoppnivaa with different fagsystemId than the one in the request
+        val requestFagsystemId = simulerBeregningRequest?.request?.oppdrag?.fagsystemId
+
+        if (requestFagsystemId != null && response.response?.simulering != null) {
+            response.response.simulering.beregningsPeriode.forEach { beregningsPeriode ->
+                beregningsPeriode.beregningStoppnivaa.removeIf { stoppnivaa ->
+                    stoppnivaa.fagsystemId.trim() != requestFagsystemId
+                }
+            }
+        }
+
+        return response
+    }
 }
