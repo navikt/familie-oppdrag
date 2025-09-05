@@ -57,5 +57,4 @@
     <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
     <logger name="org.apache.wss4j.common.crypto.CryptoBase" level="ERROR"/>
     <logger name="net.shibboleth.utilities.java.support.primitive" level="ERROR"/> <!-- Kan fjernes når CXF oppgraderes til å bruke ny major-version (fra 9 -> 10) i net.shibboleth:shib-support:9.1.3 -->
-    <logger name="" level="ERROR"/>
 </configuration>
