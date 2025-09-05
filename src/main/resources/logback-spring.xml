@@ -32,16 +32,6 @@
     <!-- Spesiell håndtering av loggeren no.nav.log.LogFilter for å forhindre logging av isAlive-sjekker o.l. -->
     <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter"> <!-- Ignorer WS Addressing warnings. Avhenger antakeligvis av en Spring-annotasjon som oppdrag må sette hos seg -->
-            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
-                <expression>return (
-                    message.contains("WS-Addressing - failed to retrieve Message Addressing Properties from context") ||
-                    message.contains("Response message does not contain WS-Addressing properties.  Not correlating response."));
-                </expression>
-            </evaluator>
-            <OnMismatch>NEUTRAL</OnMismatch>
-            <OnMatch>DENY</OnMatch>
-        </filter>
     </appender>
 
     <root level="${ROOT_LOG_LEVEL:-INFO}">
@@ -57,4 +47,5 @@
     <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
     <logger name="org.apache.wss4j.common.crypto.CryptoBase" level="ERROR"/>
     <logger name="net.shibboleth.utilities.java.support.primitive" level="ERROR"/> <!-- Kan fjernes når CXF oppgraderes til å bruke ny major-version (fra 9 -> 10) i net.shibboleth:shib-support:9.1.3 -->
+    <logger name="org.apache.cxf.ws.addressing" level="ERROR" additivity="true"/> <!-- Ignorer WS Addressing warnings. Avhenger antakeligvis av en Spring-annotasjon som oppdrag må sette hos seg -->
 </configuration>
