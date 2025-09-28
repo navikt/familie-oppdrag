@@ -22,7 +22,7 @@
         <kotlin.version>2.2.20</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>3.20250915092837_153983f</felles.version>
-	    <kontrakter.version>3.0_20250922092627_acbfa8f</kontrakter.version>
+	    <kontrakter.version>3.0_20250926084423_43c9cbe</kontrakter.version>
         <token-validation-spring.version>5.0.37</token-validation-spring.version>
 
         <!--
@@ -30,7 +30,7 @@
         https://github.com/navikt/common-java-modules/releases
         -->
         <common-java-modules.version>3.2025.05.30_07.00-bef2e550fb22</common-java-modules.version>
-        <jaxb.version>4.0.5</jaxb.version>
+        <jaxb.version>4.0.6</jaxb.version>
         <cxf.version>4.1.3</cxf.version>
 
         <mockk.version>1.14.5</mockk.version>
