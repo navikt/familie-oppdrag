@@ -4,5 +4,7 @@ import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.S
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 
 interface SimuleringSender {
-    fun hentSimulerBeregningResponse(simulerBeregningRequest: SimulerBeregningRequest?): SimulerBeregningResponse
+    fun hentSimulerBeregningResponse(
+        simulerBeregningRequest: SimulerBeregningRequest?,
+    ): Pair<SimulerBeregningResponse, SimulerBeregningResponse?>
 }

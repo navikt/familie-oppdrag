@@ -1,8 +1,10 @@
 package no.nav.familie.oppdrag.simulering.mock
 
+import no.nav.familie.oppdrag.simulering.splitResponsePåFagsakId
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaaDetaljer
 import no.nav.system.os.entiteter.typer.simpletypes.KodeStatusLinje
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
+import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.Oppdrag
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpserviceservicetypes.Oppdragslinje
 import org.assertj.core.api.Assertions.assertThat
@@ -11,6 +13,47 @@ import java.math.BigDecimal
 
 internal class SimuleringGeneratorTest {
     private val simuleringGenerator = SimuleringGenerator()
+
+    @Test
+    fun `splitResponsPåFagsakId splitter respons på fagsakId`() {
+        // Arrange
+        val oppdragGjelderId = "12345678901"
+        val kodeEndring = "NY"
+        val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
+        request.request.oppdrag.oppdragslinje.add(
+            opprettOppdragslinje("NY", null, 2339, oppdragGjelderId, "2020-06-01", "2020-11-30", null),
+        )
+
+        val response = simuleringGenerator.opprettSimuleringsResultat(request)
+        response.response.simulering.beregningsPeriode.first().beregningStoppnivaa.first().fagsystemId = "987654321"
+
+        // Act
+        val (responsForFagsak, responsForAndreFagsaker) = splitResponsePåFagsakId(
+            response = response,
+            fagsakId = "987654321"
+        )
+
+        // Assert
+        val fagsystemIdRespons = getFagsystemIdsFromResponse(response)
+        val fagsystemIdResponsForFagsak = getFagsystemIdsFromResponse(responsForFagsak)
+        val fagsystemIdResponsForAndreFagsaker = getFagsystemIdsFromResponse(responsForAndreFagsaker)
+
+        assertThat(fagsystemIdResponsForAndreFagsaker.size + fagsystemIdResponsForFagsak.size).isEqualTo(
+            fagsystemIdRespons.size
+        )
+        assertThat(fagsystemIdResponsForFagsak.size).isEqualTo(1)
+        assertThat(fagsystemIdResponsForFagsak.single()).isEqualTo("987654321")
+
+    }
+
+    private fun getFagsystemIdsFromResponse(respons: SimulerBeregningResponse): List<String> =
+        respons.response.simulering.beregningsPeriode.flatMap { beregningsPeriode -> beregningsPeriode.beregningStoppnivaa.map { stoppnivaa -> stoppnivaa.fagsystemId } }
+
+
+    private fun lesFil(fileName: String): String {
+        val url = requireNotNull(this::class.java.getResource(fileName)) { "fil med filnavn=$fileName finnes ikke" }
+        return url.readText()
+    }
 
     @Test
     fun `Simulering av ny ytelse med positivt resultat over 6 måneder`() {
@@ -42,8 +85,8 @@ internal class SimuleringGeneratorTest {
         ).isEqualTo(6)
             .withFailMessage(
                 "Perioden fom 01.06.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
-                    response.response.simulering.beregningsPeriode[0]
-                        .beregningStoppnivaa.size,
+                        response.response.simulering.beregningsPeriode[0]
+                            .beregningStoppnivaa.size,
             )
         val detaljer: List<BeregningStoppnivaaDetaljer> =
             response.response.simulering.beregningsPeriode[0]
@@ -54,7 +97,7 @@ internal class SimuleringGeneratorTest {
             .isEqualTo(1)
             .withFailMessage(
                 "En positiv respons skal bare ha en beregningStoppnivaaDetaljer. Det at den hadde flere enn 1 indikerer at " +
-                    "det feilaktig er oppstått andre posteringer",
+                        "det feilaktig er oppstått andre posteringer",
             )
     }
 
@@ -64,7 +107,15 @@ internal class SimuleringGeneratorTest {
         val kodeEndring = "ENDR"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
         request.request.oppdrag.oppdragslinje.add(
-            opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-11-30", "2020-07-01"),
+            opprettOppdragslinje(
+                kodeEndring,
+                KodeStatusLinje.OPPH,
+                1330,
+                oppdragGjelderId,
+                "2020-07-01",
+                "2020-11-30",
+                "2020-07-01"
+            ),
         )
         request.request.oppdrag.oppdragslinje.add(
             opprettOppdragslinje("NY", null, 1200, oppdragGjelderId, "2020-07-01", "2020-11-30", null),
@@ -86,8 +137,8 @@ internal class SimuleringGeneratorTest {
         ).isEqualTo(5)
             .withFailMessage(
                 "Perioden fom 01.07.2020 - tom 30.11.2020 skal være på totat 5 måneder. Antall måneder i resultatet var: " +
-                    response.response.simulering.beregningsPeriode[0]
-                        .beregningStoppnivaa.size,
+                        response.response.simulering.beregningsPeriode[0]
+                            .beregningStoppnivaa.size,
             )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =
@@ -124,7 +175,15 @@ internal class SimuleringGeneratorTest {
         val kodeEndring = "ENDR"
         val request: SimulerBeregningRequest = opprettSimulerBeregningRequest(oppdragGjelderId, kodeEndring)
         request.request.oppdrag.oppdragslinje.add(
-            opprettOppdragslinje(kodeEndring, KodeStatusLinje.OPPH, 1330, oppdragGjelderId, "2020-07-01", "2020-10-31", "2020-07-01"),
+            opprettOppdragslinje(
+                kodeEndring,
+                KodeStatusLinje.OPPH,
+                1330,
+                oppdragGjelderId,
+                "2020-07-01",
+                "2020-10-31",
+                "2020-07-01"
+            ),
         )
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
@@ -143,8 +202,8 @@ internal class SimuleringGeneratorTest {
         ).isEqualTo(4)
             .withFailMessage(
                 "Perioden fom 01.07.2020 - tom 31.10.2020 skal være på totat 4 måneder. Antall måneder i resultatet var: " +
-                    response.response.simulering.beregningsPeriode[0]
-                        .beregningStoppnivaa.size,
+                        response.response.simulering.beregningsPeriode[0]
+                            .beregningStoppnivaa.size,
             )
 
         val detaljer: List<BeregningStoppnivaaDetaljer> =

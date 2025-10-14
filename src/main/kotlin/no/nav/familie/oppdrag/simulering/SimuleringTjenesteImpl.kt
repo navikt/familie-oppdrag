@@ -39,18 +39,22 @@ class SimuleringTjenesteImpl(
 ) : SimuleringTjeneste {
     val mapper = jacksonObjectMapper()
     val simuleringResultatTransformer = SimuleringResultatTransformer()
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+
 
     private fun hentSimulerBeregningResponse(
         simulerBeregningRequest: SimulerBeregningRequest,
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): SimulerBeregningResponse {
+    ): Pair<SimulerBeregningResponse, SimulerBeregningResponse?> {
         try {
-            val response = simuleringSender.hentSimulerBeregningResponse(simulerBeregningRequest)
+            val respons = simuleringSender.hentSimulerBeregningResponse(
+                simulerBeregningRequest
+            )
             secureLogger.info(
                 "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response),
+                        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(respons.first),
             )
-            return response
+            return respons
         } catch (ex: SimulerBeregningFeilUnderBehandling) {
             val feilmelding = genererFeilmelding(ex)
             if (feilmelding.contains("Personen finnes ikke i TPS")) {
@@ -63,26 +67,59 @@ class SimuleringTjenesteImpl(
         }
     }
 
-    override fun utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat {
+    override fun utførSimuleringOghentDetaljertSimuleringResultat(
+        utbetalingsoppdrag: Utbetalingsoppdrag,
+    ): DetaljertSimuleringResultat {
         val simulerBeregningRequest = simulerBeregningRequestMapper.tilSimulerBeregningRequest(utbetalingsoppdrag)
 
         secureLogger.info(
             "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest),
+                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simulerBeregningRequest),
         )
 
         val simuleringsLager = SimuleringLager.lagFraOppdrag(utbetalingsoppdrag, simulerBeregningRequest)
         simuleringLagerTjeneste.lagreINyTransaksjon(simuleringsLager)
 
-        val respons = hentSimulerBeregningResponse(simulerBeregningRequest, utbetalingsoppdrag)
+        val (responsForFagsak, responsForAndreFagsaker) = hentSimulerBeregningResponse(
+            simulerBeregningRequest,
+            utbetalingsoppdrag
+        )
 
-        simuleringsLager.responseXml = Jaxb.tilXml(respons)
+        simuleringsLager.responseXml = Jaxb.tilXml(responsForFagsak)
         simuleringLagerTjeneste.oppdater(simuleringsLager)
 
-        val beregning = respons.response?.simulering ?: return DetaljertSimuleringResultat(emptyList())
-        return simuleringResultatTransformer.mapSimulering(
-            beregning = beregning,
-            utbetalingsoppdrag = utbetalingsoppdrag,
+        val simuleringMottakereForFagsak =
+            responsForFagsak.response?.simulering?.let {
+                simuleringResultatTransformer.mapSimulering(
+                    beregning = it,
+                    utbetalingsoppdrag = utbetalingsoppdrag,
+                )
+            } ?: emptyList()
+
+        val simuleringMottakereForAndreFagsaker =
+            responsForAndreFagsaker?.response?.simulering?.let {
+                simuleringResultatTransformer.mapSimulering(
+                    beregning = it,
+                    utbetalingsoppdrag = utbetalingsoppdrag,
+                )
+            } ?: emptyList()
+
+        val simuleringMottakereForAlleFagsaker =
+            responsForAndreFagsaker?.response?.simulering?.let {
+                simuleringResultatTransformer.mapSimulering(
+                    beregning = it,
+                    utbetalingsoppdrag = utbetalingsoppdrag,
+                )
+            } ?: emptyList()
+
+        val simularingAlleFagsakerJson =
+            mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simuleringMottakereForAlleFagsaker)
+
+        logger.info("Simuleringsmottaker for alle fagsaker: $simularingAlleFagsakerJson")
+
+        return DetaljertSimuleringResultat(
+            simuleringMottaker = simuleringMottakereForFagsak,
+            simuleringMottakerAndreFagsaker = simuleringMottakereForAndreFagsaker,
         )
     }
 
@@ -127,13 +164,13 @@ class SimuleringTjenesteImpl(
         simulering.beregningsPeriode
             .map { beregningsperiode ->
                 beregningsperiode to
-                    beregningsperiode.beregningStoppnivaa
-                        .map { stoppNivå ->
-                            stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
-                                detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
-                                    detalj.belop > BigDecimal.ZERO
-                            }
-                        }.flatten()
+                        beregningsperiode.beregningStoppnivaa
+                            .map { stoppNivå ->
+                                stoppNivå.beregningStoppnivaaDetaljer.filter { detalj ->
+                                    detalj.typeKlasse == PosteringType.FEILUTBETALING.kode &&
+                                            detalj.belop > BigDecimal.ZERO
+                                }
+                            }.flatten()
             }.filter { it.second.isNotEmpty() }
             .toMap()
 
@@ -153,7 +190,7 @@ class SimuleringTjenesteImpl(
     ): List<BeregningsPeriode> =
         ytelPerioder.keys.filter { ytelPeriode ->
             ytelPeriode.periodeFom == feilutbetaltePeriode.periodeFom &&
-                ytelPeriode.periodeTom == feilutbetaltePeriode.periodeTom
+                    ytelPeriode.periodeTom == feilutbetaltePeriode.periodeTom
         }
 
     private fun summerNegativeYtelPosteringer(
@@ -179,11 +216,11 @@ class SimuleringTjenesteImpl(
     private fun genererFeilmelding(ex: SimulerBeregningFeilUnderBehandling): String =
         ex.faultInfo.let {
             "Feil ved hentSimulering (SimulerBeregningFeilUnderBehandling) " +
-                "source: ${it.errorSource}, " +
-                "type: ${it.errorType}, " +
-                "message: ${it.errorMessage}, " +
-                "rootCause: ${it.rootCause}, " +
-                "rootCause: ${it.dateTimeStamp}"
+                    "source: ${it.errorSource}, " +
+                    "type: ${it.errorType}, " +
+                    "message: ${it.errorMessage}, " +
+                    "rootCause: ${it.rootCause}, " +
+                    "rootCause: ${it.dateTimeStamp}"
         }
 
     companion object {

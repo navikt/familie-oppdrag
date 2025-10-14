@@ -19,7 +19,7 @@ class SimuleringResultatTransformer {
     fun mapSimulering(
         beregning: Beregning,
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): DetaljertSimuleringResultat {
+    ): List<SimuleringMottaker> {
         val mottakerMap = hashMapOf<String, MutableList<SimulertPostering>>()
         for (periode in beregning.beregningsPeriode) {
             for (stoppnivaa in periode.beregningStoppnivaa) {
@@ -35,15 +35,13 @@ class SimuleringResultatTransformer {
         }
 
         val requestMottakerId = hentOrgNrEllerFnr(utbetalingsoppdrag.aktoer)
-        val simuleringMottakerListe =
-            mottakerMap.map { (utbetalesTilId, simulertPostering) ->
+        return mottakerMap.map { (utbetalesTilId, simulertPostering) ->
                 SimuleringMottaker(
                     mottakerNummer = utbetalesTilId,
                     simulertPostering = simulertPostering,
                     mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId),
                 )
             }
-        return DetaljertSimuleringResultat(simuleringMottakerListe)
     }
 
     private fun mapPostering(
