@@ -1,6 +1,8 @@
 package no.nav.familie.oppdrag.simulering.mock
 
 import no.nav.familie.oppdrag.simulering.SimuleringSender
+import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaa
+import no.nav.system.os.entiteter.beregningskjema.BeregningsPeriode
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningResponse
 import org.springframework.context.annotation.Profile
@@ -11,8 +13,8 @@ import org.springframework.stereotype.Service
 class SimuleringSenderMock : SimuleringSender {
     override fun hentSimulerBeregningResponse(
         simulerBeregningRequest: SimulerBeregningRequest?,
-    ): Pair<SimulerBeregningResponse, SimulerBeregningResponse?> {
+    ): SimulerBeregningResponse {
         val simulerBeregningResponse = SimuleringGenerator().opprettSimuleringsResultat(simulerBeregningRequest!!)
-        return simulerBeregningResponse to null
+        return simulerBeregningResponse
     }
 }

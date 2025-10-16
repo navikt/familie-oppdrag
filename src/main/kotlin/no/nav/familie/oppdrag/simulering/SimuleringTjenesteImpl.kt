@@ -15,6 +15,7 @@ import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.repository.SimuleringLager
 import no.nav.familie.oppdrag.repository.SimuleringLagerTjeneste
 import no.nav.system.os.entiteter.beregningskjema.Beregning
+import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaa
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaaDetaljer
 import no.nav.system.os.entiteter.beregningskjema.BeregningsPeriode
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningFeilUnderBehandling
@@ -45,14 +46,14 @@ class SimuleringTjenesteImpl(
     private fun hentSimulerBeregningResponse(
         simulerBeregningRequest: SimulerBeregningRequest,
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): Pair<SimulerBeregningResponse, SimulerBeregningResponse?> {
+    ): SimulerBeregningResponse {
         try {
             val respons = simuleringSender.hentSimulerBeregningResponse(
                 simulerBeregningRequest
             )
             secureLogger.info(
                 "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
-                        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(respons.first),
+                        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(respons),
             )
             return respons
         } catch (ex: SimulerBeregningFeilUnderBehandling) {
@@ -80,32 +81,16 @@ class SimuleringTjenesteImpl(
         val simuleringsLager = SimuleringLager.lagFraOppdrag(utbetalingsoppdrag, simulerBeregningRequest)
         simuleringLagerTjeneste.lagreINyTransaksjon(simuleringsLager)
 
-        val (responsForFagsak, responsForAndreFagsaker) = hentSimulerBeregningResponse(
+        val respons = hentSimulerBeregningResponse(
             simulerBeregningRequest,
             utbetalingsoppdrag
         )
 
-        simuleringsLager.responseXml = Jaxb.tilXml(responsForFagsak)
+        simuleringsLager.responseXml = Jaxb.tilXml(respons)
         simuleringLagerTjeneste.oppdater(simuleringsLager)
 
-        val simuleringMottakereForFagsak =
-            responsForFagsak.response?.simulering?.let {
-                simuleringResultatTransformer.mapSimulering(
-                    beregning = it,
-                    utbetalingsoppdrag = utbetalingsoppdrag,
-                )
-            } ?: emptyList()
-
-        val simuleringMottakereForAndreFagsaker =
-            responsForAndreFagsaker?.response?.simulering?.let {
-                simuleringResultatTransformer.mapSimulering(
-                    beregning = it,
-                    utbetalingsoppdrag = utbetalingsoppdrag,
-                )
-            } ?: emptyList()
-
         val simuleringMottakereForAlleFagsaker =
-            responsForAndreFagsaker?.response?.simulering?.let {
+            respons.response?.simulering?.let {
                 simuleringResultatTransformer.mapSimulering(
                     beregning = it,
                     utbetalingsoppdrag = utbetalingsoppdrag,
@@ -116,6 +101,29 @@ class SimuleringTjenesteImpl(
             mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simuleringMottakereForAlleFagsaker)
 
         logger.info("Simuleringsmottaker for alle fagsaker: $simularingAlleFagsakerJson")
+
+
+        val (responseForFagsak, beregningStoppnivaaForAndreFagsaker) = splitResponsePåFagsakId(respons, utbetalingsoppdrag.saksnummer)
+
+        val simuleringMottakereForFagsak =
+            responseForFagsak.response?.simulering?.let {
+                simuleringResultatTransformer.mapSimulering(
+                    beregning = it,
+                    utbetalingsoppdrag = utbetalingsoppdrag,
+                )
+            } ?: emptyList()
+
+
+        byttUtBeregningStoppnivaa(respons, beregningStoppnivaaForAndreFagsaker, utbetalingsoppdrag.saksnummer)
+
+
+        val simuleringMottakereForAndreFagsaker =
+            respons.response?.simulering?.let {
+                simuleringResultatTransformer.mapSimulering(
+                    beregning = it,
+                    utbetalingsoppdrag = utbetalingsoppdrag,
+                )
+            } ?: emptyList()
 
         return DetaljertSimuleringResultat(
             simuleringMottaker = simuleringMottakereForFagsak,
