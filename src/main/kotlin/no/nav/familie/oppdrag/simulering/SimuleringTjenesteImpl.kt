@@ -2,6 +2,7 @@ package no.nav.familie.oppdrag.simulering
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
@@ -88,23 +89,14 @@ class SimuleringTjenesteImpl(
         simuleringsLager.responseXml = Jaxb.tilXml(respons)
         simuleringLagerTjeneste.oppdater(simuleringsLager)
 
-        val simuleringMottakereForAlleFagsaker =
-            respons.response?.simulering?.let {
-                simuleringResultatTransformer.mapSimulering(
-                    beregning = it,
-                    utbetalingsoppdrag = utbetalingsoppdrag,
-                )
-            } ?: emptyList()
-
-        val simularingAlleFagsakerJson =
-            mapper.writerWithDefaultPrettyPrinter().writeValueAsString(simuleringMottakereForAlleFagsaker)
-
-        logger.info("Simuleringsmottaker for alle fagsaker: $simularingAlleFagsakerJson")
+        logger.info("Response for alle fagsaker: ${mapper.writerWithDefaultPrettyPrinter().writeValueAsString(respons)}")
 
         val (responseForFagsak, beregningStoppnivaaForAndreFagsaker) = splitResponsePåFagsakId(
             respons,
             utbetalingsoppdrag.saksnummer
         )
+
+        logger.info("Response for fagsak: ${mapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseForFagsak)}")
 
         val simuleringMottakereForFagsak =
             responseForFagsak.response?.simulering?.let {
@@ -115,6 +107,8 @@ class SimuleringTjenesteImpl(
             } ?: emptyList()
 
         byttUtBeregningStoppnivaa(respons, beregningStoppnivaaForAndreFagsaker, utbetalingsoppdrag.saksnummer)
+
+        logger.info("Response for andre fagsaker: ${mapper.writerWithDefaultPrettyPrinter().writeValueAsString(respons)}")
 
         val simuleringMottakereForAndreFagsaker =
             respons.response?.simulering?.let {
