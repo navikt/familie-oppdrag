@@ -1,5 +1,8 @@
 package no.nav.familie.oppdrag.simulering
 
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
@@ -38,7 +41,7 @@ class SimuleringTjenesteImpl(
     @Autowired val simulerBeregningRequestMapper: SimulerBeregningRequestMapper,
     @Autowired val simuleringLagerTjeneste: SimuleringLagerTjeneste,
 ) : SimuleringTjeneste {
-    val mapper = jacksonObjectMapper()
+    val mapper = jacksonObjectMapper().registerModule(JavaTimeModule())
     val simuleringResultatTransformer = SimuleringResultatTransformer()
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
