@@ -71,7 +71,7 @@ internal class SimuleringGeneratorTest {
                 oppdragGjelderId,
                 "2020-07-01",
                 "2020-11-30",
-                "2020-07-01"
+                "2020-07-01",
             ),
         )
         request.request.oppdrag.oppdragslinje.add(
@@ -139,7 +139,7 @@ internal class SimuleringGeneratorTest {
                 oppdragGjelderId,
                 "2020-07-01",
                 "2020-10-31",
-                "2020-07-01"
+                "2020-07-01",
             ),
         )
 

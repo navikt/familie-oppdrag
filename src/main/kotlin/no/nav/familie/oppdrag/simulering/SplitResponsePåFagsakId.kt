@@ -13,7 +13,7 @@ import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.S
  */
 fun splitResponsePåFagsakId(
     response: SimulerBeregningResponse,
-    fagsakId: String
+    fagsakId: String,
 ): Pair<SimulerBeregningResponse, Map<BeregningsPeriode, List<BeregningStoppnivaa>>> {
     val beregninsPerioderForAndreFagsaker = mutableMapOf<BeregningsPeriode, List<BeregningStoppnivaa>>()
     response.response.simulering.beregningsPeriode.forEach { beregningsPeriode ->
@@ -35,7 +35,7 @@ fun splitResponsePåFagsakId(
 fun byttUtBeregningStoppnivaa(
     respons: SimulerBeregningResponse,
     beregningStoppnivaa: Map<BeregningsPeriode, List<BeregningStoppnivaa>>,
-    fagsystemId: String
+    fagsystemId: String,
 ) {
     respons.response?.simulering?.beregningsPeriode?.forEach { beregningPeriode ->
         beregningPeriode.beregningStoppnivaa.addAll(beregningStoppnivaa[beregningPeriode] ?: emptyList())

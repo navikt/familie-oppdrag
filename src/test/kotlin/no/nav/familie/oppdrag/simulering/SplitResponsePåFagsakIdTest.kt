@@ -26,15 +26,20 @@ class SplitResponsePåFagsakIdTest {
 
         val response = simuleringGenerator.opprettSimuleringsResultat(request)
 
-        response.response.simulering.beregningsPeriode.first().beregningStoppnivaa.first().fagsystemId = fagsystemId
+        response.response.simulering.beregningsPeriode
+            .first()
+            .beregningStoppnivaa
+            .first()
+            .fagsystemId = fagsystemId
 
         // Act
         val fagsystemIdRespons = getFagsystemIdsFromResponse(response)
 
-        val (responsForFagsak, beregningsPerioderForAndreFagsaker) = splitResponsePåFagsakId(
-            response = response,
-            fagsakId = fagsystemId
-        )
+        val (responsForFagsak, beregningsPerioderForAndreFagsaker) =
+            splitResponsePåFagsakId(
+                response = response,
+                fagsakId = fagsystemId,
+            )
 
         val fagsystemIdResponsForFagsak = getFagsystemIdsFromResponse(responsForFagsak)
         byttUtBeregningStoppnivaa(response, beregningsPerioderForAndreFagsaker, fagsystemId)
@@ -43,16 +48,16 @@ class SplitResponsePåFagsakIdTest {
 
         // Assert
         assertThat(fagsystemIdResponsForAndreFagsaker.size + fagsystemIdResponsForFagsak.size).isEqualTo(
-            fagsystemIdRespons.size
+            fagsystemIdRespons.size,
         )
         assertThat(fagsystemIdResponsForFagsak.size).isEqualTo(1)
         assertThat(fagsystemIdResponsForFagsak.single()).isEqualTo(fagsystemId)
-
     }
 
     private fun getFagsystemIdsFromResponse(respons: SimulerBeregningResponse): List<String> =
-        respons.response.simulering.beregningsPeriode.flatMap { beregningsPeriode -> beregningsPeriode.beregningStoppnivaa.map { stoppnivaa -> stoppnivaa.fagsystemId } }
-
+        respons.response.simulering.beregningsPeriode.flatMap { beregningsPeriode ->
+            beregningsPeriode.beregningStoppnivaa.map { stoppnivaa -> stoppnivaa.fagsystemId }
+        }
 
     private fun opprettSimulerBeregningRequest(
         oppdragGjelderId: String,

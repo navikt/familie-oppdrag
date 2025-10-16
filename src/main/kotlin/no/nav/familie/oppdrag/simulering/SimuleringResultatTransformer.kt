@@ -36,12 +36,12 @@ class SimuleringResultatTransformer {
 
         val requestMottakerId = hentOrgNrEllerFnr(utbetalingsoppdrag.aktoer)
         return mottakerMap.map { (utbetalesTilId, simulertPostering) ->
-                SimuleringMottaker(
-                    mottakerNummer = utbetalesTilId,
-                    simulertPostering = simulertPostering,
-                    mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId),
-                )
-            }
+            SimuleringMottaker(
+                mottakerNummer = utbetalesTilId,
+                simulertPostering = simulertPostering,
+                mottakerType = utledMottakerType(utbetalesTilId, hentOrgNrEllerFnr(utbetalesTilId) == requestMottakerId),
+            )
+        }
     }
 
     private fun mapPostering(

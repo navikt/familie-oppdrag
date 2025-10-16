@@ -1,7 +1,5 @@
 package no.nav.familie.oppdrag.simulering
 
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
@@ -18,7 +16,6 @@ import no.nav.familie.oppdrag.iverksetting.Jaxb
 import no.nav.familie.oppdrag.repository.SimuleringLager
 import no.nav.familie.oppdrag.repository.SimuleringLagerTjeneste
 import no.nav.system.os.entiteter.beregningskjema.Beregning
-import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaa
 import no.nav.system.os.entiteter.beregningskjema.BeregningStoppnivaaDetaljer
 import no.nav.system.os.entiteter.beregningskjema.BeregningsPeriode
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningFeilUnderBehandling
@@ -45,15 +42,15 @@ class SimuleringTjenesteImpl(
     val simuleringResultatTransformer = SimuleringResultatTransformer()
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-
     private fun hentSimulerBeregningResponse(
         simulerBeregningRequest: SimulerBeregningRequest,
         utbetalingsoppdrag: Utbetalingsoppdrag,
     ): SimulerBeregningResponse {
         try {
-            val respons = simuleringSender.hentSimulerBeregningResponse(
-                simulerBeregningRequest
-            )
+            val respons =
+                simuleringSender.hentSimulerBeregningResponse(
+                    simulerBeregningRequest,
+                )
             secureLogger.info(
                 "Saksnummer: ${utbetalingsoppdrag.saksnummer} : " +
                         mapper.writerWithDefaultPrettyPrinter().writeValueAsString(respons),
@@ -71,9 +68,7 @@ class SimuleringTjenesteImpl(
         }
     }
 
-    override fun utførSimuleringOghentDetaljertSimuleringResultat(
-        utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): DetaljertSimuleringResultat {
+    override fun utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag: Utbetalingsoppdrag): DetaljertSimuleringResultat {
         val simulerBeregningRequest = simulerBeregningRequestMapper.tilSimulerBeregningRequest(utbetalingsoppdrag)
 
         secureLogger.info(
@@ -84,10 +79,11 @@ class SimuleringTjenesteImpl(
         val simuleringsLager = SimuleringLager.lagFraOppdrag(utbetalingsoppdrag, simulerBeregningRequest)
         simuleringLagerTjeneste.lagreINyTransaksjon(simuleringsLager)
 
-        val respons = hentSimulerBeregningResponse(
-            simulerBeregningRequest,
-            utbetalingsoppdrag
-        )
+        val respons =
+            hentSimulerBeregningResponse(
+                simulerBeregningRequest,
+                utbetalingsoppdrag,
+            )
 
         simuleringsLager.responseXml = Jaxb.tilXml(respons)
         simuleringLagerTjeneste.oppdater(simuleringsLager)
@@ -105,8 +101,10 @@ class SimuleringTjenesteImpl(
 
         logger.info("Simuleringsmottaker for alle fagsaker: $simularingAlleFagsakerJson")
 
-
-        val (responseForFagsak, beregningStoppnivaaForAndreFagsaker) = splitResponsePåFagsakId(respons, utbetalingsoppdrag.saksnummer)
+        val (responseForFagsak, beregningStoppnivaaForAndreFagsaker) = splitResponsePåFagsakId(
+            respons,
+            utbetalingsoppdrag.saksnummer
+        )
 
         val simuleringMottakereForFagsak =
             responseForFagsak.response?.simulering?.let {
@@ -116,9 +114,7 @@ class SimuleringTjenesteImpl(
                 )
             } ?: emptyList()
 
-
         byttUtBeregningStoppnivaa(respons, beregningStoppnivaaForAndreFagsaker, utbetalingsoppdrag.saksnummer)
-
 
         val simuleringMottakereForAndreFagsaker =
             respons.response?.simulering?.let {
