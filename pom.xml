@@ -21,7 +21,7 @@
         <jvmTarget>21</jvmTarget>
         <kotlin.version>2.2.20</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>3.20250915092837_153983f</felles.version>
+        <felles.version>3.20251016094046_66c869d</felles.version>
 	    <kontrakter.version>3.0_20251016140357_f0c6b88</kontrakter.version>
         <token-validation-spring.version>5.0.37</token-validation-spring.version>
 
@@ -133,7 +133,7 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.jakarta.client</artifactId>
-            <version>9.4.3.1</version>
+            <version>9.4.4.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
