@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.7</version>
     </parent>
 
     <properties>
@@ -21,8 +21,8 @@
         <jvmTarget>21</jvmTarget>
         <kotlin.version>2.2.21</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>3.20250915092837_153983f</felles.version>
-	    <kontrakter.version>3.0_20251016140357_f0c6b88</kontrakter.version>
+        <felles.version>3.20251021101955_e5e7dd1</felles.version>
+	    <kontrakter.version>3.0_20251027084742_f54d77b</kontrakter.version>
         <token-validation-spring.version>5.0.37</token-validation-spring.version>
 
         <!--
@@ -133,7 +133,7 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.jakarta.client</artifactId>
-            <version>9.4.3.1</version>
+            <version>9.4.4.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
@@ -482,7 +482,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>ktlint</id>
