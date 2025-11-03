@@ -66,7 +66,7 @@ class SimuleringResultatTransformer {
             posteringType = PosteringType.fraKode(detaljer.typeKlasse),
             utenInntrekk = utenInntrekk,
             klassekode = detaljer.klassekode?.trim(),
-            fagsakId = stoppnivaa.fagsystemId
+            fagsakId = stoppnivaa.fagsystemId,
         )
 
     private fun hentOrgNrEllerFnr(orgNrEllerFnr: String): String =
