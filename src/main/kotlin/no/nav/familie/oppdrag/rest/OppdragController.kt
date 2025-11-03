@@ -135,7 +135,7 @@ class OppdragController(
     fun testTimeout(
         @RequestParam(name = "sekunder") sekunder: Long,
     ): ResponseEntity<Ressurs<String>> {
-        Thread.sleep(sekunder)
+        Thread.sleep(sekunder * 1000L)
         return ok("Ventet i $sekunder sekunder")
     }
 }
