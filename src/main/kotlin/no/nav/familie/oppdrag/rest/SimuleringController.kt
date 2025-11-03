@@ -35,8 +35,21 @@ class SimuleringController(
     fun utførSimuleringOgHentResultat(
         @Valid @RequestBody
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> =
-        ok(simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag))
+    ): ResponseEntity<Ressurs<DetaljertSimuleringResultat>> {
+
+        val data = simuleringTjeneste.utførSimuleringOghentDetaljertSimuleringResultat(utbetalingsoppdrag)
+        logger.info(
+            "Henter data for utbetalingsoppdrag ${utbetalingsoppdrag.saksnummer}, hadde fagsystemIder: " +
+                "${
+                    data.simuleringMottaker
+                        .flatMap { mottaker ->
+                            mottaker.simulertPostering
+                                .map { postering -> postering.fagsakId }
+                        }
+                }"
+        )
+        return ok(data)
+    }
 
     @PostMapping(path = ["/feilutbetalinger"])
     fun hentFeilutbetalinger(
@@ -45,8 +58,8 @@ class SimuleringController(
     ): ResponseEntity<Ressurs<FeilutbetalingerFraSimulering>> {
         logger.info(
             "Henter feilutbetalinger for ytelsestype=${request.ytelsestype}, " +
-                "fagsak=${request.eksternFagsakId}," +
-                " behandlingId=${request.eksternFagsakId}",
+                    "fagsak=${request.eksternFagsakId}," +
+                    " behandlingId=${request.eksternFagsakId}",
         )
         return ok(simuleringTjeneste.hentFeilutbetalinger(request))
     }
