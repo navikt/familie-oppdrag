@@ -11,11 +11,13 @@ import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.common.RessursUtils.secureLogger
+import no.nav.familie.oppdrag.config.VaultHikariConfig
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
 import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -34,6 +36,9 @@ class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
 ) {
+
+    private val logger = LoggerFactory.getLogger(VaultHikariConfig::class.java)
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
     fun sendOppdrag(
         @Valid @RequestBody
@@ -135,7 +140,9 @@ class OppdragController(
     fun testTimeout(
         @RequestParam(name = "sekunder") sekunder: Long,
     ): ResponseEntity<Ressurs<String>> {
+        logger.info("Venter i $sekunder")
         Thread.sleep(sekunder * 1000L)
+        logger.info("Ferdig med å vente i $sekunder")
         return ok("Ventet i $sekunder sekunder")
     }
 }
