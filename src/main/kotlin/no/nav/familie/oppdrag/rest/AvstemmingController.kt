@@ -11,12 +11,14 @@ import no.nav.familie.oppdrag.service.Fagsystem
 import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
 import no.nav.familie.oppdrag.service.KonsistensavstemmingService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import no.nav.security.token.support.core.api.Unprotected
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -110,6 +112,15 @@ class AvstemmingController(
         @RequestBody fagsakIder: Set<String>,
     ): ResponseEntity<Ressurs<List<UtbetalingsoppdragForKonsistensavstemming>>> =
         ok(konsistensavstemmingService.hentSisteUtbetalingsoppdragForFagsaker(fagsystem.name, fagsakIder))
+
+    @GetMapping(path = ["/sov/{sovetid}"])
+    fun sov(
+        @PathVariable sovetid: Long,
+    ): String {
+        Thread.sleep(sovetid * 1000)
+
+        return "OK"
+    }
 
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(AvstemmingController::class.java)
