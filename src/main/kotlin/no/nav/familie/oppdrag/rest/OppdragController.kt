@@ -11,7 +11,6 @@ import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.common.RessursUtils.secureLogger
-import no.nav.familie.oppdrag.config.VaultHikariConfig
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
 import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
@@ -36,8 +35,7 @@ class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
 ) {
-
-    private val logger = LoggerFactory.getLogger(VaultHikariConfig::class.java)
+    private val logger = LoggerFactory.getLogger(OppdragController::class.java)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
     fun sendOppdrag(

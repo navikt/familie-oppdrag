@@ -45,8 +45,8 @@ class SimuleringController(
     ): ResponseEntity<Ressurs<FeilutbetalingerFraSimulering>> {
         logger.info(
             "Henter feilutbetalinger for ytelsestype=${request.ytelsestype}, " +
-                    "fagsak=${request.eksternFagsakId}," +
-                    " behandlingId=${request.eksternFagsakId}",
+                "fagsak=${request.eksternFagsakId}," +
+                " behandlingId=${request.eksternFagsakId}",
         )
         return ok(simuleringTjeneste.hentFeilutbetalinger(request))
     }
