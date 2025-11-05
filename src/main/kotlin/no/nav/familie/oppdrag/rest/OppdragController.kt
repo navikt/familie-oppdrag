@@ -16,13 +16,16 @@ import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
 import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
 import no.nav.familie.oppdrag.service.OppdragService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -32,6 +35,8 @@ class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
 ) {
+    private val logger = LoggerFactory.getLogger(OppdragController::class.java)
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdrag"])
     fun sendOppdrag(
         @Valid @RequestBody
@@ -128,4 +133,14 @@ class OppdragController(
                     ok(it.status, it.kvitteringsmelding?.beskrMelding ?: "")
                 },
             )
+
+    @GetMapping("timeout-test")
+    fun testTimeout(
+        @RequestParam(name = "sekunder") sekunder: Long,
+    ): ResponseEntity<Ressurs<String>> {
+        logger.info("Venter i $sekunder")
+        Thread.sleep(sekunder * 1000L)
+        logger.info("Ferdig med å vente i $sekunder")
+        return ok("Ventet i $sekunder sekunder")
+    }
 }
