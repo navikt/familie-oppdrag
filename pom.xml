@@ -19,10 +19,10 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>21</jvmTarget>
-        <kotlin.version>2.2.21</kotlin.version>
+        <kotlin.version>2.3.0</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>4.20251202092438_2d27579</felles.version>
-	    <kontrakter.version>3.0_20251027084742_f54d77b</kontrakter.version>
+        <felles.version>4.20251203153147_ca40cc5</felles.version>
+	    <kontrakter.version>3.0_20251217091435_940f8da</kontrakter.version>
         <token-validation-spring.version>6.0.0</token-validation-spring.version>
 
         <!--
@@ -31,12 +31,12 @@
         -->
         <common-java-modules.version>3.2025.09.03_08.33-728ff4acbfdb</common-java-modules.version>
         <jaxb.version>4.0.6</jaxb.version>
-        <cxf.version>4.1.3</cxf.version>
+        <cxf.version>4.1.4</cxf.version>
 
         <mockk.version>1.14.6</mockk.version>
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <testcontainers.version>1.21.3</testcontainers.version>
-        <tjenestespesifikasjoner.version>1.0_20250905124051_0f48699</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.0_20251127080538_249148b</tjenestespesifikasjoner.version>
         <springdoc.version>3.0.0</springdoc.version>
 
     </properties>
@@ -146,7 +146,7 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.jakarta.client</artifactId>
-            <version>9.4.3.1</version>
+            <version>9.4.4.1</version>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.messaginghub</groupId>
             <artifactId>pooled-jms</artifactId>
-            <version>3.1.7</version>
+            <version>3.2.1</version>
         </dependency>
 
 
@@ -533,7 +533,7 @@
                     <dependency>
                         <groupId>com.pinterest.ktlint</groupId>
                         <artifactId>ktlint-cli</artifactId>
-                        <version>1.7.1</version>
+                        <version>1.8.0</version>
                     </dependency>
                     <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>
