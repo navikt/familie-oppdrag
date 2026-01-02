@@ -31,9 +31,9 @@ object DevPsqlMqLauncher {
         properties["SPRING_DATASOURCE_PASSWORD_OVERRIDE"] = psql.password
         properties["SPRING_DATASOURCE_DRIVER_OVERRIDE"] = "org.postgresql.Driver"
         properties.put("OPPDRAG_MQ_PORT_OVERRIDE", mq.getMappedPort(1414))
+        properties.put("spring.profiles.active", "dev_psql_mq")
 
         SpringApplicationBuilder(ApplicationConfig::class.java)
-            .profiles("dev_psql_mq")
             .properties(properties)
             .run(*args)
     }
