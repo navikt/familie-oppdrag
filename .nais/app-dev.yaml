@@ -37,8 +37,6 @@ spec:
   ingresses:
     - https://familie-oppdrag.dev-fss-pub.nais.io
     - https://familie-oppdrag.dev.intern.nav.no
-  secureLogs:
-    enabled: true
   azure:
     application:
       enabled: true
