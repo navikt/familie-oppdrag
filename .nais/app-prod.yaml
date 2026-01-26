@@ -62,6 +62,8 @@ spec:
           cluster: prod-gcp
         - application: familie-ef-iverksett
           cluster: prod-gcp
+        - application: familie-klage
+          cluster: dev-gcp
     outbound:
       rules:
         - application: logging
