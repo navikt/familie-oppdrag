@@ -1,6 +1,6 @@
 package no.nav.familie.oppdrag.repository
 
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.behandlingsIdForFørsteUtbetalingsperiode
 import no.nav.familie.oppdrag.iverksetting.Jaxb
@@ -31,7 +31,7 @@ data class SimuleringLager(
                 fagsystem = utbetalingsoppdrag.fagSystem,
                 fagsakId = utbetalingsoppdrag.saksnummer,
                 behandlingId = utbetalingsoppdrag.behandlingsIdForFørsteUtbetalingsperiode(),
-                utbetalingsoppdrag = objectMapper.writeValueAsString(utbetalingsoppdrag),
+                utbetalingsoppdrag = jsonMapper.writeValueAsString(utbetalingsoppdrag),
                 requestXml = Jaxb.tilXml(request = request),
             )
     }

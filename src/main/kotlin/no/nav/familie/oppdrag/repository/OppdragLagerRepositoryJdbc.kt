@@ -1,7 +1,7 @@
 package no.nav.familie.oppdrag.repository
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
+import tools.jackson.module.kotlin.readValue
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.util.UUID
@@ -45,7 +46,10 @@ class OppdragLagerRepositoryJdbc(
                 throw NoSuchElementException("Feil ved henting av oppdrag. Fant ingen oppdrag med id $oppdragId")
             }
 
-            1 -> listeAvOppdrag[0]
+            1 -> {
+                listeAvOppdrag[0]
+            }
+
             else -> {
                 log.error("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
                 throw Exception("Feil ved henting av oppdrag. Fant fler oppdrag med id $oppdragId")
@@ -75,7 +79,7 @@ class OppdragLagerRepositoryJdbc(
                 .addValue("behandlingId", oppdragLager.behandlingId)
                 .addValue("fagsystem", oppdragLager.fagsystem)
                 .addValue("avstemmingTid", oppdragLager.avstemmingTidspunkt)
-                .addValue("utbetalingsoppdrag", objectMapper.writeValueAsString(oppdragLager.utbetalingsoppdrag))
+                .addValue("utbetalingsoppdrag", jsonMapper.writeValueAsString(oppdragLager.utbetalingsoppdrag))
                 .addValue("versjon", versjon)
 
         jdbcTemplate.update(insertStatement, values)
@@ -117,7 +121,7 @@ class OppdragLagerRepositoryJdbc(
         val values =
             MapSqlParameterSource()
                 .addValue("status", oppdragStatus.name)
-                .addValue("kvitteringsmelding", objectMapper.writeValueAsString(kvittering))
+                .addValue("kvitteringsmelding", jsonMapper.writeValueAsString(kvittering))
                 .addValue("personIdent", oppdragId.personIdent)
                 .addValue("fagsystem", oppdragId.fagsystem)
                 .addValue("behandlingId", oppdragId.behandlingsId)
@@ -173,7 +177,7 @@ class OppdragLagerRepositoryJdbc(
             jdbcTemplate.queryForObject(hentStatement, values, String::class.java)
                 ?: error("Fant ikke utbetalingsoppdrag for $oppdragId versjon=$versjon")
 
-        return objectMapper.readValue(jsonUtbetalingsoppdrag)
+        return jsonMapper.readValue(jsonUtbetalingsoppdrag)
     }
 
     override fun hentKvitteringsinformasjon(oppdragId: OppdragId): List<Kvitteringsinformasjon> {
@@ -217,7 +221,7 @@ class OppdragLagerRepositoryJdbc(
                     UtbetalingsoppdragForKonsistensavstemming(
                         resultSet.getString("fagsak_id"),
                         resultSet.getString("behandling_id"),
-                        objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
+                        jsonMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
                     )
                 }
             }.flatten()
@@ -249,7 +253,7 @@ class OppdragLagerRepositoryJdbc(
                         UtbetalingsoppdragForKonsistensavstemming(
                             resultSet.getString("fagsak_id"),
                             resultSet.getString("behandling_id"),
-                            objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
+                            jsonMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
                         )
                     }
             }
@@ -267,12 +271,12 @@ class OppdragLagerRowMapper : RowMapper<OppdragLager> {
             personIdent = resultSet.getString("person_ident"),
             fagsakId = resultSet.getString("fagsak_id"),
             behandlingId = resultSet.getString("behandling_id"),
-            utbetalingsoppdrag = objectMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
+            utbetalingsoppdrag = jsonMapper.readValue(resultSet.getString("utbetalingsoppdrag")),
             utgåendeOppdrag = resultSet.getString("utgaaende_oppdrag"),
             status = OppdragStatus.valueOf(resultSet.getString("status")),
             avstemmingTidspunkt = resultSet.getTimestamp("avstemming_tidspunkt").toLocalDateTime(),
             opprettetTidspunkt = resultSet.getTimestamp("opprettet_tidspunkt").toLocalDateTime(),
-            kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
+            kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { jsonMapper.readValue(it) },
             versjon = resultSet.getInt("versjon"),
         )
 }
