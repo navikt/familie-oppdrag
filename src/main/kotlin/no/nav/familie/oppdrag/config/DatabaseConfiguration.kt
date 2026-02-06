@@ -37,7 +37,7 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
         )
 
     @ReadingConverter
-    class PGobjectTilUtbetalingsoppdragConverter : Converter<PGobject, Utbetalingsoppdrag> {
+    class PGobjectTilUtbetalingsoppdragConverter : Converter<PGobject, Utbetalingsoppdrag?> {
         override fun convert(pGobject: PGobject): Utbetalingsoppdrag? = pGobject.value?.let { objectMapper.readValue(it) }
     }
 
@@ -51,7 +51,7 @@ class DatabaseConfiguration : AbstractJdbcConfiguration() {
     }
 
     @ReadingConverter
-    class PGobjectTilMmelConverter : Converter<PGobject, Mmel> {
+    class PGobjectTilMmelConverter : Converter<PGobject, Mmel?> {
         override fun convert(pGobject: PGobject): Mmel? = pGobject.value?.let { objectMapper.readValue(it) }
     }
 
