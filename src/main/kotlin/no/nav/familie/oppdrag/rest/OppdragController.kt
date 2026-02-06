@@ -2,7 +2,7 @@ package no.nav.familie.oppdrag.rest
 
 import jakarta.validation.Valid
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
@@ -104,7 +104,7 @@ class OppdragController(
                 onSuccess = {
                     if (!listOf(OppdragStatus.KVITTERT_OK, OppdragStatus.LAGT_PÅ_KØ).contains(it.status)) {
                         secureLogger.warn(
-                            "Oppdrag $oppdragId har status ${it.status} og kvitteringsmelding: ${objectMapper.writeValueAsString(
+                            "Oppdrag $oppdragId har status ${it.status} og kvitteringsmelding: ${jsonMapper.writeValueAsString(
                                 it.kvitteringsmelding,
                             )}",
                         )
