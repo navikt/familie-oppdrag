@@ -2,7 +2,7 @@ package no.nav.familie.oppdrag.service
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppdrag.GrensesnittavstemmingRequest
 import no.nav.familie.oppdrag.avstemming.AvstemmingSender
 import no.nav.familie.oppdrag.grensesnittavstemming.GrensesnittavstemmingMapper
@@ -77,7 +77,7 @@ class GrensesnittavstemmingService(
         )
         secureLogger.info(
             "Fullført grensesnittavstemming for id: ${avstemmingMapper.avstemmingId} " +
-                "totalmelding=${objectMapper.writeValueAsString(totalmelding)}",
+                "totalmelding=${jsonMapper.writeValueAsString(totalmelding)}",
         )
 
         oppdaterMetrikker(fagsystem, totalmelding.grunnlag)

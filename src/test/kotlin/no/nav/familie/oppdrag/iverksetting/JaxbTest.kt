@@ -1,6 +1,6 @@
 package no.nav.familie.oppdrag.iverksetting
 
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.okonomi.tilbakekrevingservice.TilbakekrevingsvedtakResponse
 import no.nav.system.os.entiteter.beregningskjema.Beregning
 import no.nav.system.os.tjenester.simulerfpservice.simulerfpservicegrensesnitt.SimulerBeregningRequest
@@ -110,20 +110,20 @@ internal class JaxbTest {
                         datoVedtakFagsystem = LocalDate.of(2022, 1, 1)
                     }
             }
-        assertThat(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response)).isEqualTo(
+        assertThat(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response)).isEqualTo(
             """
             {
               "mmel" : null,
               "tilbakekrevingsvedtak" : {
-                "kodeAksjon" : null,
-                "vedtakId" : null,
                 "datoVedtakFagsystem" : "2022-01-01",
-                "kodeHjemmel" : null,
-                "renterBeregnes" : null,
                 "enhetAnsvarlig" : null,
+                "kodeAksjon" : null,
+                "kodeHjemmel" : null,
                 "kontrollfelt" : null,
+                "renterBeregnes" : null,
                 "saksbehId" : null,
-                "tilbakekrevingsperiode" : null
+                "tilbakekrevingsperiode" : [ ],
+                "vedtakId" : null
               }
             }
             """.trimIndent(),
