@@ -19,7 +19,7 @@
         <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <jvmTarget>25</jvmTarget>
-        <kotlin.version>2.3.0</kotlin.version>
+        <kotlin.version>2.3.10</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
         <felles.version>4.20260205114838_3a4c3dc</felles.version>
 	    <kontrakter.version>4.0_20260204122732_558ee1d</kontrakter.version>
@@ -31,7 +31,7 @@
         -->
         <common-java-modules.version>3.2025.09.03_08.33-728ff4acbfdb</common-java-modules.version>
         <jaxb.version>4.0.6</jaxb.version>
-        <cxf.version>4.1.4</cxf.version>
+        <cxf.version>4.2.0</cxf.version>
 
         <mockk.version>1.14.9</mockk.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.4</version>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
