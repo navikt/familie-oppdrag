@@ -1,11 +1,12 @@
 package no.nav.familie.oppdrag.repository
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragId
 import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.trygdeetaten.skjema.oppdrag.Mmel
 import org.springframework.jdbc.core.RowMapper
+import tools.jackson.module.kotlin.readValue
 import java.sql.ResultSet
 import java.time.LocalDateTime
 
@@ -39,7 +40,7 @@ object KvitteringsinformasjonRowMapper : RowMapper<Kvitteringsinformasjon> {
             status = OppdragStatus.valueOf(resultSet.getString("status")),
             avstemmingTidspunkt = resultSet.getTimestamp("avstemming_tidspunkt").toLocalDateTime(),
             opprettetTidspunkt = resultSet.getTimestamp("opprettet_tidspunkt").toLocalDateTime(),
-            kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { objectMapper.readValue(it) },
+            kvitteringsmelding = resultSet.getString("kvitteringsmelding")?.let { jsonMapper.readValue(it) },
             versjon = resultSet.getInt("versjon"),
         )
 }
