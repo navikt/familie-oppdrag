@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Bygg app/image, push til github
+  pull-request:
+    name: Pull request
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
