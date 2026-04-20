@@ -39,6 +39,7 @@ class ApiExceptionHandler {
                 secureLogger.warn("Feil mot oppdrag ved ${feil.system} har oppstått", feil)
                 logger.warn("Feil mot oppdrag ved ${feil.system} har oppstått exception=${getMostSpecificCause(feil)::class}")
             }
+
             else -> {
                 secureLogger.error("Feil mot oppdrag ved ${feil.system} har oppstått", feil)
                 logger.error("Feil mot oppdrag ved ${feil.system} har oppstått exception=${getMostSpecificCause(feil)::class}")
@@ -54,13 +55,19 @@ class ApiExceptionHandler {
     fun handleTssException(tssException: TssException): ResponseEntity<Ressurs<Nothing>> {
         logger.warn("Feil mot TSS: ${tssException.message}", tssException)
         return when (tssException) {
-            is TssConnectionException -> serviceUnavailable(tssException.message!!, tssException)
+            is TssConnectionException -> {
+                serviceUnavailable(tssException.message!!, tssException)
+            }
+
             is TssNoDataFoundException -> {
                 ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(Ressurs.failure(errorMessage = tssException.message))
             }
-            else -> illegalState(tssException.message!!, tssException)
+
+            else -> {
+                illegalState(tssException.message!!, tssException)
+            }
         }
     }
 
