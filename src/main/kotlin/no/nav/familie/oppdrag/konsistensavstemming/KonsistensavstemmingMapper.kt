@@ -50,8 +50,11 @@ class KonsistensavstemmingMapper(
                         lagSluttmelding(),
                     )
             )
+
             sendStartmelding -> (listOf(lagStartmelding()) + lagDatameldinger())
+
             sendAvsluttmelding -> (lagDatameldinger() + listOf(lagTotaldata(), lagSluttmelding()))
+
             else -> lagDatameldinger()
         }
 
