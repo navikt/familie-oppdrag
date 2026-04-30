@@ -21,7 +21,7 @@
         <jvmTarget>25</jvmTarget>
         <kotlin.version>2.3.20</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>4.20260420125050_76c5fea</felles.version>
+        <felles.version>4.20260428145828_c16a1d8</felles.version>
 	    <kontrakter.version>4.0_20260420135248_2e6d9ea</kontrakter.version>
         <token-validation-spring.version>6.0.6</token-validation-spring.version>
 
@@ -233,6 +233,11 @@
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
             <artifactId>sikkerhet</artifactId>
+            <version>${felles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.familie.felles</groupId>
+            <artifactId>sikkerhet-token-support</artifactId>
             <version>${felles.version}</version>
         </dependency>
         <dependency>
