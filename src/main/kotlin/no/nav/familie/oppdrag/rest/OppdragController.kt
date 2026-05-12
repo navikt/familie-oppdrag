@@ -15,7 +15,6 @@ import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
 import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
 import no.nav.familie.oppdrag.service.OppdragService
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-@ProtectedWithClaims(issuer = "azuread")
 class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
