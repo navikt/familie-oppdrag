@@ -12,14 +12,17 @@ oppdrag.mq:
 grensesnitt:
   antall: 2
 
-no.nav.security.jwt:
-  issuer.azuread:
-    discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
-    accepted_audience: ${AZURE_APP_CLIENT_ID}
-
-spring.datasource.url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
-spring.datasource.username: postgres
-spring.datasource.password: test
+spring:
+  datasource:
+    url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
+    username: postgres
+    password: test
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_APP_WELL_KNOWN_URL}
+          audiences: ${AZURE_APP_CLIENT_ID}
 
 vault:
   systembruker:

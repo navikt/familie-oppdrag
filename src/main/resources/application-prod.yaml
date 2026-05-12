@@ -9,12 +9,6 @@ oppdrag.mq:
   port: 1414
   enabled: true
 
-no.nav.security.jwt:
-  issuer.azuread:
-    discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
-    accepted_audience: ${AZURE_APP_CLIENT_ID}
-    proxyurl: http://webproxy-nais.nav.no:8088
-
 spring:
   datasource:
     url: jdbc:postgresql://A01DBVL035.adeo.no:5432/familie-oppdrag-15
