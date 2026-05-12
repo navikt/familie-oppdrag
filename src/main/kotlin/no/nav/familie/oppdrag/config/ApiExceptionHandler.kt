@@ -7,12 +7,13 @@ import no.nav.familie.oppdrag.common.RessursUtils.unauthorized
 import no.nav.familie.oppdrag.tss.TssConnectionException
 import no.nav.familie.oppdrag.tss.TssException
 import no.nav.familie.oppdrag.tss.TssNoDataFoundException
-import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.NestedExceptionUtils.getMostSpecificCause
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
@@ -21,10 +22,11 @@ class ApiExceptionHandler {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleJwtTokenUnauthorizedException(
-        jwtTokenUnauthorizedException: JwtTokenUnauthorizedException,
-    ): ResponseEntity<Ressurs<Nothing>> = unauthorized("Unauthorized")
+    @ExceptionHandler(AuthenticationException::class)
+    fun handleAuthenticationException(exception: AuthenticationException): ResponseEntity<Ressurs<Nothing>> = unauthorized("Unauthorized")
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(exception: AccessDeniedException): ResponseEntity<Ressurs<Nothing>> = unauthorized("Forbidden")
 
     @ExceptionHandler(Throwable::class)
     fun handleThrowable(throwable: Throwable): ResponseEntity<Ressurs<Nothing>> {
