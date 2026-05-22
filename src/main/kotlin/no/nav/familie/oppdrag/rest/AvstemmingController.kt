@@ -10,7 +10,6 @@ import no.nav.familie.oppdrag.repository.UtbetalingsoppdragForKonsistensavstemmi
 import no.nav.familie.oppdrag.service.Fagsystem
 import no.nav.familie.oppdrag.service.GrensesnittavstemmingService
 import no.nav.familie.oppdrag.service.KonsistensavstemmingService
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,7 +26,6 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/api")
-@ProtectedWithClaims(issuer = "azuread")
 @Validated
 class AvstemmingController(
     @Autowired val grensesnittavstemmingService: GrensesnittavstemmingService,

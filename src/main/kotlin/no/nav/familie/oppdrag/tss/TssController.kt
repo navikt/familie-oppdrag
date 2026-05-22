@@ -5,7 +5,6 @@ import no.nav.familie.kontrakter.ba.tss.SamhandlerInfo
 import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfo
 import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfoRequest
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.rtv.namespacetss.TOutputElementer
 import no.rtv.namespacetss.TypeOD910
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/tss")
-@ProtectedWithClaims(issuer = "azuread")
 class TssController(
     private val tssOppslagService: TssOppslagService,
 ) {
