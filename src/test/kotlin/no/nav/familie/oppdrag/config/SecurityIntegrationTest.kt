@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
@@ -53,6 +54,7 @@ import tools.jackson.module.kotlin.readValue
     initializers = [MockOAuth2ServerInitializer::class],
     classes = [SecurityIntegrationTest.TestConfig::class]
 )
+@DirtiesContext
 class SecurityIntegrationTest {
     @Configuration
     @ComponentScan(
