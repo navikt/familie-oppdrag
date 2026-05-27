@@ -22,16 +22,14 @@ object JwtTokenTestUtil {
         mockOAuth2Server: MockOAuth2Server,
         subject: String = "test-user@nav.no",
         audience: String = "aud-localhost",
-    ): String {
-        val expiry = System.currentTimeMillis() / 1000 - 3600 // 1 time siden
-        return mockOAuth2Server
+    ): String =
+        mockOAuth2Server
             .issueToken(
                 issuerId = "azuread",
                 subject = subject,
                 audience = audience,
-                expiry = expiry,
+                expiry = -3600, // token utløpt for 1 time siden
             ).serialize()
-    }
 
     fun lagTokenMedFeilIssuer(
         mockOAuth2Server: MockOAuth2Server,

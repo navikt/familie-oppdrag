@@ -37,8 +37,6 @@ class SecurityConfig {
                 authenticationEntryPoint = authenticationEntryPoint()
                 accessDeniedHandler = accessDeniedHandler()
             }
-
-
         }
         return http.build()
     }

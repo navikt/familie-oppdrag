@@ -3,53 +3,43 @@ package no.nav.familie.oppdrag.config
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.SpringBootConfiguration
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.context.WebApplicationContext
-import org.testcontainers.junit.jupiter.Testcontainers
 import tools.jackson.module.kotlin.readValue
 
-@ActiveProfiles("dev")
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    properties = [
-        "spring.cloud.vault.enabled=false",
-        "AZURE_APP_CLIENT_ID=test-client-id",
-        "OPPDRAG_SERVICE_URL=http://localhost:8080/oppdrag-service",
-        "oppdrag.mq.enabled=false",
-    ],
+    classes = [SecurityIntegrationTest.TestConfig::class],
+    properties = ["management.endpoint.health.validate-group-membership=false"],
 )
+@AutoConfigureMockMvc
+@ActiveProfiles("dev", "security-test")
 @ContextConfiguration(initializers = [MockOAuth2ServerInitializer::class])
-@Testcontainers
 class SecurityIntegrationTest {
-    @Autowired
-    private lateinit var webApplicationContext: WebApplicationContext
+    @SpringBootConfiguration
+    @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
+    @Import(SecurityConfig::class)
+    @org.springframework.context.annotation.Profile("security-test")
+    class TestConfig
 
+    @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Autowired
     private lateinit var mockOAuth2Server: MockOAuth2Server
-
-    @BeforeEach
-    fun setup() {
-        mockMvc =
-            MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
-                .apply<org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder>(springSecurity())
-                .build()
-    }
 
     private fun gyldigSimuleringRequest() =
         """
@@ -68,19 +58,9 @@ class SecurityIntegrationTest {
     inner class OffentligeEndepunkter {
         @Test
         fun `skal tillate tilgang til health uten token`() {
-            // Health endpoint should not require auth (503 acceptable due to MQ unavailable in tests)
-            val result =
-                mockMvc
-                    .perform(MockMvcRequestBuilders.get("/internal/health"))
-                    .andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value()) {
-                "Health burde ikke gi 401, fikk $status"
-            }
-            assert(status != HttpStatus.FORBIDDEN.value()) {
-                "Health burde ikke gi 403, fikk $status"
-            }
+            mockMvc
+                .perform(MockMvcRequestBuilders.get("/internal/health"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
         }
 
         @Test
@@ -92,25 +72,14 @@ class SecurityIntegrationTest {
 
         @Test
         fun `skal tillate tilgang til swagger-ui uten token`() {
-            val result =
-                mockMvc
-                    .perform(MockMvcRequestBuilders.get("/swagger-ui.html"))
-                    .andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value()) {
-                "Swagger burde ikke gi 401, fikk $status"
-            }
-            assert(status != HttpStatus.FORBIDDEN.value()) {
-                "Swagger burde ikke gi 403, fikk $status"
-            }
+            mockMvc
+                .perform(MockMvcRequestBuilders.get("/swagger-ui/index.html"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
         }
 
         @Test
         fun `skal tillate tilgang til api-docs uten token`() {
-            mockMvc
-                .perform(MockMvcRequestBuilders.get("/v3/api-docs"))
-                .andExpect(MockMvcResultMatchers.status().isOk)
+            mockMvc.perform(MockMvcRequestBuilders.get("/v3/api-docs")).andExpect(MockMvcResultMatchers.status().isOk)
         }
     }
 
@@ -131,42 +100,30 @@ class SecurityIntegrationTest {
         fun `skal akseptere gyldig Azure AD-token`() {
             val token = JwtTokenTestUtil.lagAzureAdToken(mockOAuth2Server)
 
-            // Forventer ikke 401/403 - kan være 400/500 på grunn av validering/business logic
-            val result =
-                mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .post("/api/simulering/v1")
-                            .header("Authorization", "Bearer $token")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gyldigSimuleringRequest()),
-                    ).andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value() && status != HttpStatus.FORBIDDEN.value()) {
-                "Gyldig token burde ikke gi 401 eller 403, fikk $status"
-            }
+            mockMvc
+                .perform(
+                    MockMvcRequestBuilders
+                        .post("/api/simulering/v1")
+                        .header("Authorization", "Bearer $token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gyldigSimuleringRequest()),
+                )
+                // testen laster ikke handlere så 404 er ok, forventer bare å ikke få 401 eller 403
+                .andExpect(MockMvcResultMatchers.status().isNotFound)
         }
 
         @Test
         fun `skal avvise utgått token`() {
             val token = JwtTokenTestUtil.lagUtgaattToken(mockOAuth2Server)
 
-            // Expired tokens should be rejected by auth layer (not 200 OK)
-            val result =
-                mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .post("/api/simulering/v1")
-                            .header("Authorization", "Bearer $token")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gyldigSimuleringRequest()),
-                    ).andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.OK.value()) {
-                "Expired token should be rejected, got status $status"
-            }
+            mockMvc
+                .perform(
+                    MockMvcRequestBuilders
+                        .post("/api/simulering/v1")
+                        .header("Authorization", "Bearer $token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gyldigSimuleringRequest()),
+                ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
         }
 
         @Test
