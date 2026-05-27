@@ -1,17 +1,31 @@
 package no.nav.familie.oppdrag.config
 
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.jsonMapper
+import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
+import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
+import no.nav.familie.kontrakter.felles.simulering.SimuleringMottaker
+import no.nav.familie.oppdrag.avstemming.AvstemmingSenderMQ
+import no.nav.familie.oppdrag.iverksetting.OppdragMottaker
+import no.nav.familie.oppdrag.iverksetting.OppdragSenderMQ
+import no.nav.familie.oppdrag.rest.SimuleringController
+import no.nav.familie.oppdrag.simulering.SimuleringTjeneste
+import no.nav.familie.oppdrag.simulering.SimuleringTjenesteImplTest
+import no.nav.familie.oppdrag.tss.TssMQClient
 import no.nav.security.mock.oauth2.MockOAuth2Server
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.SpringBootConfiguration
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import org.springframework.context.annotation.Import
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FilterType
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
@@ -21,25 +35,56 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import tools.jackson.module.kotlin.readValue
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = [SecurityIntegrationTest.TestConfig::class],
-    properties = ["management.endpoint.health.validate-group-membership=false"],
-)
-@AutoConfigureMockMvc
 @ActiveProfiles("dev")
-@ContextConfiguration(initializers = [MockOAuth2ServerInitializer::class])
+@WebMvcTest(
+    SimuleringController::class,
+    excludeFilters = [ComponentScan.Filter(
+        type = FilterType.ASSIGNABLE_TYPE,
+        classes = [
+            OppdragMottaker::class,
+            OppdragMQConfig::class,
+            OppdragSenderMQ::class,
+            AvstemmingSenderMQ::class,
+            TssMQClient::class
+        ]
+    )]
+)
+@ContextConfiguration(
+    initializers = [MockOAuth2ServerInitializer::class],
+    classes = [SecurityIntegrationTest.TestConfig::class]
+)
 class SecurityIntegrationTest {
-    @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
-    @Import(SecurityConfig::class)
-    class TestConfig
+    @Configuration
+    @ComponentScan(
+        basePackages = ["no.nav.familie.oppdrag.config"],  // ← Only security config
+        includeFilters = [
+            ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = [SecurityConfig::class]
+            )
+        ],
+        useDefaultFilters = false
+    )
+    class TestConfig {
+        @Bean
+        fun simuleringTjeneste(): SimuleringTjeneste {
+            return mockk<SimuleringTjeneste> {
+                every { utførSimuleringOghentDetaljertSimuleringResultat(any()) } returns DetaljertSimuleringResultat(
+                    emptyList()
+                )
+
+                every { hentFeilutbetalinger(any()) } returns FeilutbetalingerFraSimulering(emptyList())
+            }
+        }
+    }
+
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Autowired
     private lateinit var mockOAuth2Server: MockOAuth2Server
+
 
     private fun gyldigSimuleringRequest() =
         """
