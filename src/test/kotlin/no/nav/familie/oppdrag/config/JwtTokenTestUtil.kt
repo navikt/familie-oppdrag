@@ -23,7 +23,7 @@ object JwtTokenTestUtil {
         subject: String = "test-user@nav.no",
         audience: String = "aud-localhost",
     ): String {
-        val expiry = System.currentTimeMillis() / 1000 - 3600 // 1 time siden
+        val expiry = -3600L
         return mockOAuth2Server
             .issueToken(
                 issuerId = "azuread",

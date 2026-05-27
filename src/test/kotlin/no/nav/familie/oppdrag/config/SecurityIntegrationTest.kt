@@ -1,92 +1,73 @@
 package no.nav.familie.oppdrag.config
 
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.simulering.DetaljertSimuleringResultat
 import no.nav.familie.kontrakter.felles.simulering.FeilutbetalingerFraSimulering
-import no.nav.familie.kontrakter.felles.simulering.SimuleringMottaker
-import no.nav.familie.oppdrag.avstemming.AvstemmingSenderMQ
-import no.nav.familie.oppdrag.iverksetting.OppdragMottaker
-import no.nav.familie.oppdrag.iverksetting.OppdragSenderMQ
-import no.nav.familie.oppdrag.rest.SimuleringController
 import no.nav.familie.oppdrag.simulering.SimuleringTjeneste
-import no.nav.familie.oppdrag.simulering.SimuleringTjenesteImplTest
-import no.nav.familie.oppdrag.tss.TssMQClient
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import org.junit.jupiter.api.BeforeEach
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
-import org.springframework.http.HttpStatus
+import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import tools.jackson.module.kotlin.readValue
+import org.springframework.test.web.servlet.client.RestTestClient
+import kotlin.test.assertNotEquals
 
 @ActiveProfiles("dev")
-@WebMvcTest(
-    SimuleringController::class,
-    excludeFilters = [ComponentScan.Filter(
-        type = FilterType.ASSIGNABLE_TYPE,
-        classes = [
-            OppdragMottaker::class,
-            OppdragMQConfig::class,
-            OppdragSenderMQ::class,
-            AvstemmingSenderMQ::class,
-            TssMQClient::class
-        ]
-    )]
+@SpringBootTest(
+    classes = [SecurityIntegrationTest.TestConfig::class],
+    properties = ["spring.cloud.vault.enabled=false"], //TODO se om denne er nødvendig
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @ContextConfiguration(
     initializers = [MockOAuth2ServerInitializer::class],
-    classes = [SecurityIntegrationTest.TestConfig::class]
+    classes = [SecurityIntegrationTest.TestConfig::class], //TODO se om denne er nødvendig
 )
 @DirtiesContext
+@AutoConfigureRestTestClient()
 class SecurityIntegrationTest {
     @Configuration
+    @Import(SecurityConfig::class)
     @ComponentScan(
-        basePackages = ["no.nav.familie.oppdrag.config"],  // ← Only security config
-        includeFilters = [
+        basePackages = ["no.nav.familie.oppdrag"],
+        excludeFilters = [
             ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = [SecurityConfig::class]
-            )
-        ],
-        useDefaultFilters = false
+                type = FilterType.REGEX, pattern = [".*[MQ].*"]
+            ), ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE, classes = [SimuleringTjeneste::class]
+            )],
     )
     class TestConfig {
         @Bean
-        fun simuleringTjeneste(): SimuleringTjeneste {
-            return mockk<SimuleringTjeneste> {
-                every { utførSimuleringOghentDetaljertSimuleringResultat(any()) } returns DetaljertSimuleringResultat(
-                    emptyList()
-                )
+        fun simuleringTjeneste(): SimuleringTjeneste =
+            mockk<SimuleringTjeneste> {
+                every { utførSimuleringOghentDetaljertSimuleringResultat(any()) } returns
+                        DetaljertSimuleringResultat(
+                            emptyList(),
+                        )
 
                 every { hentFeilutbetalinger(any()) } returns FeilutbetalingerFraSimulering(emptyList())
             }
-        }
     }
 
-
     @Autowired
-    private lateinit var mockMvc: MockMvc
+    private lateinit var restTestClient: RestTestClient
 
     @Autowired
     private lateinit var mockOAuth2Server: MockOAuth2Server
-
 
     private fun gyldigSimuleringRequest() =
         """
@@ -105,155 +86,136 @@ class SecurityIntegrationTest {
     inner class OffentligeEndepunkter {
         @Test
         fun `skal tillate tilgang til health uten token`() {
-            val result =
-                mockMvc
-                    .perform(MockMvcRequestBuilders.get("/internal/health"))
-                    .andReturn()
+            val status = restTestClient
+                .get()
+                .uri("/internal/health")
+                .exchange()
+                .returnResult()
+                .status
 
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value()) {
-                "Health burde ikke gi 401, fikk $status"
-            }
-            assert(status != HttpStatus.FORBIDDEN.value()) {
-                "Health burde ikke gi 403, fikk $status"
-            }
+            assertThat(status).isNotIn(400..499)
         }
 
         @Test
         fun `skal tillate tilgang til actuator uten token`() {
-            val result =
-                mockMvc
-                    .perform(MockMvcRequestBuilders.get("/internal/prometheus"))
-                    .andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value()) {
-                "Prometheus burde ikke gi 401, fikk $status"
-            }
-            assert(status != HttpStatus.FORBIDDEN.value()) {
-                "Prometheus burde ikke gi 403, fikk $status"
-            }
+            restTestClient
+                .get()
+                .uri("/internal/prometheus")
+                .exchange()
+                .expectStatus()
+                .isOk
         }
 
         @Test
         fun `skal tillate tilgang til swagger-ui uten token`() {
-            val result =
-                mockMvc
-                    .perform(MockMvcRequestBuilders.get("/swagger-ui.html"))
-                    .andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value()) {
-                "Swagger burde ikke gi 401, fikk $status"
-            }
-            assert(status != HttpStatus.FORBIDDEN.value()) {
-                "Swagger burde ikke gi 403, fikk $status"
-            }
+            restTestClient
+                .get()
+                .uri("/swagger-ui.html")
+                .exchange()
+                .expectStatus()
+                .isOk
         }
 
         @Test
         fun `skal tillate tilgang til api-docs uten token`() {
-            val result =
-                mockMvc
-                    .perform(MockMvcRequestBuilders.get("/v3/api-docs"))
-                    .andReturn()
+            restTestClient
+                .get()
+                .uri("/v3/api-docs")
+                .exchange()
+                .expectStatus()
+                .isOk
 
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value()) {
-                "api-docs burde ikke gi 401, fikk $status"
-            }
-            assert(status != HttpStatus.FORBIDDEN.value()) {
-                "api-docs burde ikke gi 403, fikk $status"
-            }
-        }
-    }
-
-    @Nested
-    inner class BeskyttedeEndepunkter {
-        @Test
-        fun `skal avvise simulering uten token`() {
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/simulering/v1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(gyldigSimuleringRequest()),
-                ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
         }
 
-        @Test
-        fun `skal akseptere gyldig Azure AD-token`() {
-            val token = JwtTokenTestUtil.lagAzureAdToken(mockOAuth2Server)
-
-            val result =
-                mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .post("/api/simulering/v1")
-                            .header("Authorization", "Bearer $token")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gyldigSimuleringRequest()),
-                    ).andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.UNAUTHORIZED.value() && status != HttpStatus.FORBIDDEN.value()) {
-                "Gyldig token burde ikke gi 401 eller 403, fikk $status"
+        @Nested
+        inner class BeskyttedeEndepunkter {
+            @Test
+            fun `skal avvise simulering uten token`() {
+                restTestClient
+                    .post()
+                    .uri("/api/simulering/v1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(gyldigSimuleringRequest())
+                    .exchange()
+                    .expectStatus()
+                    .isUnauthorized
             }
-        }
 
-        @Test
-        fun `skal avvise utgått token`() {
-            val token = JwtTokenTestUtil.lagUtgaattToken(mockOAuth2Server)
+            @Test
+            fun `skal akseptere gyldig Azure AD-token`() {
+                val token = JwtTokenTestUtil.lagAzureAdToken(mockOAuth2Server)
 
-            val result =
-                mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .post("/api/simulering/v1")
-                            .header("Authorization", "Bearer $token")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(gyldigSimuleringRequest()),
-                    ).andReturn()
-
-            val status = result.response.status
-            assert(status != HttpStatus.OK.value()) {
-                "Expired token should be rejected, got status $status"
-            }
-        }
-
-        @Test
-        fun `skal avvise token med feil issuer`() {
-            val token = JwtTokenTestUtil.lagTokenMedFeilIssuer(mockOAuth2Server)
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/simulering/v1")
+                val result =
+                    restTestClient
+                        .post()
+                        .uri("/api/simulering/v1")
                         .header("Authorization", "Bearer $token")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gyldigSimuleringRequest()),
-                ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
-                .andExpect {
-                    val content = jsonMapper.readValue<Ressurs<Any>>(it.response.contentAsString)
-                    content.status == Ressurs.Status.FEILET
-                }
-        }
+                        .body((gyldigSimuleringRequest()))
+                        .exchange()
+                        .returnResult()
 
-        @Test
-        fun `skal avvise token med feil audience`() {
-            val token = JwtTokenTestUtil.lagTokenMedFeilAudience(mockOAuth2Server)
+                val status = result.status
+                assertNotEquals(
+                    '4',
+                    status.toString().first(),
+                    message =
+                        "Gyldig token burde ikke gi 4xx-feil, fikk $status",
+                )
+            }
 
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/simulering/v1")
-                        .header("Authorization", "Bearer $token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(gyldigSimuleringRequest()),
-                ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
-                .andExpect {
-                    val content = jsonMapper.readValue<Ressurs<Any>>(it.response.contentAsString)
-                    content.status == Ressurs.Status.FEILET
-                }
+            @Test
+            fun `skal avvise utgått token`() {
+                val token = JwtTokenTestUtil.lagUtgaattToken(mockOAuth2Server)
+                restTestClient
+                    .post()
+                    .uri("/api/simulering/v1")
+                    .header("Authorization", "Bearer $token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(gyldigSimuleringRequest())
+                    .exchange()
+                    .expectStatus()
+                    .is4xxClientError
+            }
+
+            @Test
+            fun `skal avvise token med feil issuer`() {
+                val token = JwtTokenTestUtil.lagTokenMedFeilIssuer(mockOAuth2Server)
+                val body = restTestClient
+                    .post()
+                    .uri("/api/simulering/v1")
+                    .header("Authorization", "Bearer $token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(gyldigSimuleringRequest())
+                    .exchange()
+                    .expectStatus()
+                    .isUnauthorized
+                    .expectBody(Ressurs::class.java)
+                    .returnResult()
+                    .responseBody
+
+                assertThat(body?.status).isEqualTo(Ressurs.Status.FEILET)
+            }
+
+            @Test
+            fun `skal avvise token med feil audience`() {
+                val token = JwtTokenTestUtil.lagTokenMedFeilAudience(mockOAuth2Server)
+
+                val body = restTestClient
+                    .post()
+                    .uri("/api/simulering/v1")
+                    .header("Authorization", "Bearer $token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(gyldigSimuleringRequest())
+                    .exchange()
+                    .expectStatus()
+                    .isUnauthorized
+                    .expectBody(Ressurs::class.java)
+                    .returnResult()
+                    .responseBody
+
+                assertThat(body?.status).isEqualTo(Ressurs.Status.FEILET)
+            }
         }
     }
 }
