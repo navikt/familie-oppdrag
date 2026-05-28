@@ -18,7 +18,7 @@ class MockOAuth2ServerInitializer : ApplicationContextInitializer<ConfigurableAp
     override fun initialize(applicationContext: ConfigurableApplicationContext) {
         val properties =
             mapOf<String, Any>(
-                "AZURE_APP_WELL_KNOWN_URL" to server.issuerUrl("azuread").toString(),
+                "AZURE_OPENID_CONFIG_ISSUER" to server.issuerUrl("azuread").toString(),
                 "AZURE_APP_CLIENT_ID" to "aud-localhost",
             )
 
