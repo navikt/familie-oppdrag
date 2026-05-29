@@ -3,7 +3,6 @@ package no.nav.familie.oppdrag.config
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.serviceUnavailable
-import no.nav.familie.oppdrag.common.RessursUtils.unauthorized
 import no.nav.familie.oppdrag.tss.TssConnectionException
 import no.nav.familie.oppdrag.tss.TssException
 import no.nav.familie.oppdrag.tss.TssNoDataFoundException
@@ -12,8 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.NestedExceptionUtils.getMostSpecificCause
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 

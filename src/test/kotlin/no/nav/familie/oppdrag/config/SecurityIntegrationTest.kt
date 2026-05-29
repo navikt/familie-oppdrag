@@ -3,15 +3,14 @@ package no.nav.familie.oppdrag.config
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.security.mock.oauth2.MockOAuth2Server
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -22,18 +21,14 @@ import tools.jackson.module.kotlin.readValue
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-    classes = [SecurityIntegrationTest.TestConfig::class],
+    classes = [SecurityIntegrationTest::class, SecurityConfig::class],
     properties = ["management.endpoint.health.validate-group-membership=false"],
 )
 @AutoConfigureMockMvc
-@ActiveProfiles("dev", "security-test")
+@ActiveProfiles("dev")
 @ContextConfiguration(initializers = [MockOAuth2ServerInitializer::class])
+@EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
 class SecurityIntegrationTest {
-    @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
-    @Import(SecurityConfig::class)
-    @org.springframework.context.annotation.Profile("security-test")
-    class TestConfig
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -93,12 +88,12 @@ class SecurityIntegrationTest {
                         .post("/api/simulering/v1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gyldigSimuleringRequest()),
-                ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
+                ).andExpect(MockMvcResultMatchers.status().isForbidden)
         }
 
         @Test
         fun `skal akseptere gyldig Azure AD-token`() {
-            val token = JwtTokenTestUtil.lagAzureAdToken(mockOAuth2Server)
+            val token = JwtTokenTestUtil.lagToken(mockOAuth2Server)
 
             mockMvc
                 .perform(
@@ -114,7 +109,7 @@ class SecurityIntegrationTest {
 
         @Test
         fun `skal avvise utgått token`() {
-            val token = JwtTokenTestUtil.lagUtgaattToken(mockOAuth2Server)
+            val token = JwtTokenTestUtil.lagToken(mockOAuth2Server, expiry = -3600)
 
             mockMvc
                 .perform(
@@ -128,7 +123,7 @@ class SecurityIntegrationTest {
 
         @Test
         fun `skal avvise token med feil issuer`() {
-            val token = JwtTokenTestUtil.lagTokenMedFeilIssuer(mockOAuth2Server)
+            val token = JwtTokenTestUtil.lagToken(mockOAuth2Server, issuer = "feil-issuer")
             mockMvc
                 .perform(
                     MockMvcRequestBuilders
@@ -139,13 +134,13 @@ class SecurityIntegrationTest {
                 ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
                 .andExpect {
                     val content = jsonMapper.readValue<Ressurs<Any>>(it.response.contentAsString)
-                    content.status == Ressurs.Status.FEILET
+                    assertThat(content.status).isEqualTo(Ressurs.Status.FEILET)
                 }
         }
 
         @Test
         fun `skal avvise token med feil audience`() {
-            val token = JwtTokenTestUtil.lagTokenMedFeilAudience(mockOAuth2Server)
+            val token = JwtTokenTestUtil.lagToken(mockOAuth2Server, audience = "feil-audience")
 
             mockMvc
                 .perform(
@@ -157,7 +152,7 @@ class SecurityIntegrationTest {
                 ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
                 .andExpect {
                     val content = jsonMapper.readValue<Ressurs<Any>>(it.response.contentAsString)
-                    content.status == Ressurs.Status.FEILET
+                    assertThat(content.status).isEqualTo(Ressurs.Status.FEILET)
                 }
         }
     }

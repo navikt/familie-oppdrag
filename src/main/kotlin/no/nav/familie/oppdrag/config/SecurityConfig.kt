@@ -56,7 +56,7 @@ class SecurityConfig {
         AccessDeniedHandler { request, response, accessDeniedException ->
             logger.debug("AccessDeniedException caught: ${accessDeniedException.message}")
             // Maintains backward compatibility - returns 401 instead of 403
-            response.status = HttpStatus.UNAUTHORIZED.value()
+            response.status = HttpStatus.FORBIDDEN.value()
             response.contentType = MediaType.APPLICATION_JSON_VALUE
             response.writer.write(
                 jsonMapper.writeValueAsString(Ressurs.failure<Nothing>("Forbidden")),
