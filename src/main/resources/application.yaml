@@ -25,6 +25,12 @@ spring:
       max-lifetime: 30000
       minimum-idle: 1
       data-source-properties.stringtype: unspecified # Nødvendig for å kunde sende en String til et json-felt i PostgresSql
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_OPENID_CONFIG_ISSUER}
+          audiences: ${AZURE_APP_CLIENT_ID}
 
 management:
   endpoint:
@@ -63,4 +69,5 @@ EF_SAK_CLIENT_ID: ""
 EF_IVERKSETT_CLIENT_ID: ""
 TILBAKEKREVING_V1_URL: "http://localhost"
 FAMILIE_TILBAKE_CLIENT_ID: ""
-AZURE_APP_WELL_KNOWN_URL: ""
+AZURE_OPENID_CONFIG_ISSUER: ""
+AZURE_APP_CLIENT_ID: ""

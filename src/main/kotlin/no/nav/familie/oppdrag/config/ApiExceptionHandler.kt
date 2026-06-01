@@ -3,11 +3,9 @@ package no.nav.familie.oppdrag.config
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.serviceUnavailable
-import no.nav.familie.oppdrag.common.RessursUtils.unauthorized
 import no.nav.familie.oppdrag.tss.TssConnectionException
 import no.nav.familie.oppdrag.tss.TssException
 import no.nav.familie.oppdrag.tss.TssNoDataFoundException
-import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.NestedExceptionUtils.getMostSpecificCause
@@ -20,11 +18,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class ApiExceptionHandler {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
-
-    @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleJwtTokenUnauthorizedException(
-        jwtTokenUnauthorizedException: JwtTokenUnauthorizedException,
-    ): ResponseEntity<Ressurs<Nothing>> = unauthorized("Unauthorized")
 
     @ExceptionHandler(Throwable::class)
     fun handleThrowable(throwable: Throwable): ResponseEntity<Ressurs<Nothing>> {

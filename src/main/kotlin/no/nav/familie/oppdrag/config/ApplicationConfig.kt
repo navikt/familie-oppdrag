@@ -3,7 +3,6 @@ package no.nav.familie.oppdrag.config
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
-import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.jetty.servlet.JettyServletWebServerFactory
 import org.springframework.boot.persistence.autoconfigure.EntityScan
@@ -11,13 +10,13 @@ import org.springframework.boot.web.server.servlet.ServletWebServerFactory
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootConfiguration
-@EntityScan(ApplicationConfig.PAKKENAVN, "no.nav.familie.sikkerhet")
-@ComponentScan(ApplicationConfig.PAKKENAVN, "no.nav.familie.sikkerhet")
+@EntityScan(ApplicationConfig.PAKKENAVN)
+@ComponentScan(ApplicationConfig.PAKKENAVN)
 @EnableScheduling
-@EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 class ApplicationConfig {
     @Bean
     fun servletWebServerFactory(): ServletWebServerFactory {

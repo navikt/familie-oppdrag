@@ -12,14 +12,17 @@ oppdrag.mq:
 grensesnitt:
   antall: 2
 
-no.nav.security.jwt:
-  issuer.azuread:
-    discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
-    accepted_audience: ${AZURE_APP_CLIENT_ID}
-
-spring.datasource.url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
-spring.datasource.username: postgres
-spring.datasource.password: test
+spring:
+  datasource:
+    url: jdbc:postgresql://0.0.0.0:5432/familie-oppdrag
+    username: postgres
+    password: test
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_OPENID_CONFIG_ISSUER}
+          audiences: ${AZURE_APP_CLIENT_ID}
 
 vault:
   systembruker:
@@ -28,4 +31,5 @@ vault:
 
 OPPDRAG_SERVICE_URL: #Mockes ut lokalt
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-AZURE_APP_WELL_KNOWN_URL: "https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration"
+AZURE_OPENID_CONFIG_ISSUER: "https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0"
+AZURE_APP_CLIENT_ID: "local-client-id"
