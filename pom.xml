@@ -32,7 +32,7 @@
         <jaxb.version>4.0.9</jaxb.version>
         <cxf.version>4.2.2</cxf.version>
 
-        <mockk.version>1.14.9</mockk.version>
+        <mockk.version>1.14.11</mockk.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20260611160851_f0e234f</tjenestespesifikasjoner.version>
