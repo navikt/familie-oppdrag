@@ -12,8 +12,10 @@ import no.rtv.namespacetss.TypeOD910
 import no.rtv.namespacetss.TypeSamhAdr
 import no.rtv.namespacetss.TypeSamhAvd
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
+@Profile("never")
 @Service
 class TssOppslagService(
     private val tssMQClient: TssMQClient,

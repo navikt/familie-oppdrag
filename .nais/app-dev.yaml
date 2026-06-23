@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: familie-oppdrag
+  name: familie-oppdrag-backend
   namespace: teamfamilie
   labels:
     team: teamfamilie
@@ -9,6 +9,8 @@ metadata:
 spec:
   image: {{ image }}
   port: 8087
+  envFrom:
+    - secret: familie-oppdrag-backend
   liveness:
     path: /internal/health/liveness
     initialDelay: 30
@@ -20,11 +22,6 @@ spec:
   prometheus:
     enabled: true
     path: /internal/prometheus
-  vault:
-    enabled: true
-    paths:
-      - kvPath: /serviceuser/data/dev/srvfamilie-oppdrag
-        mountPath: /secret/serviceuser
   replicas:
     min: 2
     max: 4
@@ -35,8 +32,16 @@ spec:
       memory: 700Mi
       cpu: 25m
   ingresses:
-    - https://familie-oppdrag.dev-fss-pub.nais.io
-    - https://familie-oppdrag.dev.intern.nav.no
+    - https://familie-oppdrag-backend.dev.intern.nav.no
+  sqlInstances:
+    - type: POSTGRES_17 # IF This is changed, all data will be lost. Read on nais.io how to upgrade
+      tier: db-custom-1-3840
+      name: familie-oppdrag-17
+      autoBackupHour: 2
+      diskAutoresize: true
+      databases:
+        - name: familie-oppdrag
+          envVarPrefix: DB
   azure:
     application:
       enabled: true

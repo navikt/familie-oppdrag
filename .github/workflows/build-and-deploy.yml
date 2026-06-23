@@ -1,9 +1,6 @@
 name: Build og deploy (dev og prod)
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'main'
 
 jobs:
   build:
@@ -40,11 +37,12 @@ jobs:
         run: |
           curl -X POST --data "{\"text\": \"Build av $GITHUB_REPOSITORY feilet - $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}" $WEBHOOK_URL
         env:
-          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.BAKS_DEPLOYMENTS_SLACK_WEBHOOK }}
     outputs:
       image: ${{ steps.docker-push.outputs.image }}
   deploy:
-    name: Deploy to FSS
+    name: Deploy to GCP
+    if: false # ingen deploy inntil videre
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -52,16 +50,16 @@ jobs:
       id-token: "write"
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # ratchet:actions/checkout@v4
-      - name: Deploy til dev-fss team namespace
+      - name: Deploy til dev-gcp team namespace
         uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: dev-fss
+          CLUSTER: dev-gcp
           RESOURCE: .nais/app-dev.yaml
           VAR: image=${{ needs.build.outputs.image }}
-      - name: Deploy til prod-fss team namespace
+      - name: Deploy til prod-gcp team namespace
         uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: prod-fss
+          CLUSTER: prod-gcp
           RESOURCE: .nais/app-prod.yaml
           VAR: image=${{ needs.build.outputs.image }}
       - name: Post deploy failures to Slack
@@ -69,4 +67,4 @@ jobs:
         run: |
           curl -X POST --data "{\"text\": \"Deploy av $GITHUB_REPOSITORY feilet - $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}" $WEBHOOK_URL
         env:
-          WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.BAKS_DEPLOYMENTS_SLACK_WEBHOOK }}

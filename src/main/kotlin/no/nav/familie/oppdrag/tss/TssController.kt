@@ -7,6 +7,7 @@ import no.nav.familie.kontrakter.ba.tss.SøkSamhandlerInfoRequest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.rtv.namespacetss.TOutputElementer
 import no.rtv.namespacetss.TypeOD910
+import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@Profile("never")
 @RestController
 @RequestMapping("/api/tss")
 class TssController(

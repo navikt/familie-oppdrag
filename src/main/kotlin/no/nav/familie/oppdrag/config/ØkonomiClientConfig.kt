@@ -14,11 +14,13 @@ import org.apache.cxf.ws.addressing.WSAddressingFeature
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import javax.xml.namespace.QName
 
 private const val WSDL = "wsdl/no/nav/tilbakekreving/tilbakekreving-v1-tjenestespesifikasjon.wsdl"
 private const val NAMESPACE = "http://okonomi.nav.no/tilbakekrevingService/"
 
+@Profile("never")
 @Configuration
 class ØkonomiClientConfig(
     @Value("\${TILBAKEKREVING_V1_URL}") private val tilbakekrevingUrl: String,

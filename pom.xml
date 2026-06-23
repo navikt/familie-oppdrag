@@ -6,7 +6,7 @@
 
     <groupId>no.nav</groupId>
     <packaging>jar</packaging>
-    <artifactId>familie-oppdrag</artifactId>
+    <artifactId>familie-oppdrag-backend</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -33,7 +33,6 @@
         <cxf.version>4.2.2</cxf.version>
 
         <mockk.version>1.14.9</mockk.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <tjenestespesifikasjoner.version>1.0_20260611160851_f0e234f</tjenestespesifikasjoner.version>
         <springdoc.version>3.0.3</springdoc.version>
@@ -42,13 +41,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <!-- Override Spring Boot BOM's okhttp 4.x pins to align with mock-oauth2-server 4.0.0 which requires mockwebserver 5.x -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
@@ -195,18 +187,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.vault</groupId>
-            <artifactId>spring-vault-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-vault-config-databases</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -361,10 +341,6 @@
         </dependency>
         -->
         <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-common</artifactId>
             <version>${springdoc.version}</version>
@@ -427,12 +403,12 @@
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/navikt/familie-oppdrag</url>
-        </repository>
-        <repository>
             <id>jitpack</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/navikt/familie-felles</url>
         </repository>
     </repositories>
 
