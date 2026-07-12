@@ -21,8 +21,8 @@
         <jvmTarget>25</jvmTarget>
         <kotlin.version>2.4.0</kotlin.version>
         <main-class>no.nav.familie.oppdrag.LauncherKt</main-class>
-        <felles.version>4.20260622095330_affbfcf</felles.version>
-	    <kontrakter.version>4.0_20260622103258_a3e0997</kontrakter.version>
+        <felles.version>4.20260702124222_2415d74</felles.version>
+	    <kontrakter.version>4.0_20260702124405_ce34af2</kontrakter.version>
 
         <!--
         denne må oppdateres manuellt då eks `mvn versions:update-properties` henter versjon 2023.
@@ -189,7 +189,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>4.2.0</version>
+            <version>4.2.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
