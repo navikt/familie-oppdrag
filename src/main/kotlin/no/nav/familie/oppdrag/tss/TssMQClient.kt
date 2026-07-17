@@ -13,7 +13,6 @@ import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
 import java.util.UUID
 
-@Profile("never")
 @Service
 class TssMQClient(
     @Qualifier("jmsTemplateTss") private val jmsTemplateTss: JmsTemplate,
@@ -135,6 +134,6 @@ class TssMQClient(
     }
 
     companion object {
-        const val BRUKER_ID = "familie-oppdrag"
+        const val BRUKER_ID = "familie-oppdrag-backend"
     }
 }

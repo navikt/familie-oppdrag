@@ -29,7 +29,7 @@ import java.time.Duration
 
 private const val UTF_8_WITH_PUA = 1208
 
-@Profile("never")
+
 @Configuration
 class OppdragMQConfig(
     @Value("\${oppdrag.mq.hostname}") val hostname: String,
@@ -87,7 +87,7 @@ class OppdragMQConfig(
         cf.setStringProperty(WMQConstants.WMQ_CHANNEL, channel)
         cf.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQ_CM_CLIENT)
         cf.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, queuemanager)
-        cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "familie-oppdrag")
+        cf.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "familie-oppdrag-backend")
         cf.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true)
         cf.setStringProperty(WMQConstants.USERID, stsConfig.username)
         cf.setStringProperty(WMQConstants.PASSWORD, stsConfig.password)
@@ -131,6 +131,7 @@ class OppdragMQConfig(
     }
 
     @Bean
+    @Profile("never")
     fun jmsTemplateAvstemming(mqQueueConnectionFactory: ConnectionFactory): JmsTemplate =
         JmsTemplate(mqQueueConnectionFactory).apply { defaultDestinationName = avstemmingQueue }
 }
