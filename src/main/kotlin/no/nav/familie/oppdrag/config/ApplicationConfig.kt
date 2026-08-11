@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootConfiguration
 @EntityScan(ApplicationConfig.PAKKENAVN)
-@ComponentScan(ApplicationConfig.PAKKENAVN)
+@ComponentScan(ApplicationConfig.PAKKENAVN, "no.nav.familie.unleash")
 @EnableScheduling
 class ApplicationConfig {
     @Bean

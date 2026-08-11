@@ -70,6 +70,7 @@ spec:
         - host: mpls02.adeo.no
           ports:
             - port: 1414
+        - host: teamfamilie-unleash-api.nav.cloud.nais.io
   observability:
     logging:
       destinations:
@@ -81,6 +82,8 @@ spec:
       destinations:
         - id: "grafana-lgtm"
         - id: "elastic-apm"
+  envFrom:
+    - secret: familie-oppdrag-unleash-api-token
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
