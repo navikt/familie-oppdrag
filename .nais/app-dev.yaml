@@ -77,6 +77,7 @@ spec:
         - host: b27apvl220.preprod.local
           ports:
             - port: 1413
+        - host: teamfamilie-unleash-api.nav.cloud.nais.io
 
   observability:
     logging:
@@ -86,6 +87,8 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+  envFrom:
+    - secret: familie-oppdrag-unleash-api-token
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
