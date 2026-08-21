@@ -12,12 +12,14 @@ import no.nav.familie.kontrakter.felles.oppdrag.OppdragStatus
 import no.nav.familie.kontrakter.felles.oppdrag.Opphør
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsoppdrag
 import no.nav.familie.kontrakter.felles.oppdrag.Utbetalingsperiode
+import no.nav.familie.oppdrag.featuretoggle.FeatureToggleService
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.iverksetting.OppdragSender
 import no.nav.familie.oppdrag.repository.OppdragLager
 import no.nav.familie.oppdrag.repository.OppdragLagerRepository
 import no.nav.familie.oppdrag.service.OppdragServiceImpl
 import no.trygdeetaten.skjema.oppdrag.Mmel
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
@@ -28,6 +30,8 @@ import kotlin.test.assertEquals
 internal class OppdragControllerTest {
     val localDateTimeNow = LocalDateTime.now()
     val localDateNow = LocalDate.now()
+
+    private val featureToggleService = mockk<FeatureToggleService>()
 
     val utbetalingsoppdrag =
         Utbetalingsoppdrag(
@@ -54,6 +58,11 @@ internal class OppdragControllerTest {
                 ),
             ),
         )
+
+    @BeforeEach
+    fun setup() {
+        every { featureToggleService.isEnabled(any(), true) } returns false
+    }
 
     @Test
     fun `Skal lagre oppdrag for utbetalingoppdrag`() {
@@ -140,7 +149,7 @@ internal class OppdragControllerTest {
 
         val oppdragService = OppdragServiceImpl(oppdragSender, oppdragLagerRepository)
 
-        val oppdragController = OppdragController(oppdragService, mapper)
+        val oppdragController = OppdragController(oppdragService, mapper, featureToggleService)
         return Pair(oppdragLagerRepository, oppdragController)
     }
 }
