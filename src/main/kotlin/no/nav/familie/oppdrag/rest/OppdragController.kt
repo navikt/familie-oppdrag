@@ -11,6 +11,9 @@ import no.nav.familie.oppdrag.common.RessursUtils.illegalState
 import no.nav.familie.oppdrag.common.RessursUtils.notFound
 import no.nav.familie.oppdrag.common.RessursUtils.ok
 import no.nav.familie.oppdrag.common.RessursUtils.secureLogger
+import no.nav.familie.oppdrag.common.RessursUtils.serviceUnavailable
+import no.nav.familie.oppdrag.featuretoggle.FeatureToggle
+import no.nav.familie.oppdrag.featuretoggle.FeatureToggleService
 import no.nav.familie.oppdrag.iverksetting.OppdragMapper
 import no.nav.familie.oppdrag.service.OppdragAlleredeSendtException
 import no.nav.familie.oppdrag.service.OppdragHarAlleredeKvitteringException
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController
 class OppdragController(
     @Autowired val oppdragService: OppdragService,
     @Autowired val oppdragMapper: OppdragMapper,
+    private val featureToggleService: FeatureToggleService,
 ) {
     private val logger = LoggerFactory.getLogger(OppdragController::class.java)
 
@@ -39,8 +43,14 @@ class OppdragController(
     fun sendOppdrag(
         @Valid @RequestBody
         utbetalingsoppdrag: Utbetalingsoppdrag,
-    ): ResponseEntity<Ressurs<String>> =
-        Result
+    ): ResponseEntity<Ressurs<String>> {
+        if (featureToggleService.isEnabled(FeatureToggle.SKRU_AV_IVERKSETTELSE, true)) {
+            logger.info("Iverksettelse av oppdrag er skrudd av, sender ikke oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}.")
+            return serviceUnavailable(
+                "Iverksettelse er skrudd av for familie-oppdrag. All fremtidig iverksettelse skal gjøres via familie-oppdrag-backend i GCP (http://familie-oppdrag-backend).",
+            )
+        }
+        return Result
             .runCatching {
                 val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
                 val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
@@ -58,14 +68,21 @@ class OppdragController(
                     ok("Oppdrag sendt OK")
                 },
             )
+    }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdragPaaNytt/{versjon}"])
     fun sendOppdragPåNytt(
         @Valid @RequestBody
         utbetalingsoppdrag: Utbetalingsoppdrag,
         @PathVariable versjon: Int,
-    ): ResponseEntity<Ressurs<String>> =
-        Result
+    ): ResponseEntity<Ressurs<String>> {
+        if (featureToggleService.isEnabled(FeatureToggle.SKRU_AV_IVERKSETTELSE, true)) {
+            logger.info("Iverksettelse av oppdrag er skrudd av, sender ikke oppdrag for saksnr ${utbetalingsoppdrag.saksnummer}.")
+            return serviceUnavailable(
+                "Iverksettelse er skrudd av for familie-oppdrag. All fremtidig iverksettelse skal gjøres via familie-oppdrag-backend i GCP (http://familie-oppdrag-backend).",
+            )
+        }
+        return Result
             .runCatching {
                 val oppdrag110 = oppdragMapper.tilOppdrag110(utbetalingsoppdrag)
                 val oppdrag = oppdragMapper.tilOppdrag(oppdrag110)
@@ -79,13 +96,21 @@ class OppdragController(
                     ok("Oppdrag sendt OK")
                 },
             )
+    }
 
     @PostMapping("resend")
     fun resendOppdrag(
         @Valid @RequestBody
         oppdragId: OppdragId,
-    ) {
+    ): ResponseEntity<Ressurs<String>> {
+        if (featureToggleService.isEnabled(FeatureToggle.SKRU_AV_IVERKSETTELSE, true)) {
+            logger.info("Iverksettelse av oppdrag er skrudd av, resender ikke oppdrag med oppdragId: $oppdragId.")
+            return serviceUnavailable(
+                "Iverksettelse er skrudd av for familie-oppdrag. All fremtidig iverksettelse skal gjøres via familie-oppdrag-backend i GCP (http://familie-oppdrag-backend).",
+            )
+        }
         oppdragService.resendOppdrag(oppdragId)
+        return ok("Oppdrag sendt på nytt")
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/status"])
