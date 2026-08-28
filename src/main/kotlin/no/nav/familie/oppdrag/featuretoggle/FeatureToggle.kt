@@ -4,4 +4,5 @@ enum class FeatureToggle(
     val navn: String,
 ) {
     SKRU_AV_SIMULERING("familie-oppdrag.skru-av-simulering"),
+    SKRU_AV_IVERKSETTELSE("familie-oppdrag.skru-av-iverksettelse"),
 }
