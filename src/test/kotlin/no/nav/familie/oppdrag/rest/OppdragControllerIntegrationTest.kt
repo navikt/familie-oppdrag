@@ -111,6 +111,7 @@ internal class OppdragControllerIntegrationTest(
 
         val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer()
         oppdragController.sendOppdrag(utbetalingsoppdrag)
+        assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
         oppdragLagerRepository.oppdaterStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_FUNKSJONELL_FEIL)
 
         oppdragController.resendOppdrag(utbetalingsoppdrag.oppdragId)
@@ -122,6 +123,7 @@ internal class OppdragControllerIntegrationTest(
         every { featureToggleService.isEnabled(any(), true) } returns false
         val utbetalingsoppdrag = utbetalingsoppdragMedTilfeldigAktoer()
         oppdragController.sendOppdrag(utbetalingsoppdrag)
+        assertOppdragStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_OK)
         oppdragLagerRepository.oppdaterStatus(utbetalingsoppdrag.oppdragId, OppdragStatus.KVITTERT_FUNKSJONELL_FEIL)
 
         every { featureToggleService.isEnabled(any(), true) } returns true
