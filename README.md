@@ -1,4 +1,7 @@
-# familie-oppdrag
+# familie-oppdrag (arkivert)
+
+**Dette repoet er arkivert og har blitt erstattet av [familie-oppdrag-backend](https://github.com/navikt/familie-oppdrag-backend)**
+
 Generell proxy mot Oppdragsystemet (OS) for familie-ytelsene
 
 ## Bygging
